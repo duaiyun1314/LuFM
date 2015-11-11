@@ -1,0 +1,37 @@
+<resources >
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+    </style>
+
+    <style name="Theme.Basic" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!--屏蔽原始actionbar 使用toolbar-->
+        <item name="windowActionBar">false</item>
+        <!--不显示window的title-->
+        <item name="windowNoTitle">true</item>
+        <!--窗体是否半透明-->
+        <item name="android:windowIsTranslucent">true</item>
+        <!--窗体内容背景-->
+        <item name="android:windowContentOverlay">@null</item>
+        <!--toolbar 背景色-->
+        <item name="colorPrimary">@color/toolbarColor</item>
+        <!--状态栏颜色-->
+        <item name="colorPrimaryDark">@color/statusColor</item>
+        <!--actionmode 背景色-->
+        <item name="actionModeBackground">?colorPrimary</item>
+        <!--checkbox button 选中的颜色-->
+        <item name="colorAccent">#3c69ce</item>
+        <!--自定义属性 ：list标题颜色-->
+        <item name="titleColor">?colorPrimary</item>
+        <!--自定义属性：list副标题颜色-->
+        <item name="subTitleColor">#5d5b5b</item>
+        <!--文本颜色-->
+        <item name="android:textColor">@color/textColor</item>
+        <item name="textSelectColor">#ff0000</item>
+        <!--toolbar主题-->
+        <item name="toolbarTheme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+        <item name="toolbarPopupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+
+    </style>
+</resources>
