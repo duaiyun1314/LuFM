@@ -1,37 +1,20 @@
 package com.andy.LuFM.controller;
 
+import android.app.Activity;
+import android.content.Context;
+import android.view.View;
+
 import com.andy.LuFM.providers.BaseProvider;
 import com.andy.LuFM.providers.ProviderCallback;
 
 /**
  * Created by Andy.Wang on 2015/11/13.
  */
-public abstract class BaseController<Provider extends BaseProvider> implements ProviderCallback {
-    protected Provider provider;
+public interface BaseController<Provider extends BaseProvider> {
 
-    public BaseController(Provider provider) {
-        this.provider = provider;
-        this.provider.setCallback(this);
-    }
+    void assumeView(View view);
 
-    @Override
-    public void onLoadStart() {
+    void setActivity(Context activity);
 
-    }
-
-    @Override
-    public void onLoadSuccess(Object object) {
-
-    }
-
-    @Override
-    public void onLoadFinish(int size) {
-
-    }
-
-    @Override
-    public void onLoadFailure() {
-
-    }
     abstract void loadData();
 }

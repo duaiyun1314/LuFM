@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.andy.LuFM.AllInOneActivity;
 import com.andy.LuFM.R;
 import com.andy.LuFM.model.CategoryNode;
+import com.andy.LuFM.view.RecommendView;
 import com.andy.LuFM.view.SlidingTabLayout;
 
 import java.util.List;
@@ -47,14 +48,11 @@ public class DiscoverFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mViewPager.setAdapter(new MyAdapter(getChildFragmentManager()));
+        mViewPager.setAdapter(new MyAdapter());
         slidingTabLayout.setViewPager(mViewPager);
     }
 
-    private class MyAdapter extends FragmentPagerAdapter {
-        public MyAdapter(FragmentManager fm) {
-            super(fm);
-        }
+    private class MyAdapter extends PagerAdapter {
 
         @Override
         public int getCount() {
@@ -62,8 +60,22 @@ public class DiscoverFragment extends Fragment {
         }
 
         @Override
-        public Fragment getItem(int position) {
-            return new MineFragment();
+        public boolean isViewFromObject(View view, Object object) {
+            return view == object;
+        }
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            RecommendView recommendView = new RecommendView(getActivity());
+            ((ViewPager) container).addView(recommendView);
+            recommendView.update();
+            return recommendView;
+        }
+
+        @Override
+        public void destroyItem(View container, int position, Object object) {
+           // super.destroyItem(container, position, object);
+            ((ViewPager) container).removeView((View) object);
         }
 
         @Override

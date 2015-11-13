@@ -9,4 +9,7 @@
     <string name="label_mine">我的</string>
     <string name="label_discover">发现</string>
     <string name="label_download">下载</string>
+
+
+    <string name="load_fail">加载失败</string>
 </resources>
