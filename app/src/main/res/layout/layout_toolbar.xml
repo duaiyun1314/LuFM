@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?colorPrimary">
+
+    <RadioGroup
+        android:id="@+id/radio_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/rd_mine"
+            style="@style/Radio_Button"
+            android:text="@string/label_mine" />
+
+        <RadioButton
+            android:id="@+id/rd_discover"
+            style="@style/Radio_Button"
+            android:text="@string/label_discover" />
+
+        <RadioButton
+            android:id="@+id/rd_download"
+            style="@style/Radio_Button"
+            android:text="@string/label_download" />
+    </RadioGroup>
+</android.support.v7.widget.Toolbar>

@@ -3,4 +3,10 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+
+
+    <!--labels for toolbar-->
+    <string name="label_mine">我的</string>
+    <string name="label_discover">发现</string>
+    <string name="label_download">下载</string>
 </resources>
