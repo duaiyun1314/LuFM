@@ -1,0 +1,61 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:context=".AllInOneActivity">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="4dip"
+        android:background="#22777777" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="5dip"
+        android:paddingLeft="@dimen/content_padding"
+        android:paddingRight="@dimen/content_padding"
+        android:paddingTop="@dimen/content_padding">
+
+        <View
+            android:id="@+id/tag_view"
+            android:layout_width="3dip"
+            android:layout_height="18dip"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:background="?colorPrimary" />
+
+        <TextView
+            android:id="@+id/tag_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="3dip"
+            android:layout_toRightOf="@id/tag_view"
+            android:text="新闻"
+            android:textSize="16dp" />
+
+        <LinearLayout
+            android:id="@+id/more_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:clickable="true"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="更多"
+                android:textColor="?colorPrimary" />
+
+            <ImageView
+                android:layout_width="16dip"
+                android:layout_height="16dip"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_arrow_more" />
+        </LinearLayout>
+    </RelativeLayout>
+
+</LinearLayout>

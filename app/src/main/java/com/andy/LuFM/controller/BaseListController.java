@@ -33,8 +33,9 @@ public class BaseListController<Provider extends ListDataProvider, BaseView exte
         this.mRefreshLayout.setSize(SwipeRefreshLayout.DEFAULT);
         this.mRefreshLayout.setOnRefreshListener(this);
         this.mRefreshLayout.setColorSchemeColors(colorPrimary, colorPrimaryDark, colorAccent);
-        mRefreshLayout.removeAllViews();
+        //mRefreshLayout.removeAllViews();
         mListView = new ListView(mContext);
+        mListView.setDivider(null);
         mRefreshLayout.addView(mListView, layoutParams);
     }
 
