@@ -22,7 +22,7 @@ public abstract class ListDataProvider extends BaseProvider {
     }
 
     @Override
-    public void loadData() {
+    public void loadData(Object... aArray) {
 
     }
 

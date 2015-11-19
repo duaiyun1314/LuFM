@@ -2,20 +2,19 @@ package com.andy.LuFM.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.andy.LuFM.AllInOneActivity;
 import com.andy.LuFM.R;
+import com.andy.LuFM.Utils.Constants;
 import com.andy.LuFM.model.CategoryNode;
+import com.andy.LuFM.view.BaseRecommendView;
+import com.andy.LuFM.view.RecommendNovelView;
 import com.andy.LuFM.view.RecommendView;
 import com.andy.LuFM.view.SlidingTabLayout;
 
@@ -66,15 +65,27 @@ public class DiscoverFragment extends Fragment {
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
-            RecommendView recommendView = new RecommendView(getActivity());
-            ((ViewPager) container).addView(recommendView);
-            recommendView.update();
-            return recommendView;
+            CategoryNode node = lists.get(position);
+            BaseRecommendView viewGroup = null;
+            switch (node.getSectionId()) {
+                case 0:
+                    viewGroup = new RecommendView(getActivity());
+                    break;
+                case Constants.NOVEL_SECTION:
+                    viewGroup = new RecommendNovelView(getActivity());
+                    break;
+            }
+            if (viewGroup != null) {
+                (container).addView(viewGroup);
+                viewGroup.update();
+            }
+
+            return viewGroup;
         }
 
         @Override
         public void destroyItem(View container, int position, Object object) {
-           // super.destroyItem(container, position, object);
+            // super.destroyItem(container, position, object);
             ((ViewPager) container).removeView((View) object);
         }
 

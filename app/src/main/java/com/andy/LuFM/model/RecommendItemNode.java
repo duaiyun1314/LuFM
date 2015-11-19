@@ -1,9 +1,11 @@
 package com.andy.LuFM.model;
 
+import com.andy.LuFM.Utils.TimeKit;
+
 /**
  * Created by wanglu on 15/11/16.
  */
-public class RecommendItemNode extends Node{
+public class RecommendItemNode extends Node {
     public int sectionId;
     public String belongName;
     public String briefName;
@@ -14,8 +16,9 @@ public class RecommendItemNode extends Node{
     public String update_time;
     public int ratingStar;
     public int mCategoryId;
-    private Node mNode;
+    public Node mNode;
     public int categoryPos;
+    private long mUpdateTime;
 
     public String getLargeThumb() {
         return largeThumb;
@@ -44,13 +47,26 @@ public class RecommendItemNode extends Node{
     public boolean noThumb() {
         return this.smallThumb == null && this.mediumThumb == null && this.largeThumb == null;
     }
-    public Node getDetail(){
+
+    public Node getDetail() {
         return this.mNode;
     }
-    public void setDetail(Node node){
-        if(node !=null){
+
+    public void setDetail(Node node) {
+        if (node != null) {
             this.mNode = node;
-            this.mNode.parent =this;
+            this.mNode.parent = this;
         }
+    }
+
+    public long getUpdateTime() {
+        if (this.update_time == null) {
+            return 0;
+        }
+        if (this.mUpdateTime > 0) {
+            return this.mUpdateTime;
+        }
+        this.mUpdateTime = TimeKit.dateToMS(this.update_time);
+        return this.mUpdateTime;
     }
 }

@@ -16,5 +16,5 @@ public interface BaseController<Provider extends BaseProvider> {
 
     void setActivity(Context activity);
 
-    abstract void loadData();
+    abstract void loadData(Object... aArray);
 }

@@ -6,4 +6,18 @@
     <attr name="subTitleColor" format="color|reference" />
     <attr name="toolbarTheme" format="reference" />
     <attr name="toolbarPopupTheme" format="reference" />
+
+    <declare-styleable name="RatingBar">
+        <!--尺寸值-->
+        <attr name="starImageSize" format="dimension" />
+        <attr name="starCount" format="integer" />
+        <!--资源文件值-->
+        <attr name="starEmpty" format="reference" />
+        <!--资源文件值-->
+        <attr name="starFill" format="reference" />
+        <!--资源文件值-->
+        <attr name="starHalf" format="reference" />
+        <!--boolean值-->
+        <attr name="clickable" format="boolean" />
+    </declare-styleable>
 </resources>

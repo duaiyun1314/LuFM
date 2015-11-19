@@ -48,7 +48,7 @@ public class BaseControllerImpl<Provider extends BaseProvider> implements BaseCo
     }
 
     @Override
-    public void loadData() {
+    public void loadData(Object... aArray) {
 
     }
 

@@ -1,38 +1,31 @@
 package com.andy.LuFM.controller;
 
-import android.util.Log;
-import android.view.View;
-
-import com.andy.LuFM.model.RecommendItemNode;
+import com.andy.LuFM.data.InfoManager;
+import com.andy.LuFM.model.RecommendCategoryNode;
 import com.andy.LuFM.providers.RecommendListProvider;
-import com.andy.LuFM.view.RecommendView;
-import com.andy.LuFM.view.SwitchView;
-
-import java.util.List;
+import com.andy.LuFM.view.BaseRecommendView;
 
 /**
  * Created by Andy.Wang on 2015/11/13.
  */
-public class RecommendListController<Prodiver extends RecommendListProvider> extends BaseListController<Prodiver, RecommendView> {
+public class RecommendListController<Prodiver extends RecommendListProvider> extends BaseRecommendListController<Prodiver, BaseRecommendView> {
+
     public RecommendListController(Prodiver provider) {
         super(provider);
     }
 
     @Override
-    public void assumeView(View view) {
-        super.assumeView(view);
-        mListView.setAdapter(mProvider.getAdapter());
-        SwitchView switchView = new SwitchView(mContext);
-        mListView.addHeaderView(switchView);
-    }
-
-    @Override
-    public void onLoadSuccess(Object object) {
-        super.onLoadSuccess(object);
-        List<RecommendItemNode> recommendItemNodes = (List<RecommendItemNode>) object;
-        View view = mListView.getChildAt(0);
-        if (view instanceof SwitchView) {
-            ((SwitchView) view).update(recommendItemNodes);
+    public void loadData(Object... aArray) {
+        int sectionId = 0;
+        for (Object obj : aArray) {
+            sectionId = (int) obj;
+        }
+        RecommendCategoryNode recommendCategoryNode =
+                InfoManager.getInstance().root().getRecommendCategoryNode(sectionId);
+        if (recommendCategoryNode == null) {
+            super.loadData(sectionId);
+        } else {
+            baseView.setDate(recommendCategoryNode);
         }
 
     }

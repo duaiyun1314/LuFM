@@ -8,6 +8,8 @@ import com.andy.LuFM.data.RequestType;
 import com.andy.LuFM.data.Result;
 import com.andy.LuFM.handler.GsonHttpHandler;
 
+import java.util.Map;
+
 /**
  * Created by wanglu on 15/11/16.
  */
@@ -33,8 +35,9 @@ public class NetDs implements IDataOperation {
     @Override
     public Result doCommand(DataCommand dataCommand, IDataRecvHandler iDataRecvHandler) {
         String type = dataCommand.getType();
+        Map<String, Object> param = dataCommand.getParam();
         if (type.equals(RequestType.DATA_TYPE_GET_RECOMMEND)) {
-            NetKit.getInstance().getRecommendInfo((GsonHttpHandler) iDataRecvHandler);
+            NetKit.getInstance().getRecommendInfo(param,(GsonHttpHandler) iDataRecvHandler);
         }
         return null;
     }

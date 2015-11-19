@@ -20,6 +20,6 @@ public abstract class BaseProvider<T> {
         this.callback = callback;
     }
 
-    public abstract void loadData();
+    public abstract void loadData(Object... aArray);
 
 }
