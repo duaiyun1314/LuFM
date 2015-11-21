@@ -36,10 +36,7 @@ public class SwitchView extends LinearLayout {
     }
 
     public void update(List<RecommendItemNode> lists) {
-        Log.i("Sync", "switchview 加载adapter；" + lists.size());
         viewPager.setAdapter(new SwitchAdapter(context, lists));
-        //viewPager.setOnPageChangeListener(new MyOnPageChangeListener());
-
         viewPager.setInterval(2000);
         viewPager.startAutoScroll();
         viewPager.setCurrentItem(0);

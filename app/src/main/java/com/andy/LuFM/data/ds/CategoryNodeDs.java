@@ -7,6 +7,7 @@ import com.andy.LuFM.Utils.Constants;
 import com.andy.LuFM.data.DataCommand;
 import com.andy.LuFM.data.IDataOperation;
 import com.andy.LuFM.data.IDataRecvHandler;
+import com.andy.LuFM.data.IResultRecvHandler;
 import com.andy.LuFM.data.RequestType;
 import com.andy.LuFM.data.Result;
 import com.andy.LuFM.dbutil.DaoMaster;
@@ -41,7 +42,7 @@ public class CategoryNodeDs implements IDataOperation {
     }
 
     @Override
-    public Result doCommand(DataCommand dataCommand, IDataRecvHandler iDataRecvHandler) {
+    public Result doCommand(DataCommand dataCommand, IResultRecvHandler iDataRecvHandler) {
         Map<String, Object> params = dataCommand.getParam();
         List<CategoryNode> lists = new ArrayList<>();
         int parentId = (int) params.get(Constants.PARENT_ID);

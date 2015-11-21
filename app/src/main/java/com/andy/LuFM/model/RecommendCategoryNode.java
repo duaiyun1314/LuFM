@@ -7,8 +7,36 @@ import java.util.List;
  * Created by wanglu on 15/11/16.
  */
 public class RecommendCategoryNode extends Node {
-    public List<RecommendItemNode> lstBanner = new ArrayList<>();
-    public List<List<RecommendItemNode>> lstRecMain = new ArrayList<>();
+
+    private transient boolean hasInsertedBannerAdvertisement;
+    private transient boolean hasLoadAudioAdvertisement;
+    private transient boolean hasRestored;
+    private transient boolean hasRestoredSucc;
+    public transient boolean hasUpdate;
+    public List<RecommendItemNode> lstBanner;
+    public List<List<RecommendItemNode>> lstRecMain;
+    public String name;
+    public int sectionId;
+
+    public RecommendCategoryNode() {
+        this.lstBanner = new ArrayList();
+        this.lstRecMain = new ArrayList();
+        this.sectionId = -1;
+        this.name = "";
+        this.hasRestoredSucc = false;
+        this.hasRestored = false;
+        this.hasUpdate = false;
+        this.hasInsertedBannerAdvertisement = false;
+        this.hasLoadAudioAdvertisement = false;
+        this.nodeName = "recommendcategory";
+    }
+
+    public boolean isFrontpage() {
+        if (this.sectionId == 0) {
+            return true;
+        }
+        return false;
+    }
 
     public void insertItemNode(RecommendItemNode recommendItemNode, int pos) {
         if (pos == 1) {

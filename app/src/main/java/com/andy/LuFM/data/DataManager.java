@@ -25,7 +25,7 @@ public class DataManager {
         requests.put(operation.dataRequestName(), operation);
     }
 
-    public Result getData(String requestName, IDataRecvHandler handler, DataCommand dataCommand) {
+    public Result getData(String requestName, IResultRecvHandler handler, DataCommand dataCommand) {
         Result result = new Result();
         IDataOperation iDataOperation = requests.get(requestName.trim());
         if (iDataOperation == null) {

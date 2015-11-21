@@ -6,6 +6,6 @@ package com.andy.LuFM.data;
 public interface IDataOperation {
     String dataRequestName();
 
-    Result doCommand(DataCommand dataCommand, IDataRecvHandler iDataRecvHandler);
+    Result doCommand(DataCommand dataCommand, IResultRecvHandler iDataRecvHandler);
 
 }

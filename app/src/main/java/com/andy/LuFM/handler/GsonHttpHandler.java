@@ -12,7 +12,7 @@ import cz.msebera.android.httpclient.Header;
 /**
  * Created by wanglu on 15/11/16.
  */
-public abstract class GsonHttpHandler<T> extends TextHttpResponseHandler implements IDataRecvHandler {
+public abstract class GsonHttpHandler<T> extends TextHttpResponseHandler  {
     protected Type type;
     protected boolean parseString = false;
 

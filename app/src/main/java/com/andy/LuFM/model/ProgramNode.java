@@ -1,5 +1,7 @@
 package com.andy.LuFM.model;
 
+import com.andy.LuFM.helper.ChannelHelper;
+
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -90,8 +92,6 @@ public class ProgramNode extends Node {
     }
 
 
-
-
     public void setAbsoluteStartTime(long time) {
         this.absoluteStartTime = time;
     }
@@ -101,6 +101,34 @@ public class ProgramNode extends Node {
     }
 
 
+    public void setCategoryId(int id) {
+        if (id != -1) {
+            this.categoryId = id;
+        }
+    }
 
+    public int getCategoryId() {
+        if (this.isDownloadProgram) {
+            return 71;
+        }
+        if (this.categoryId != -1) {
+            return this.categoryId;
+        }
+        ChannelNode node;
+        if (this.mLiveInVirtual) {
+            node = ChannelHelper.getInstance().getChannel(this.channelId, LIVE_PROGRAM);
+            if (node == null) {
+                return -1;
+            }
+            this.categoryId = node.categoryId;
+            return node.categoryId;
+        }
+        node = ChannelHelper.getInstance().getChannel(this.channelId, this.channelType);
+        if (node == null) {
+            return -1;
+        }
+        this.categoryId = node.categoryId;
+        return node.categoryId;
+    }
 
 }

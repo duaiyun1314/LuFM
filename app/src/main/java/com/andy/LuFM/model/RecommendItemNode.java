@@ -6,19 +6,49 @@ import com.andy.LuFM.Utils.TimeKit;
  * Created by wanglu on 15/11/16.
  */
 public class RecommendItemNode extends Node {
-    public int sectionId;
     public String belongName;
     public String briefName;
-    public String name;
-    private String smallThumb;
-    private String mediumThumb;
-    private String largeThumb;
-    public String update_time;
-    public int ratingStar;
-    public int mCategoryId;
-    public Node mNode;
     public int categoryPos;
+    public String desc;
+    public String id;
+    public transient boolean isAds;
+    public boolean isweb;
+    private String largeThumb;
+    //public transient AdvertisementItemNode mAdNode;
+    public String mAttributesPath;
+    public int mCategoryId;
+    public transient int mClickCnt;
+    public transient Node mNode;
     private long mUpdateTime;
+    private String mediumThumb;
+    public String name;
+    public int ratingStar;
+    public int redirect;
+    public int redirectToVirtualChannels;
+    public int sectionId;
+    private transient long showLinkTime;
+    private String smallThumb;
+    public transient int time;
+    public String update_time;
+
+    public RecommendItemNode() {
+        this.id = "";
+        this.name = "";
+        this.briefName = "";
+        this.desc = "";
+        this.isweb = false;
+        this.redirectToVirtualChannels = 0;
+        this.mUpdateTime = 0;
+        this.sectionId = 0;
+        this.belongName = "";
+        this.ratingStar = -1;
+        this.isAds = false;
+        //this.mAdNode = null;
+        this.categoryPos = 1;
+        this.mClickCnt = 0;
+        this.redirect = 0;
+        this.nodeName = "recommenditem";
+    }
 
     public String getLargeThumb() {
         return largeThumb;

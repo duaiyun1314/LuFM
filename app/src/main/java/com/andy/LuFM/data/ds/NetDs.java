@@ -1,9 +1,11 @@
 package com.andy.LuFM.data.ds;
 
+import com.andy.LuFM.Utils.Constants;
 import com.andy.LuFM.Utils.NetKit;
 import com.andy.LuFM.data.DataCommand;
 import com.andy.LuFM.data.IDataOperation;
 import com.andy.LuFM.data.IDataRecvHandler;
+import com.andy.LuFM.data.IResultRecvHandler;
 import com.andy.LuFM.data.RequestType;
 import com.andy.LuFM.data.Result;
 import com.andy.LuFM.handler.GsonHttpHandler;
@@ -33,11 +35,15 @@ public class NetDs implements IDataOperation {
     }
 
     @Override
-    public Result doCommand(DataCommand dataCommand, IDataRecvHandler iDataRecvHandler) {
+    public Result doCommand(DataCommand dataCommand, IResultRecvHandler iResultRecvHandler) {
         String type = dataCommand.getType();
         Map<String, Object> param = dataCommand.getParam();
         if (type.equals(RequestType.DATA_TYPE_GET_RECOMMEND)) {
-            NetKit.getInstance().getRecommendInfo(param,(GsonHttpHandler) iDataRecvHandler);
+            String url = Constants.RECOMMEND_INFO_URL + (Integer) param.get("sectionId");
+            NetKit.getInstance().getNormalNetInfo(url, type, iResultRecvHandler);
+        } else if (type.equalsIgnoreCase(RequestType.GET_LIVE_CHANNEL_INFO)) {
+            String url = Constants.RECOMMEND_INFO_URL + param.get("id");
+            NetKit.getInstance().getNormalNetInfo(url, type, iResultRecvHandler);
         }
         return null;
     }

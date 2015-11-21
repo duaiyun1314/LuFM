@@ -15,6 +15,7 @@ import com.andy.LuFM.data.DataOfflineManager;
 import com.andy.LuFM.data.RequestType;
 import com.andy.LuFM.data.Result;
 import com.andy.LuFM.data.ds.CategoryNodeDs;
+import com.andy.LuFM.data.ds.ChannelNodeDS;
 import com.andy.LuFM.data.ds.NetDs;
 import com.andy.LuFM.event.EventType;
 import com.andy.LuFM.event.IEventHandler;
@@ -52,6 +53,7 @@ public class AllInOneActivity extends AppCompatActivity implements IEventHandler
     private void initDataOperation() {
         DataManager.getInstance().addRequests(CategoryNodeDs.getInstance());
         DataManager.getInstance().addRequests(NetDs.getInstance());
+        DataManager.getInstance().addRequests(ChannelNodeDS.getInstance());
     }
 
     private void initData() {

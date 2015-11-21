@@ -1,10 +1,12 @@
 package com.andy.LuFM.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.andy.LuFM.R;
+import com.andy.LuFM.controller.ControllerManager;
 import com.andy.LuFM.model.RecommendItemNode;
 import com.andy.LuFM.view.SwitchItemView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -33,16 +35,24 @@ public class SwitchAdapter extends RecyclingPageAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup container) {
+    public View getView(final int position, View convertView, ViewGroup container) {
         ViewHolder holder;
         if (convertView == null) {
             holder = new ViewHolder();
             holder.switchItemView = new SwitchItemView(context);
             convertView = holder.switchItemView;
             convertView.setTag(holder);
+
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
+        convertView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("Sync", "click:");
+                ControllerManager.getInstance().openControllerByRecommendNode(recommendItemNodes.get(getPosition(position)));
+            }
+        });
         holder.switchItemView.update(recommendItemNodes.get(getPosition(position)), options);
         return convertView;
     }
@@ -60,4 +70,5 @@ public class SwitchAdapter extends RecyclingPageAdapter {
     private static class ViewHolder {
         SwitchItemView switchItemView;
     }
+
 }

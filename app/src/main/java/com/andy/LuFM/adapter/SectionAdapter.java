@@ -59,4 +59,14 @@ public class SectionAdapter extends BaseAdapter {
     public void setData(List<SectionItem> items) {
         this.data = items;
     }
+
+    @Override
+    public boolean isEnabled(int position) {
+        SectionItem item = data.get(position);
+        if (item.type == SectionItem.TYPE_TAG) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 }
