@@ -42,7 +42,10 @@ public class NetDs implements IDataOperation {
             String url = Constants.RECOMMEND_INFO_URL + (Integer) param.get("sectionId");
             NetKit.getInstance().getNormalNetInfo(url, type, iResultRecvHandler);
         } else if (type.equalsIgnoreCase(RequestType.GET_LIVE_CHANNEL_INFO)) {
-            String url = Constants.RECOMMEND_INFO_URL + param.get("id");
+            String url = Constants.LIVE_CHANNLE_INFO_URL + param.get("id");
+            NetKit.getInstance().getNormalNetInfo(url, type, iResultRecvHandler);
+        } else if (type.equalsIgnoreCase(RequestType.GET_VIRTUAL_CHANNEL_INFO)) {
+            String url = Constants.VIRTUAL_CHANNLE_INFO_URL + param.get("id");
             NetKit.getInstance().getNormalNetInfo(url, type, iResultRecvHandler);
         }
         return null;

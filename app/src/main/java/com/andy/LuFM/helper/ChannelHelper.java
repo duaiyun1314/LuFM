@@ -53,6 +53,7 @@ public class ChannelHelper extends Node {
     }
 
     public ChannelNode getFakeChannel(int channelId, int catid, String name, int type) {
+        Log.i("Sync", "getFakeChannel");
         if (type == 0) {
             return getFakeLiveChannel(channelId, catid, name);
         }
@@ -60,6 +61,7 @@ public class ChannelHelper extends Node {
     }
 
     public ChannelNode getFakeLiveChannel(int channelId, int catid, String name) {
+        Log.i("Sync", "getFakeLiveChannel");
         if (this.mapLiveChannels.get(channelId) != null) {
             return (ChannelNode) this.mapLiveChannels.get(channelId);
         }
@@ -77,6 +79,7 @@ public class ChannelHelper extends Node {
     }
 
     public ChannelNode getFakeVirtualChannel(int channelId, int catid, String name) {
+        Log.i("Sync", "getFakeVirtualChannle");
         if (this.mapVirtualChannels.get(channelId) != null) {
             return (ChannelNode) this.mapVirtualChannels.get(channelId);
         }
@@ -96,7 +99,7 @@ public class ChannelHelper extends Node {
         }
         node.categoryId = catid;
         this.mapVirtualChannels.put(channelId, node);
-        //   InfoManager.getInstance().loadVirtualChannelNode(channelId, this);
+        InfoManager.getInstance().loadVirtualChannelNode(channelId, this);
         return node;
     }
 
@@ -134,20 +137,24 @@ public class ChannelHelper extends Node {
     }
 
     public ChannelNode getChannel(int channelId, int type) {
+        Log.i("Sync", "getChannel");
         ChannelNode node;
         if (type == 0) {
             node = (ChannelNode) this.mapLiveChannels.get(channelId);
             if (node != null) {
+                Log.i("Sync", "内存中有：");
                 return node;
             }
         } else if (type == 1) {
             node = (ChannelNode) this.mapVirtualChannels.get(channelId);
             if (node != null) {
+                Log.i("Sync", "内存中有：");
                 return node;
             }
         }
         node = getChannelFromDB(channelId, type);
         if (node != null) {
+            Log.i("Sync", "数据库有：");
             if (type == 1) {
                 this.mapVirtualChannels.put(channelId, node);
             } else if (type == 0) {
@@ -159,7 +166,7 @@ public class ChannelHelper extends Node {
             InfoManager.getInstance()._loadLiveChannelNode(channelId, this);
         }
         if (type == 1) {
-            //  InfoManager.getInstance().loadVirtualChannelNode(channelId, this);
+            InfoManager.getInstance().loadVirtualChannelNode(channelId, this);
         }
         return node;
     }

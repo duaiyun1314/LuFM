@@ -1,5 +1,6 @@
 package com.andy.LuFM.view;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -18,7 +19,7 @@ import java.util.List;
  */
 public class SwitchView extends LinearLayout {
     private AutoScrollViewPager viewPager;
-    private Context context;
+    private Activity context;
 
     public SwitchView(Context context) {
         this(context, null);
@@ -30,13 +31,13 @@ public class SwitchView extends LinearLayout {
 
     public SwitchView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        this.context = context;
+        this.context = (Activity) context;
         inflate(context, R.layout.layout_switchview, this);
         viewPager = (AutoScrollViewPager) findViewById(R.id.vp);
     }
 
     public void update(List<RecommendItemNode> lists) {
-        viewPager.setAdapter(new SwitchAdapter(context, lists));
+        viewPager.setAdapter(new SwitchAdapter(context, lists, viewPager));
         viewPager.setInterval(2000);
         viewPager.startAutoScroll();
         viewPager.setCurrentItem(0);

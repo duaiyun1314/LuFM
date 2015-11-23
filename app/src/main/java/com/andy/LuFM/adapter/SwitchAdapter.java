@@ -1,6 +1,8 @@
 package com.andy.LuFM.adapter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,9 +22,11 @@ public class SwitchAdapter extends RecyclingPageAdapter {
     private List<RecommendItemNode> recommendItemNodes;
     private DisplayImageOptions options;
     private boolean isInfiniteLoop;
-    private Context context;
+    private Activity context;
+    private ViewPager viewPager;
 
-    public SwitchAdapter(Context context, List<RecommendItemNode> lists) {
+    public SwitchAdapter(Activity context, List<RecommendItemNode> lists, ViewPager viewPager) {
+        this.viewPager = viewPager;
         this.recommendItemNodes = lists;
         isInfiniteLoop = true;
         this.context = context;
@@ -49,8 +53,10 @@ public class SwitchAdapter extends RecyclingPageAdapter {
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i("Sync", "click:");
-                ControllerManager.getInstance().openControllerByRecommendNode(recommendItemNodes.get(getPosition(position)));
+                int currentPoint = getPosition(viewPager.getCurrentItem());
+                Log.i("Sync", "click:" + currentPoint);
+
+                ControllerManager.getInstance(context).openControllerByRecommendNode(recommendItemNodes.get(currentPoint));
             }
         });
         holder.switchItemView.update(recommendItemNodes.get(getPosition(position)), options);

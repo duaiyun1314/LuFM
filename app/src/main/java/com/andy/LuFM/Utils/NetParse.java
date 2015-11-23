@@ -51,8 +51,8 @@ public class NetParse {
             }
 
             iResultRecvHandler.onRecvResult(result, type);
-        } else if (type == RequestType.GET_LIVE_CHANNEL_INFO) {
-            Log.i("Sync", "responseStrin:" + responseString);
+        } else if (type == RequestType.GET_LIVE_CHANNEL_INFO || type == RequestType.GET_VIRTUAL_CHANNEL_INFO) {
+            // Log.i("Sync", "responseStrin:" + type + "  " + responseString);
         }
 
     }

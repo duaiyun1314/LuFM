@@ -11,4 +11,5 @@ public class RequestType {
     public static final String CHANNEL_INFO = "CHANNEL_INFO";
     public static final String GETDB_CHANNEL_INFO = "GETDB_CHANNEL_INFO";
     public static final String GET_LIVE_CHANNEL_INFO = "GET_LIVE_CHANNEL_INFO";
+    public static final String GET_VIRTUAL_CHANNEL_INFO = "GET_VIRTUAL_CHANNEL_INFO";
 }

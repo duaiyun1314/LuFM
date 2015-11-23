@@ -1,5 +1,6 @@
 package com.andy.LuFM;
 
+import android.app.FragmentManager;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -19,20 +20,24 @@ import com.andy.LuFM.data.ds.ChannelNodeDS;
 import com.andy.LuFM.data.ds.NetDs;
 import com.andy.LuFM.event.EventType;
 import com.andy.LuFM.event.IEventHandler;
+import com.andy.LuFM.fragments.ChannelFragment;
 import com.andy.LuFM.fragments.DiscoverFragment;
 import com.andy.LuFM.fragments.DownloadFragment;
 import com.andy.LuFM.fragments.MineFragment;
+import com.andy.LuFM.listener.ChannelDetailClickListener;
 import com.andy.LuFM.model.CategoryNode;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AllInOneActivity extends AppCompatActivity implements IEventHandler, RadioGroup.OnCheckedChangeListener {
+public class AllInOneActivity extends AppCompatActivity implements IEventHandler, RadioGroup.OnCheckedChangeListener, ChannelDetailClickListener {
     private int mViewType = 1;
     public List<CategoryNode> categoryNodes;
     private RadioGroup radioGroup;
     private Fragment[] fragments;
+    public static final String CHANNEL_DETAIL_TAG = "channel_detail_tag";
+    public static final String MAIN_CONTENT_TAG = "main_content_tag";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,7 +96,7 @@ public class AllInOneActivity extends AppCompatActivity implements IEventHandler
     private void setMainPane() {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         Fragment fragment = fragments[mViewType];
-        ft.replace(R.id.content, fragment);
+        ft.replace(R.id.content, fragment, MAIN_CONTENT_TAG);
         ft.commit();
 
     }
@@ -141,5 +146,38 @@ public class AllInOneActivity extends AppCompatActivity implements IEventHandler
                 break;
         }
         setMainPane();
+    }
+
+    @Override
+    public void onChannelSelected(String type, Object param) {
+        ChannelFragment fragment = (ChannelFragment) getFragmentManager().findFragmentByTag(CHANNEL_DETAIL_TAG);
+        if (true) {
+            //   getActionBar().hide();
+            fragment = new ChannelFragment();
+            fragment.setData(type, param);
+            android.app.FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.setCustomAnimations(R.animator.slide_in_from_right, R.animator.slide_out_to_left
+                    , R.animator.slide_in_from_left, R.animator.slide_out_to_right);
+            fragmentTransaction.replace(R.id.detail, fragment, CHANNEL_DETAIL_TAG);
+            android.app.Fragment fragment1 = getFragmentManager().findFragmentByTag(MAIN_CONTENT_TAG);
+            if (fragment1 != null) {
+                fragmentTransaction.hide(fragment1);
+            }
+            fragmentTransaction.addToBackStack(null);
+
+            fragmentTransaction.commit();
+        }
+
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        FragmentManager fragmentManager = getFragmentManager();
+        if (fragmentManager.getBackStackEntryCount() > 0) {
+            fragmentManager.popBackStack();
+        } else {
+            super.onBackPressed();
+        }
     }
 }

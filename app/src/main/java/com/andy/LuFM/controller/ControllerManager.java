@@ -1,7 +1,14 @@
 package com.andy.LuFM.controller;
 
+import android.app.Activity;
+import android.content.Context;
+import android.util.Log;
+
+import com.andy.LuFM.controller.viewcontroller.ChannelDetailController;
+import com.andy.LuFM.controller.viewcontroller.ViewController;
 import com.andy.LuFM.data.InfoManager;
 import com.andy.LuFM.helper.ChannelHelper;
+import com.andy.LuFM.listener.ChannelDetailClickListener;
 import com.andy.LuFM.model.ChannelNode;
 import com.andy.LuFM.model.Node;
 import com.andy.LuFM.model.ProgramNode;
@@ -14,14 +21,19 @@ import com.andy.LuFM.model.RecommendItemNode;
 public class ControllerManager {
     private static ControllerManager instance;
     private int mChannelSource;
+    private Activity context;
+    private ChannelDetailClickListener channelDetailClickListener;
 
-    private ControllerManager() {
-
+    private ControllerManager(Activity context) {
+        this.context = context;
+        if (channelDetailClickListener == null) {
+            channelDetailClickListener = (ChannelDetailClickListener) context;
+        }
     }
 
-    public static ControllerManager getInstance() {
+    public static ControllerManager getInstance(Activity context) {
         if (instance == null) {
-            instance = new ControllerManager();
+            instance = new ControllerManager(context);
 
         }
         return instance;
@@ -30,6 +42,9 @@ public class ControllerManager {
     public void openControllerByRecommendNode(Node node) {
         if (node != null && node.nodeName.equalsIgnoreCase("recommenditem")) {
             RecommendItemNode p = (RecommendItemNode) node;
+            if (p != null) {
+                Log.i("Sync", "打开的item的detail：" + p.mNode.nodeName);
+            }
             p.mClickCnt++;
             if (p.mNode != null && !p.mNode.nodeName.equalsIgnoreCase("category")) {
                 if (p.mNode.nodeName.equalsIgnoreCase("channel")) {
@@ -64,7 +79,7 @@ public class ControllerManager {
                         PlayerAgent.getInstance().addPlaySource(36);
                     }
                     ((ProgramNode) p.mNode).setCategoryId(p.mCategoryId);
-                    getInstance().setChannelSource(1);
+                    setChannelSource(1);
                     if (PlayerAgent.getInstance().isPlaying()) {
                         openChannelDetailController((ProgramNode) p.mNode, false, true);
                     } else {
@@ -101,23 +116,24 @@ public class ControllerManager {
                 if (((ProgramNode) node).mLiveInVirtual) {
                     cNode = ChannelHelper.getInstance().getChannel(((ProgramNode) node).channelId, 1);
                     if (cNode == null) {
-                        // cNode = ChannelHelper.getInstance().getFakeVirtualChannel(((ProgramNode) node).channelId, ((ProgramNode) node).getCategoryId(), ((ProgramNode) node).title);
+                        cNode = ChannelHelper.getInstance().getFakeVirtualChannel(((ProgramNode) node).channelId, ((ProgramNode) node).getCategoryId(), ((ProgramNode) node).title);
                     }
                 } else {
-                      cNode = ChannelHelper.getInstance().getChannel(((ProgramNode) node).channelId, ((ProgramNode) node).channelType);
+                    cNode = ChannelHelper.getInstance().getChannel(((ProgramNode) node).channelId, ((ProgramNode) node).channelType);
                     if (cNode == null) {
-                         cNode = ChannelHelper.getInstance().getFakeChannel(((ProgramNode) node).channelId, ((ProgramNode) node).getCategoryId(), ((ProgramNode) node).title, ((ProgramNode) node).channelType);
+                        cNode = ChannelHelper.getInstance().getFakeChannel(((ProgramNode) node).channelId, ((ProgramNode) node).getCategoryId(), ((ProgramNode) node).title, ((ProgramNode) node).channelType);
                     }
                 }
                 if (cNode.ratingStar == -1) {
                     cNode.ratingStar = ((ProgramNode) node).channelRatingStar;
                 }
+                redirect2View(name, cNode);
                 /*if (openDamaku && InfoManager.getInstance().enableBarrage(((ProgramNode) node).channelId)) {
                     openDamakuPlayController();
                 } else {
                     url = InfoManager.getInstance().h5Channel(cNode.channelId);
                     if (url == null || url.equalsIgnoreCase(bi.b)) {
-                        redirect2View(name, cNode);
+
                     } else {
                         redirectToActiviyByUrl(url, cNode.title, false);
                     }
@@ -146,5 +162,24 @@ public class ControllerManager {
            */
             }
         }
+    }
+
+    public void redirect2View(String name, Object param) {
+        try {
+           /* ViewController controller = getController(name);
+            controller.config(name, param);*/
+            if (channelDetailClickListener != null) {
+                channelDetailClickListener.onChannelSelected(name, param);
+            }
+            // pushControllerByProperAnimation(controller);
+        } catch (Exception e) {
+        }
+    }
+
+    private ViewController getController(String type) {
+        if (type.equalsIgnoreCase("channeldetail")) {
+            return new ChannelDetailController(context);
+        }
+        return null;
     }
 }
