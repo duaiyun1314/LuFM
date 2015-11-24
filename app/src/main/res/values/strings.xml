@@ -12,4 +12,5 @@
 
 
     <string name="load_fail">加载失败</string>
+    <string name="mark_label">评分：</string>
 </resources>

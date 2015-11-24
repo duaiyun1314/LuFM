@@ -24,6 +24,7 @@ public class ChannelHelper extends Node {
     private final int ERROR_CHANNELS;
     private final int LIVE_CHANNELS_PAGE_SIZE;
     private final int VIRTUAL_CHANNELS_PAGE_SIZE;
+    private SparseArray<IDataChangeObserver> mObservers;
     //private SparseArray<IDataChangeObserver> mObservers;
     public Map<String, List<ChannelNode>> mapChannelNodes;
     public Map<String, Integer> mapChannelPages;
@@ -166,10 +167,75 @@ public class ChannelHelper extends Node {
             InfoManager.getInstance()._loadLiveChannelNode(channelId, this);
         }
         if (type == 1) {
+            //会调到onNodeUpdated（）
             InfoManager.getInstance().loadVirtualChannelNode(channelId, this);
         }
         return node;
     }
 
+    @Override
+    public void onNodeUpdated(Object obj, String type) {
+        //super.onNodeUpdated(obj, str);
+        Log.i("Sync", "onNodeUpdated:" + type);
+        if (obj != null) {
+            Node node;
+            ChannelNode temp;
+            if (type.equalsIgnoreCase(InfoManager.INodeEventListener.ADD_VIRTUAL_CHANNEL_INFO)) {
+                node = (Node) obj;
+                if (node != null && node.nodeName.equalsIgnoreCase("channel")) {
+                    temp = (ChannelNode) this.mapVirtualChannels.get(((ChannelNode) node).channelId);
+                    if (temp != null) {
+                         temp.updatePartialInfo((ChannelNode) node);
+                    } else {
+                        this.mapVirtualChannels.put(((ChannelNode) node).channelId, (ChannelNode) node);
+                    }
+                    dispatch2Observer((ChannelNode) node);
+                    // updateChannel((ChannelNode) node);
+                    /*ChannelNode currentNode = InfoManager.getInstance().root().getCurrentPlayingChannelNode();
+                    if (currentNode != null && currentNode.channelId == ((ChannelNode) node).channelId) {
+                        // PlayerAgent.getInstance().setPlayingChannelThumb(((ChannelNode) node).getApproximativeThumb());
+                        currentNode.updateAllInfo((ChannelNode) node);
+                    }*/
+                }
+            } else if (type.equalsIgnoreCase(InfoManager.INodeEventListener.ADD_LIVE_CHANNEL_INFO)) {
+                /*node = (Node) obj;
+                if (node != null && node.nodeName.equalsIgnoreCase("channel")) {
+                    temp = (ChannelNode) this.mapLiveChannels.get(((ChannelNode) node).channelId);
+                    if (temp != null) {
+                        temp.updatePartialInfo((ChannelNode) node);
+                    } else {
+                        this.mapLiveChannels.put(((ChannelNode) node).channelId, (ChannelNode) node);
+                    }
+                    dispatch2Observer((ChannelNode) node);
+                    updateChannel((ChannelNode) node);
+                }*/
+            }
+        }
+    }
 
+    private void dispatch2Observer(ChannelNode node) {
+        if (this.mObservers != null) {
+            IDataChangeObserver observer = (IDataChangeObserver) this.mObservers.get(node.channelId);
+            if (observer != null) {
+                observer.onChannelNodeInfoUpdate(node);
+            }
+        }
+    }
+
+    public void addObserver(int channelId, IDataChangeObserver observer) {
+        if (this.mObservers == null) {
+            this.mObservers = new SparseArray();
+        }
+        this.mObservers.put(channelId, observer);
+    }
+
+    public void removeObserver(int channelId) {
+        if (this.mObservers != null) {
+            this.mObservers.remove(channelId);
+        }
+    }
+
+    public interface IDataChangeObserver {
+        void onChannelNodeInfoUpdate(ChannelNode channelNode);
+    }
 }

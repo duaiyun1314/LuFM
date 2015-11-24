@@ -3,15 +3,19 @@ package com.andy.LuFM.model;
 /**
  * Created by Andy.Wang on 2015/11/11.
  */
-public class CategoryNode {
-    int categoryId;
+public class CategoryNode extends Node {
+    public static final int LIVE_CHANNEL = 5;
+    public static final int MUSIC = 523;
+    public static final int NEWS = 545;
+    public static final int NOVEL = 521;
+    public static final int SPECIAL_TOPIC = 2733;
+    public int categoryId;
     int hasChild;
     String mAttributesPath;
     String name;
     int parentId;
     int sectionId;
     int type;
-    String nodeName;
 
     public int getCategoryId() {
         return categoryId;

@@ -11,6 +11,7 @@ import com.andy.LuFM.model.ProgramNode;
 import com.andy.LuFM.model.RecommendCategoryNode;
 import com.andy.LuFM.model.RecommendItemNode;
 import com.andy.LuFM.model.SpecialTopicNode;
+import com.andy.LuFM.model.UserInfo;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,6 +54,30 @@ public class NetParse {
             iResultRecvHandler.onRecvResult(result, type);
         } else if (type == RequestType.GET_LIVE_CHANNEL_INFO || type == RequestType.GET_VIRTUAL_CHANNEL_INFO) {
             // Log.i("Sync", "responseStrin:" + type + "  " + responseString);
+            ChannelNode channelNode = parseChannelNode(responseString);
+            if (channelNode != null) {
+                result.setSuccess(true);
+                result.setData(channelNode);
+            } else {
+                result.setSuccess(false);
+            }
+
+            iResultRecvHandler.onRecvResult(result, type);
+        } else if (type.equalsIgnoreCase(RequestType.GET_PODCASTER_BASEINFO)) {
+            try {
+                JSONObject data = (new JSONObject(responseString)).getJSONObject("data");
+                UserInfo userInfo = _parsePodcaster(data);
+                if (userInfo != null) {
+                    result.setSuccess(true);
+                    result.setData(userInfo);
+                } else {
+                    result.setSuccess(false);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                result.setSuccess(false);
+            }
+            iResultRecvHandler.onRecvResult(result, type);
         }
 
     }
@@ -389,8 +414,9 @@ public class NetParse {
                     return node;
                 }
                 int i;
-               /* BroadcasterNode broadcasterNode;
                 node.programCnt = detailObject.getInt("program_count");
+               /* BroadcasterNode broadcasterNode;
+
                 JSONArray authors = detailObject.getJSONArray("authors");
                 if (authors != null) {
                     for (i = 0; i < authors.length(); i++) {
@@ -415,7 +441,16 @@ public class NetParse {
                 if (podcastersObject == null) {
                     return node;
                 }*/
-             /*   for (i = 0; i < podcastersObject.length(); i++) {
+                JSONArray podcastersObject;
+                try {
+                    podcastersObject = detailObject.getJSONArray("podcasters");
+                } catch (Exception e) {
+                    podcastersObject = null;
+                }
+                if (podcastersObject == null) {
+                    return node;
+                }
+                for (i = 0; i < podcastersObject.length(); i++) {
                     UserInfo user = _parsePodcaster(podcastersObject.getJSONObject(i));
                     if (node.lstPodcasters == null) {
                         node.lstPodcasters = new ArrayList();
@@ -423,9 +458,10 @@ public class NetParse {
                     if (user != null) {
                         node.lstPodcasters.add(user);
                     }
-                }*/
+                }
                 return node;
             } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         return null;
@@ -466,4 +502,57 @@ public class NetParse {
             return null;
         }
     }
+
+    private ChannelNode parseChannelNode(String json) {
+        if (!(json == null || json.equalsIgnoreCase(""))) {
+            try {
+                JSONObject obj = new JSONObject(json);
+                if (obj != null) {
+                    ChannelNode node = _parseChannelNode(obj.getJSONObject("data"));
+                    if (node != null) {
+                        return node;
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    private UserInfo _parsePodcaster(JSONObject data) throws Exception {
+        if (data == null) {
+            return null;
+        }
+        UserInfo user = new UserInfo();
+        user.userId = data.getString("user_system_id");
+        user.userKey = user.userId;
+        user.isBlocked = false;
+        user.isPodcaster = true;
+        user.podcasterId = data.getInt("id");
+        user.podcasterName = data.getString("nickname");
+        user.fansNumber = data.getLong("fan_num");
+        user.snsInfo.signature = data.getString("signature");
+        user.snsInfo.sns_id = data.getString("weibo_id");
+        user.snsInfo.sns_name = data.getString("weibo_name");
+        if (user.snsInfo.sns_name == null) {
+            user.snsInfo.sns_name = "\u873b\u8713\u4e3b\u64ad";
+        }
+        user.snsInfo.sns_avatar = data.getString("avatar");
+        user.snsInfo.desc = data.getString("description");
+        int sex = data.getInt("sex");
+        if (sex == 0) {
+            user.snsInfo.sns_gender = "n";
+            return user;
+        } else if (sex == 1) {
+            user.snsInfo.sns_gender = "m";
+            return user;
+        } else if (sex != 2) {
+            return user;
+        } else {
+            user.snsInfo.sns_gender = "f";
+            return user;
+        }
+    }
+
 }

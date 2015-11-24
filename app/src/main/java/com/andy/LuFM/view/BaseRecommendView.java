@@ -65,4 +65,6 @@ public abstract class BaseRecommendView<Controller extends BaseRecommendListCont
      * @param object
      */
     public abstract void setDate(Object object);
+
+    public abstract int getSection();
 }

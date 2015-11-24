@@ -68,6 +68,11 @@ public class RecommendNovelView extends BaseRecommendView<RecommendListControlle
 
     }
 
+    @Override
+    public int getSection() {
+        return 208;
+    }
+
     private List<SectionItem> parseSection(RecommendCategoryNode categoryNode) {
         List<List<RecommendItemNode>> defaultRecList = categoryNode.lstRecMain;
         if (defaultRecList != null) {

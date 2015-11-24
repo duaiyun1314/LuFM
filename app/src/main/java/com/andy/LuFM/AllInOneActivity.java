@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
@@ -150,9 +151,9 @@ public class AllInOneActivity extends AppCompatActivity implements IEventHandler
 
     @Override
     public void onChannelSelected(String type, Object param) {
+        Log.i("Sync", "onChannelSelected:" + type);
         ChannelFragment fragment = (ChannelFragment) getFragmentManager().findFragmentByTag(CHANNEL_DETAIL_TAG);
         if (true) {
-            //   getActionBar().hide();
             fragment = new ChannelFragment();
             fragment.setData(type, param);
             android.app.FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();

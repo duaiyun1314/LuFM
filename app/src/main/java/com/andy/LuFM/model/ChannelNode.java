@@ -3,6 +3,8 @@ package com.andy.LuFM.model;
 import android.text.TextUtils;
 
 import com.andy.LuFM.Utils.TimeKit;
+import com.andy.LuFM.data.InfoManager;
+import com.andy.LuFM.helper.ProgramHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,12 +30,13 @@ public class ChannelNode extends Node {
     public String latest_program;
     // public List<BroadcasterNode> lstAuthors;
     //  public List<BroadcasterNode> lstBroadcaster;
-    //public transient List<UserInfo> lstPodcasters;
+    public transient List<UserInfo> lstPodcasters;
     private transient boolean mAutoPlay;
     public transient int mLoadedProgramId;
     public transient int mLoadedProgramSize;
     public transient List<Integer> mLoadingSize;
     public transient List<Integer> mLoadingStart;
+    private transient ProgramScheduleList mProgramScheduleList;
     public String mSourceUrl;
     private transient long mUpdateTime;
     public long mViewTime;
@@ -189,5 +192,107 @@ public class ChannelNode extends Node {
         return TextUtils.isEmpty(text);
     }
 
+    public void updateAllInfo(ChannelNode right) {
+        if (right != null) {
+            this.channelId = right.channelId;
+            this.categoryId = right.categoryId;
+            this.title = right.title;
+            this.desc = right.desc;
+            this.groupId = right.groupId;
+            this.thumb = right.thumb;
+            this.mediumThumb = right.mediumThumb;
+            this.largeThumb = right.largeThumb;
+            this.autoPlay = right.autoPlay;
+            this.recordEnable = right.recordEnable;
+            this.channelType = right.channelType;
+            this.resId = right.resId;
+            this.audienceCnt = right.audienceCnt;
+            this.mapLinkInfo = right.mapLinkInfo;
+            this.latest_program = right.latest_program;
+            this.update_time = right.update_time;
+            this.mViewTime = right.mViewTime;
+            this.mUpdateTime = right.mUpdateTime;
+            //   this.lstAuthors = right.lstAuthors;
+            //  this.lstBroadcaster = right.lstBroadcaster;
+            this.lstPodcasters = right.lstPodcasters;
+            this.ratingStar = right.ratingStar;
+            this.programCnt = right.programCnt;
+        }
+    }
 
+    public void updatePartialInfo(ChannelNode right) {
+        if (right != null) {
+            this.channelId = right.channelId;
+            this.categoryId = right.categoryId;
+            this.title = right.title;
+            this.desc = right.desc;
+            this.groupId = right.groupId;
+            this.thumb = right.thumb;
+            this.mediumThumb = right.mediumThumb;
+            this.largeThumb = right.largeThumb;
+            this.autoPlay = right.autoPlay;
+            this.recordEnable = right.recordEnable;
+            this.channelType = right.channelType;
+            this.resId = right.resId;
+            this.audienceCnt = right.audienceCnt;
+            this.mapLinkInfo = right.mapLinkInfo;
+            this.latest_program = right.latest_program;
+            this.update_time = right.update_time;
+            this.mViewTime = right.mViewTime;
+            this.mUpdateTime = right.mUpdateTime;
+            //   this.lstAuthors = right.lstAuthors;
+            // this.lstBroadcaster = right.lstBroadcaster;
+            this.lstPodcasters = right.lstPodcasters;
+            this.ratingStar = right.ratingStar;
+            this.programCnt = right.programCnt;
+        }
+    }
+
+    public List<ProgramNode> getAllLstProgramNode() {
+        if (isLiveChannel()) {
+            return null;
+        }
+        if (this.mProgramScheduleList == null && !isDownloadChannel()) {
+            //   this.mProgramScheduleList = ProgramHelper.getInstance().getProgramSchedule(this.channelId, this.channelType, false);
+            if (this.mProgramScheduleList == null) {
+                InfoManager.getInstance().loadProgramsScheduleNode(this, null);
+            }
+        }
+        if (this.mProgramScheduleList != null) {
+            return this.mProgramScheduleList.getLstProgramNode(LIVE_CHANNEL);
+        }
+        return null;
+    }
+
+    public boolean isMusicChannel() {
+        if (this.channelType == VIRTUAL_CHANNEL && this.categoryId == CategoryNode.MUSIC) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isNovelChannel() {
+        if (this.channelType == VIRTUAL_CHANNEL && this.categoryId == CategoryNode.NOVEL) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isDownloadChannel() {
+        if (this.categoryId == 71) {
+            return true;
+        }
+        return false;
+    }
+
+    public int getLoadedProgramSize() {
+        if (this.channelType == 0) {
+            return this.mLoadedProgramSize;
+        }
+        // restoreProgramFromDB();
+        if (!(this.mProgramScheduleList == null || getAllLstProgramNode() == null)) {
+            this.mLoadedProgramSize = getAllLstProgramNode().size();
+        }
+        return this.mLoadedProgramSize;
+    }
 }

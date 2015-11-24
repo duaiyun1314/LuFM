@@ -47,6 +47,9 @@ public class NetDs implements IDataOperation {
         } else if (type.equalsIgnoreCase(RequestType.GET_VIRTUAL_CHANNEL_INFO)) {
             String url = Constants.VIRTUAL_CHANNLE_INFO_URL + param.get("id");
             NetKit.getInstance().getNormalNetInfo(url, type, iResultRecvHandler);
+        } else if (type.equalsIgnoreCase(RequestType.GET_PODCASTER_BASEINFO)) {
+            String url = Constants.GET_PODCASTER_BASE_INFO + param.get("id");
+            NetKit.getInstance().getNormalNetInfo(url, type, iResultRecvHandler);
         }
         return null;
     }

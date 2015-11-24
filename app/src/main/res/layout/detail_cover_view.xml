@@ -1,19 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="16dip">
 
-    <com.andy.LuFM.view.SlidingTabLayout
-        android:id="@+id/sliding_tabs"
+    <LinearLayout
+        android:id="@+id/info_container"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:background="#ffffff" />
+        android:layout_height="120dip"
+        android:orientation="horizontal">
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/vp_discover"
+        <ImageView
+            android:id="@+id/info_pic"
+            android:layout_width="120dip"
+            android:layout_height="120dip" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dip"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/info_discription"
+                android:layout_width="wrap_content"
+                android:layout_height="0dip"
+                android:layout_weight="1"
+                android:ellipsize="marquee"
+                android:maxLines="3"
+                android:textColor="@color/normal_text_color"
+                android:textSize="16dip" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <com.andy.LuFM.view.CircleImageView
+                    android:id="@+id/info_avaimg"
+                    android:layout_width="40dip"
+                    android:layout_height="40dip"
+                    app:border_color="#333333"
+                    app:border_width="1dip" />
+
+                <TextView
+                    android:id="@+id/info_avaname"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/normal_text_color" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="120dip"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/mark_label"
+            android:textColor="@color/normal_text_subcolor"
+            android:textSize="14dp" />
+
+        <com.andy.LuFM.view.RatingBar
+            android:id="@+id/rating"
+            android:layout_width="0dip"
+            android:layout_height="23dip"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            app:clickable="false"
+            app:starCount="5"
+            app:starEmpty="@drawable/ic_star_empty"
+            app:starFill="@drawable/ic_star_full"
+            app:starHalf="@drawable/ic_star_half"
+            app:starImageSize="14dip" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/tag_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></android.support.v4.view.ViewPager>
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tag_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:text="共11期" />
+
+        <Button
+            android:id="@+id/tag_sort_bt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="排序" />
+    </RelativeLayout>
 
 
 </LinearLayout>

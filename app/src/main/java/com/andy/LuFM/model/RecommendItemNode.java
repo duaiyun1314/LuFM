@@ -1,5 +1,7 @@
 package com.andy.LuFM.model;
 
+import android.text.TextUtils;
+
 import com.andy.LuFM.Utils.TimeKit;
 
 /**
@@ -98,5 +100,39 @@ public class RecommendItemNode extends Node {
         }
         this.mUpdateTime = TimeKit.dateToMS(this.update_time);
         return this.mUpdateTime;
+    }
+
+    public String getApproximativeThumb() {
+        return getApproximativeThumb(0, 0, false);
+    }
+
+    public String getApproximativeThumb(int targetWidth, int targetHeight) {
+        return getApproximativeThumb(targetWidth, targetHeight, true);
+    }
+
+    public String getApproximativeThumb(int targetWidth, int targetHeight, boolean scaled) {
+        int size = Math.max(targetWidth, targetHeight);
+        int medium = 600;
+        int small = 300;
+        if (size >= medium) {
+            if (!isEmpty(this.largeThumb)) {
+                return this.largeThumb;
+            }
+            if (isEmpty(this.mediumThumb)) {
+                return this.smallThumb;
+            }
+            return this.mediumThumb;
+        } else if (size <= small) {
+            return this.smallThumb;
+        } else {
+            if (isEmpty(this.mediumThumb)) {
+                return this.smallThumb;
+            }
+            return this.mediumThumb;
+        }
+    }
+
+    private static boolean isEmpty(String text) {
+        return TextUtils.isEmpty(text);
     }
 }

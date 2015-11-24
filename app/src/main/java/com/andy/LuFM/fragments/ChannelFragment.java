@@ -6,8 +6,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.andy.LuFM.R;
+import com.andy.LuFM.model.ChannelNode;
 import com.andy.LuFM.view.channeldetail.ChannelDetailView;
 
 /**
@@ -17,6 +20,8 @@ public class ChannelFragment extends Fragment {
     private ChannelDetailView detailView;
     private Object obj;
     private String type;
+    private ImageView iv_back;
+    private TextView title_label;
 
     public ChannelFragment() {
     }
@@ -25,8 +30,11 @@ public class ChannelFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.layout_channel_detail, null);
         detailView = (ChannelDetailView) view.findViewById(R.id.detail_view);
+        iv_back = (ImageView) view.findViewById(R.id.iv_back);
+        title_label = (TextView) view.findViewById(R.id.title_label);
         if (obj != null) {
-            detailView.update(type, obj);
+            // detailView.update(type, obj);
+            setData(type, obj);
         }
         return view;
     }
@@ -36,6 +44,12 @@ public class ChannelFragment extends Fragment {
         this.type = type;
         if (detailView != null) {
             detailView.update(type, param);
+            updateTitle((ChannelNode) param);
         }
+    }
+
+    private void updateTitle(ChannelNode param) {
+
+        title_label.setText(param.title);
     }
 }

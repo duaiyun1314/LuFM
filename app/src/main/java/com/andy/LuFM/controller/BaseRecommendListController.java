@@ -37,7 +37,6 @@ public class BaseRecommendListController<Provider extends ListDataProvider, Base
         this.mRefreshLayout.setSize(SwipeRefreshLayout.DEFAULT);
         this.mRefreshLayout.setOnRefreshListener(this);
         this.mRefreshLayout.setColorSchemeColors(colorPrimary, colorPrimaryDark, colorAccent);
-        //mRefreshLayout.removeAllViews();
         mListView = new ListView(mContext);
         mHeadView = new SwitchView(mContext);
         mListView.addHeaderView(mHeadView);
@@ -49,7 +48,7 @@ public class BaseRecommendListController<Provider extends ListDataProvider, Base
 
     @Override
     public void onRefresh() {
-        mProvider.loadData();
+        mProvider.loadData(baseView.getSection());
     }
 
     @Override
