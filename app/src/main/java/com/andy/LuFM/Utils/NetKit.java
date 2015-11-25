@@ -1,8 +1,12 @@
 package com.andy.LuFM.Utils;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.preference.PreferenceActivity;
 import android.util.Log;
 
+import com.andy.LuFM.LuFmApplication;
 import com.andy.LuFM.data.IDataRecvHandler;
 import com.andy.LuFM.data.IResultRecvHandler;
 import com.andy.LuFM.handler.GsonHttpHandler;
@@ -23,6 +27,16 @@ public class NetKit {
     private AsyncHttpClient mClient;
     private SyncHttpClient syncClient;
     private NetParse netParser;
+
+    public static boolean isNetworkConnected() {
+        Context context = LuFmApplication.getInstance();
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo ni = cm.getActiveNetworkInfo();
+        if (ni != null && ni.isAvailable()) {
+            return true;
+        }
+        return false;
+    }
 
     private NetKit() {
         mClient = new AsyncHttpClient();
@@ -55,7 +69,7 @@ public class NetKit {
 
     }*/
 
-    public void getNormalNetInfo(final String url, final String requesttype, final IResultRecvHandler iResultRecvHandler) {
+    public void getNormalNetInfo(final String url, final String requesttype, final IResultRecvHandler iResultRecvHandler,final Object param) {
         Log.i("Sync", "url:" + url);
         mClient.get(url, new GsonHttpHandler(null) {
             @Override
@@ -72,7 +86,7 @@ public class NetKit {
             public void onSuccess(int statusCode, Header[] headers, String responseString, Object object) {
                 Log.i("Sync", "oNSuccess");
                 if (netParser != null) {
-                    netParser.parse(responseString, requesttype, iResultRecvHandler);
+                    netParser.parse(responseString, requesttype, iResultRecvHandler,param);
                 }
             }
         });

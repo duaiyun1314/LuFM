@@ -8,5 +8,6 @@
 
     <color name="normal_text_color">#272930</color>
     <color name="normal_text_subcolor">#ff787878</color>
+    <color name="normal_text_thircolor">#ff959595</color>
 
 </resources>

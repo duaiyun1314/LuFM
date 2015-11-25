@@ -11,6 +11,7 @@ import com.andy.LuFM.dbutil.DaoMaster;
 public class LuFmApplication extends Application {
     private static LuFmApplication mInstance;
     private DaoMaster.DevOpenHelper mHelper;
+    private DaoMaster.DevOpenHelper mProgramNodesHelper;
 
     public static LuFmApplication getInstance() {
         return mInstance;
@@ -21,14 +22,19 @@ public class LuFmApplication extends Application {
         super.onCreate();
         mInstance = this;
         initDb();
-        ImageLoaderUtil.initImageLoader(getApplicationContext());
+
     }
 
     private void initDb() {
         mHelper = new DaoMaster.DevOpenHelper(this, "categoryNodes", null);
+        mProgramNodesHelper = new DaoMaster.DevOpenHelper(this, "programNodes", null);
     }
 
     public DaoMaster.DevOpenHelper getHelper() {
         return mHelper;
+    }
+
+    public DaoMaster.DevOpenHelper getProgramNodesHelperHelper() {
+        return mProgramNodesHelper;
     }
 }

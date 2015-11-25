@@ -1,17 +1,29 @@
 package com.andy.LuFM.controller;
 
+import android.view.View;
+
 import com.andy.LuFM.data.InfoManager;
 import com.andy.LuFM.model.RecommendCategoryNode;
 import com.andy.LuFM.providers.RecommendListProvider;
 import com.andy.LuFM.view.BaseRecommendView;
+import com.andy.LuFM.view.SwitchView;
 
 /**
  * Created by Andy.Wang on 2015/11/13.
  */
-public class RecommendListController<Prodiver extends RecommendListProvider> extends BaseRecommendListController<Prodiver, BaseRecommendView> {
+public class RecommendListController<Prodiver extends RecommendListProvider> extends BaseListController<Prodiver, BaseRecommendView> {
+
+    public SwitchView mHeadView;
 
     public RecommendListController(Prodiver provider) {
         super(provider);
+    }
+
+    @Override
+    public void assumeView(View view) {
+        super.assumeView(view);
+        mHeadView = new SwitchView(mContext);
+        mListView.addHeaderView(mHeadView);
     }
 
     @Override
@@ -28,5 +40,17 @@ public class RecommendListController<Prodiver extends RecommendListProvider> ext
             baseView.setDate(recommendCategoryNode);
         }
 
+    }
+
+    @Override
+    public void onRefresh() {
+        super.onRefresh();
+        mProvider.loadData(baseView.getSection());
+    }
+
+    @Override
+    public void onLoadSuccess(Object object) {
+        super.onLoadSuccess(object);
+        baseView.setDate(object);
     }
 }

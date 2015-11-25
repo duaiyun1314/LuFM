@@ -14,4 +14,9 @@ public class RequestType {
     public static final String GET_VIRTUAL_CHANNEL_INFO = "GET_VIRTUAL_CHANNEL_INFO";
     public static final String GET_PODCASTER_BASEINFO = "GET_PODCASTER_BASEINFO";
     public static final String GET_VIRTUAL_PROGRAM_SCHEDULE = "GET_VIRTUAL_PROGRAM_SCHEDULE";
+    public static final String GETDB_PROGRAM_NODE_REV = "GETDB_PROGRAM_NODE_REV";
+    public static final String GETDB_PROGRAM_NODE = "GETDB_PROGRAM_NODE";
+    public static final String RELOAD_VIRTUAL_PROGRAMS_SCHEDULE = "RELOAD_VIRTUAL_PROGRAMS_SCHEDULE";
+    public static final String UPDATEDB_PROGRAM_NODE_REV = "UPDATEDB_PROGRAM_NODE_REV";
+    public static final String UPDATEDB_PROGRAM_NODE = "UPDATEDB_PROGRAM_NODE";
 }

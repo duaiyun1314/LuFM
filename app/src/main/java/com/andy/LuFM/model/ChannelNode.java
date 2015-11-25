@@ -253,7 +253,7 @@ public class ChannelNode extends Node {
             return null;
         }
         if (this.mProgramScheduleList == null && !isDownloadChannel()) {
-            //   this.mProgramScheduleList = ProgramHelper.getInstance().getProgramSchedule(this.channelId, this.channelType, false);
+            this.mProgramScheduleList = ProgramHelper.getInstance().getProgramSchedule(this.channelId, this.channelType, false);
             if (this.mProgramScheduleList == null) {
                 InfoManager.getInstance().loadProgramsScheduleNode(this, null);
             }
@@ -295,4 +295,34 @@ public class ChannelNode extends Node {
         }
         return this.mLoadedProgramSize;
     }
+
+    public boolean hasEmptyProgramSchedule() {
+        if (this.mProgramScheduleList == null && !isDownloadChannel()) {
+            this.mProgramScheduleList = ProgramHelper.getInstance().getProgramSchedule(this.channelId, this.channelType, false);
+        }
+        if (this.mProgramScheduleList == null) {
+            return true;
+        }
+        if (this.mProgramScheduleList.mLstProgramsScheduleNodes.size() > 0) {
+            return false;
+        }
+        return true;
+    }
+
+    public List<ProgramNode> reloadAllLstProgramNode() {
+        if (isLiveChannel()) {
+            return null;
+        }
+        ProgramScheduleList temp = ProgramHelper.getInstance().getProgramSchedule(this.channelId, this.channelType, false);
+        if (temp == null) {
+            InfoManager.getInstance().loadProgramsScheduleNode(this, null);
+        } else {
+            this.mProgramScheduleList = temp;
+        }
+        if (this.mProgramScheduleList != null) {
+            return this.mProgramScheduleList.getLstProgramNode(LIVE_CHANNEL);
+        }
+        return null;
+    }
+
 }

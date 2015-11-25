@@ -7,7 +7,10 @@ import com.andy.LuFM.data.RequestType;
 import com.andy.LuFM.data.Result;
 import com.andy.LuFM.model.ActivityNode;
 import com.andy.LuFM.model.ChannelNode;
+import com.andy.LuFM.model.Node;
 import com.andy.LuFM.model.ProgramNode;
+import com.andy.LuFM.model.ProgramSchedule;
+import com.andy.LuFM.model.ProgramScheduleList;
 import com.andy.LuFM.model.RecommendCategoryNode;
 import com.andy.LuFM.model.RecommendItemNode;
 import com.andy.LuFM.model.SpecialTopicNode;
@@ -40,7 +43,7 @@ public class NetParse {
 
     }
 
-    public void parse(String responseString, String type, IResultRecvHandler iResultRecvHandler) {
+    public void parse(String responseString, String type, IResultRecvHandler iResultRecvHandler, Object param) {
         Result result = new Result();
         if (type == RequestType.DATA_TYPE_GET_RECOMMEND) {
             RecommendCategoryNode recommendCategoryNode = parseRecommendInfo(responseString);
@@ -51,7 +54,7 @@ public class NetParse {
                 result.setSuccess(false);
             }
 
-            iResultRecvHandler.onRecvResult(result, type);
+            iResultRecvHandler.onRecvResult(result, type, param);
         } else if (type == RequestType.GET_LIVE_CHANNEL_INFO || type == RequestType.GET_VIRTUAL_CHANNEL_INFO) {
             // Log.i("Sync", "responseStrin:" + type + "  " + responseString);
             ChannelNode channelNode = parseChannelNode(responseString);
@@ -62,7 +65,7 @@ public class NetParse {
                 result.setSuccess(false);
             }
 
-            iResultRecvHandler.onRecvResult(result, type);
+            iResultRecvHandler.onRecvResult(result, type, param);
         } else if (type.equalsIgnoreCase(RequestType.GET_PODCASTER_BASEINFO)) {
             try {
                 JSONObject data = (new JSONObject(responseString)).getJSONObject("data");
@@ -77,7 +80,15 @@ public class NetParse {
                 e.printStackTrace();
                 result.setSuccess(false);
             }
-            iResultRecvHandler.onRecvResult(result, type);
+            iResultRecvHandler.onRecvResult(result, type, param);
+        } else if (type.equalsIgnoreCase(RequestType.RELOAD_VIRTUAL_PROGRAMS_SCHEDULE)) {
+            ProgramScheduleList programScheduleList = parseVirtualProgramSchedule(responseString);
+            if (programScheduleList != null) {
+                result.setSuccess(true);
+                result.setData(programScheduleList);
+
+            }
+            iResultRecvHandler.onRecvResult(result, type, param);
         }
 
     }
@@ -289,7 +300,11 @@ public class NetParse {
             node.title = obj.getString("title");
             node.duration = obj.getDouble("duration");
             node.sequence = obj.getInt("sequence");
-            // node.updateTime = obj.getString("update_time");
+            try {
+                node.updateTime = obj.getString("update_time");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             node.sequence = obj.getInt("sequence");
             node.groupId = obj.getInt("chatgroup_id");
             JSONObject media = obj.getJSONObject("mediainfo");
@@ -554,5 +569,42 @@ public class NetParse {
             return user;
         }
     }
+
+    private ProgramScheduleList parseVirtualProgramSchedule(String json) {
+        if (!(json == null || json.equalsIgnoreCase(""))) {
+            try {
+                // JSONArray dataArray = ((JSONObject) JSON.parse(json)).getJSONArray(ShareRequestParam.RESP_UPLOAD_PIC_PARAM_DATA);
+                JSONObject dataObj = new JSONObject(json);
+                JSONArray dataArray = dataObj.getJSONArray("data");
+                if (dataArray != null) {
+                    ProgramScheduleList pslist = new ProgramScheduleList(1);
+                    ProgramSchedule programSchedule = new ProgramSchedule();
+                    programSchedule.dayOfWeek = 0;
+                    programSchedule.mLstProgramNodes = new ArrayList();
+                    Node prev = null;
+                    for (int i = 0; i < dataArray.length(); i++) {
+                        ProgramNode program = _parseVirtualProgramNode(dataArray.getJSONObject(i), 0);
+                        if (program != null) {
+                            if (program.sequence == 0) {
+                                program.sequence = i;
+                            }
+                            if (prev != null) {
+                                prev.nextSibling = program;
+                                program.prevSibling = prev;
+                            }
+                            programSchedule.mLstProgramNodes.add(program);
+                            prev = program;
+                        }
+                    }
+                    pslist.mLstProgramsScheduleNodes.add(programSchedule);
+                    return pslist;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
 
 }

@@ -33,7 +33,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.1.0'
     compile 'de.greenrobot:greendao:1.3.7'
     compile 'com.loopj.android:android-async-http:1.4.9'
-    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.4'
+    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.+'
 
     compile files('libs/gson-2.2.4.jar')
 }

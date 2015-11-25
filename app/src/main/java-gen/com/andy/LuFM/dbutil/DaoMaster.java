@@ -26,7 +26,7 @@ public class DaoMaster extends AbstractDaoMaster {
     }
 
     private static void createProgramNodes(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE  if not exist programNodes (" +
+        db.execSQL("CREATE TABLE  programNodes (" +
                 "'dw' INTEGER, " +
                 "'cid' INTEGER," +
                 "'programNode'  VARCHAR(1000)," +

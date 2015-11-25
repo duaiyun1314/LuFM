@@ -58,6 +58,7 @@ public class SectionAdapter extends BaseAdapter {
 
     public void setData(List<SectionItem> items) {
         this.data = items;
+        notifyDataSetChanged();
     }
 
     @Override

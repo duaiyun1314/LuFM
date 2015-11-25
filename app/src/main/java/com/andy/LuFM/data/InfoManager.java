@@ -6,6 +6,7 @@ import com.andy.LuFM.helper.ProgramHelper;
 import com.andy.LuFM.model.CategoryNode;
 import com.andy.LuFM.model.ChannelNode;
 import com.andy.LuFM.model.Node;
+import com.andy.LuFM.model.ProgramScheduleList;
 import com.andy.LuFM.model.RootNode;
 import com.andy.LuFM.model.UserInfo;
 
@@ -18,6 +19,7 @@ import java.util.Map;
  * 存储必要信息
  */
 public class InfoManager implements IResultRecvHandler {
+    private static final String TAG = "InfoManager";
     private static InfoManager instance;
     private RootNode mRootNode = new RootNode();
     private Map<String, List<INodeEventListener>> mapNodeEventListeners = new HashMap();
@@ -62,7 +64,9 @@ public class InfoManager implements IResultRecvHandler {
 
 
     @Override
-    public void onRecvResult(Result result, String type) {
+    public void onRecvResult(Result result, String type, Object param) {
+        Map<String, String> mapParam;
+        mapParam = (Map<String, String>) param;
         if (type.equalsIgnoreCase(RequestType.GET_VIRTUAL_CHANNEL_INFO)) {
             ChannelNode channelNode = (ChannelNode) result.getData();
             if (channelNode != null) {
@@ -74,6 +78,13 @@ public class InfoManager implements IResultRecvHandler {
                 dispatchNodeEvent(user, INodeEventListener.ADD_PODCASTER_BASE);
                 dispatchSubscribeEvent(ISubscribeEventListener.RECV_PODCASTER_BASEINFO);
             }
+        } else if (type.equalsIgnoreCase(RequestType.RELOAD_VIRTUAL_PROGRAMS_SCHEDULE)) {
+            ProgramScheduleList psl = (ProgramScheduleList) result.getData();
+            if (psl != null) {
+                dispatchNodeEvent(psl, mapParam, INodeEventListener.ADD_RELOAD_VIRTUAL_PROGRAMS_SCHEDULE);
+                dispatchSubscribeEvent(ISubscribeEventListener.RECV_RELOAD_PROGRAMS_SCHEDULE);
+            }
+
         }
 
     }
@@ -86,6 +97,16 @@ public class InfoManager implements IResultRecvHandler {
             }
         }
     }
+
+    private void dispatchNodeEvent(Object node, Map<String, String> map, String type) {
+        if (node != null && this.mapNodeEventListeners.containsKey(type)) {
+            List<INodeEventListener> lstListeners = (List) this.mapNodeEventListeners.get(type);
+            for (int i = 0; i < lstListeners.size(); i++) {
+                ((INodeEventListener) lstListeners.get(i)).onNodeUpdated(node, map, type);
+            }
+        }
+    }
+
     /*public void dispatchSubscribeEvent(String type) {
         dispatchSubscribeEvent(type, DataExceptionStatus.OK);
     }*/
@@ -383,4 +404,28 @@ public class InfoManager implements IResultRecvHandler {
         }
         DataManager.getInstance().getData(RequestType.NET_REQUEST, this, new DataCommand(requestType, param));
     }
+
+    public void reloadVirtualProgramsSchedule(ChannelNode node, ISubscribeEventListener listener) {
+        if (node != null) {
+            Log.d(TAG, "sym:\u5237\u65b0\u8282\u76ee\u5355id=" + node.channelId);
+            //  int order = root().getProgramListOrder(node.channelId);
+            int order = 0;//正序
+            String requestType = RequestType.RELOAD_VIRTUAL_PROGRAMS_SCHEDULE;
+            Map<String, Object> param = new HashMap();
+            param.put("id", String.valueOf(node.channelId));
+            if (node.isNovelChannel()) {
+                param.put("pagesize", String.valueOf(NOVEL_PAGE_SIZE));
+            } else {
+                param.put("pagesize", String.valueOf(30));
+            }
+            param.put("page", String.valueOf(1));
+            param.put("order", String.valueOf(order));
+            registerNodeEventListener(ProgramHelper.getInstance(), INodeEventListener.ADD_RELOAD_VIRTUAL_PROGRAMS_SCHEDULE);
+            if (listener != null) {
+                registerSubscribeEventListener(listener, ISubscribeEventListener.RECV_RELOAD_PROGRAMS_SCHEDULE);
+            }
+            DataManager.getInstance().getData(RequestType.NET_REQUEST, this, new DataCommand(requestType, param));
+        }
+    }
+
 }

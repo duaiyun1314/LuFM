@@ -12,34 +12,17 @@ import com.andy.LuFM.Utils.ViewFactory;
 import com.andy.LuFM.adapter.SectionAdapter;
 import com.andy.LuFM.data.DataCommand;
 import com.andy.LuFM.data.DataManager;
-import com.andy.LuFM.data.IDataRecvHandler;
 import com.andy.LuFM.data.IResultRecvHandler;
 import com.andy.LuFM.data.InfoManager;
 import com.andy.LuFM.data.RequestType;
 import com.andy.LuFM.data.Result;
-import com.andy.LuFM.handler.GsonHttpHandler;
-import com.andy.LuFM.model.ActivityNode;
-import com.andy.LuFM.model.ChannelNode;
-import com.andy.LuFM.model.ProgramNode;
 import com.andy.LuFM.model.RecommendCategoryNode;
-import com.andy.LuFM.model.RecommendDataModel;
-import com.andy.LuFM.model.RecommendItemNode;
 import com.andy.LuFM.model.SectionItem;
-import com.andy.LuFM.model.SpecialTopicNode;
-import com.andy.LuFM.view.RecommendItemView;
-import com.andy.LuFM.view.RecommendTagView;
-import com.google.gson.reflect.TypeToken;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import cz.msebera.android.httpclient.Header;
 
 /**
  * Created by Andy.Wang on 2015/11/13.
@@ -74,7 +57,7 @@ public class RecommendListProvider extends ListDataProvider implements IResultRe
 
 
     @Override
-    public void onRecvResult(Result result, String type) {
+    public void onRecvResult(Result result, String type, Object param) {
         if (result.isSuccess()) {
             RecommendCategoryNode recommendCategoryNode = (RecommendCategoryNode) result.getData();
             InfoManager.getInstance().root().mapRecommendCategoryNode.put(sectionId, recommendCategoryNode);

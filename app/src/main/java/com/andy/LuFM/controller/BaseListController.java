@@ -3,6 +3,7 @@ package com.andy.LuFM.controller;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
@@ -16,13 +17,12 @@ import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 /**
  * Created by Andy.Wang on 2015/11/13.
  */
-public class BaseRecommendListController<Provider extends ListDataProvider, BaseView extends BaseRecommendView> extends BaseControllerImpl<Provider> implements SwipeRefreshLayout.OnRefreshListener {
+public class BaseListController<Provider extends ListDataProvider, BaseView extends FrameLayout> extends BaseControllerImpl<Provider> implements SwipeRefreshLayout.OnRefreshListener {
     public SwipeRefreshLayout mRefreshLayout;
     public BaseView baseView;
     public ListView mListView;
-    public SwitchView mHeadView;
 
-    public BaseRecommendListController(Provider provider) {
+    public BaseListController(Provider provider) {
         super(provider);
     }
 
@@ -38,8 +38,6 @@ public class BaseRecommendListController<Provider extends ListDataProvider, Base
         this.mRefreshLayout.setOnRefreshListener(this);
         this.mRefreshLayout.setColorSchemeColors(colorPrimary, colorPrimaryDark, colorAccent);
         mListView = new ListView(mContext);
-        mHeadView = new SwitchView(mContext);
-        mListView.addHeaderView(mHeadView);
         mListView.setDivider(null);
         mListView.setAdapter(mProvider.getAdapter());
         mRefreshLayout.addView(mListView, layoutParams);
@@ -48,7 +46,7 @@ public class BaseRecommendListController<Provider extends ListDataProvider, Base
 
     @Override
     public void onRefresh() {
-        mProvider.loadData(baseView.getSection());
+
     }
 
     @Override
@@ -68,16 +66,12 @@ public class BaseRecommendListController<Provider extends ListDataProvider, Base
     public void onLoadFinish(int size) {
         super.onLoadFinish(size);
         mRefreshLayout.setRefreshing(false);
-        mProvider.getAdapter().notifyDataSetChanged();
+        //mProvider.getAdapter().notifyDataSetChanged();
     }
 
     public ListAdapter getAdatper() {
         return mProvider.getAdapter();
     }
 
-    @Override
-    public void onLoadSuccess(Object object) {
-        super.onLoadSuccess(object);
-        baseView.setDate(object);
-    }
+
 }

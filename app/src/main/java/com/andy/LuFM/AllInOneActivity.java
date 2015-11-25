@@ -11,6 +11,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.andy.LuFM.Utils.Constants;
+import com.andy.LuFM.Utils.ImageLoaderUtil;
 import com.andy.LuFM.data.DataCommand;
 import com.andy.LuFM.data.DataManager;
 import com.andy.LuFM.data.DataOfflineManager;
@@ -19,6 +20,7 @@ import com.andy.LuFM.data.Result;
 import com.andy.LuFM.data.ds.CategoryNodeDs;
 import com.andy.LuFM.data.ds.ChannelNodeDS;
 import com.andy.LuFM.data.ds.NetDs;
+import com.andy.LuFM.data.ds.ProgramNodeDs;
 import com.andy.LuFM.event.EventType;
 import com.andy.LuFM.event.IEventHandler;
 import com.andy.LuFM.fragments.ChannelFragment;
@@ -43,10 +45,16 @@ public class AllInOneActivity extends AppCompatActivity implements IEventHandler
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initUtils();
         setContentView(R.layout.layout_splash);
         initDataOperation();
         initFragments();
         initData();
+
+    }
+
+    private void initUtils() {
+        ImageLoaderUtil.initImageLoader(getApplicationContext());
     }
 
     private void initFragments() {
@@ -60,6 +68,7 @@ public class AllInOneActivity extends AppCompatActivity implements IEventHandler
         DataManager.getInstance().addRequests(CategoryNodeDs.getInstance());
         DataManager.getInstance().addRequests(NetDs.getInstance());
         DataManager.getInstance().addRequests(ChannelNodeDS.getInstance());
+        DataManager.getInstance().addRequests(ProgramNodeDs.getInstance());
     }
 
     private void initData() {

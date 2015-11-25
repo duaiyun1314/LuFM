@@ -6,13 +6,13 @@ import android.util.AttributeSet;
 import android.widget.FrameLayout;
 
 import com.andy.LuFM.Utils.ViewFactory;
-import com.andy.LuFM.controller.BaseRecommendListController;
+import com.andy.LuFM.controller.BaseListController;
 import com.andy.LuFM.providers.BaseProvider;
 
 /**
  * Created by Andy.Wang on 2015/11/13.
  */
-public abstract class BaseRecommendView<Controller extends BaseRecommendListController, Provider extends BaseProvider> extends FrameLayout implements SwipeRefreshLayout.OnRefreshListener {
+public abstract class BaseRecommendView<Controller extends BaseListController, Provider extends BaseProvider> extends FrameLayout implements SwipeRefreshLayout.OnRefreshListener {
     protected Controller controller;
 
 
