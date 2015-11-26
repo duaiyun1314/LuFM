@@ -27,4 +27,12 @@ public abstract class ListDataProvider extends BaseProvider {
     }
 
     public abstract BaseAdapter newAdapter();
+
+    public void loadNextData(Object... aArray) {
+
+    }
+
+    public int getPageSize() {
+        return 30;
+    }
 }

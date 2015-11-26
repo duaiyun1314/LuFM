@@ -66,4 +66,6 @@ public class RecommendListProvider extends ListDataProvider implements IResultRe
         }
 
     }
+
+
 }

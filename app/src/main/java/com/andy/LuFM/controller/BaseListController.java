@@ -21,6 +21,7 @@ public class BaseListController<Provider extends ListDataProvider, BaseView exte
     public SwipeRefreshLayout mRefreshLayout;
     public BaseView baseView;
     public ListView mListView;
+    public PageLoader loader;
 
     public BaseListController(Provider provider) {
         super(provider);
@@ -39,9 +40,23 @@ public class BaseListController<Provider extends ListDataProvider, BaseView exte
         this.mRefreshLayout.setColorSchemeColors(colorPrimary, colorPrimaryDark, colorAccent);
         mListView = new ListView(mContext);
         mListView.setDivider(null);
-        mListView.setAdapter(mProvider.getAdapter());
+        View headerview = createHeadView();
+        if (headerview != null) {
+            mListView.addHeaderView(headerview);
+        }
         mRefreshLayout.addView(mListView, layoutParams);
         mListView.setOnScrollListener(new PauseOnScrollListener(ImageLoader.getInstance(), true, true));
+        PageLoader.OnLoadListener onLoadListener = new PageLoader.OnLoadListener() {
+            @Override
+            public void onLoading(PageLoader pagedLoader, boolean isAutoLoad) {
+                mProvider.loadNextData();
+            }
+        };
+        this.loader = PageLoader.from(mListView).setOnLoadListener(onLoadListener).build();
+        this.loader.setOnScrollListener(new PauseOnScrollListener(ImageLoader.getInstance(), true, true));
+        mListView.setAdapter(mProvider.getAdapter());
+        this.loader.setAdatper(this.mProvider.getAdapter());
+        this.loader.setEnable(setLoaderEnable());
     }
 
     @Override
@@ -62,16 +77,37 @@ public class BaseListController<Provider extends ListDataProvider, BaseView exte
         }, 0);
     }
 
+    public void loadNextData(Object... aArray) {
+        mProvider.loadNextData(aArray);
+    }
+
     @Override
     public void onLoadFinish(int size) {
         super.onLoadFinish(size);
         mRefreshLayout.setRefreshing(false);
         //mProvider.getAdapter().notifyDataSetChanged();
+        if (mProvider.getAdapter().getCount() < mProvider.getPageSize() || size == 0) {
+            loader.setFinally();
+        } else {
+            loader.setLoading(false);
+        }
+    }
+
+    @Override
+    public void onLoadSuccess(Object object) {
+        super.onLoadSuccess(object);
+        mRefreshLayout.setRefreshing(false);
     }
 
     public ListAdapter getAdatper() {
         return mProvider.getAdapter();
     }
 
+    protected View createHeadView() {
+        return null;
+    }
 
+    protected boolean setLoaderEnable() {
+        return false;
+    }
 }

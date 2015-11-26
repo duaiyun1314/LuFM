@@ -2,8 +2,11 @@ package com.andy.LuFM.view;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.LinearLayout;
 
 import com.andy.LuFM.R;
@@ -20,9 +23,11 @@ import java.util.List;
 public class SwitchView extends LinearLayout {
     private AutoScrollViewPager viewPager;
     private Activity context;
+    private SwipeRefreshLayout refreshLayout;
 
-    public SwitchView(Context context) {
-        this(context, null);
+    public SwitchView(Context context, SwipeRefreshLayout refreshLayout) {
+        this(context, null, 0);
+        this.refreshLayout = refreshLayout;
     }
 
     public SwitchView(Context context, AttributeSet attrs) {
@@ -34,6 +39,23 @@ public class SwitchView extends LinearLayout {
         this.context = (Activity) context;
         inflate(context, R.layout.layout_switchview, this);
         viewPager = (AutoScrollViewPager) findViewById(R.id.vp);
+        viewPager.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        break;
+                    case MotionEvent.ACTION_UP:
+                    case MotionEvent.ACTION_CANCEL:
+                        refreshLayout.setEnabled(true);
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        refreshLayout.setEnabled(false);
+                        break;
+                }
+                return false;
+            }
+        });
     }
 
     public void update(List<RecommendItemNode> lists) {

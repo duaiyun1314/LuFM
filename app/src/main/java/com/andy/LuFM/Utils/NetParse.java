@@ -81,7 +81,7 @@ public class NetParse {
                 result.setSuccess(false);
             }
             iResultRecvHandler.onRecvResult(result, type, param);
-        } else if (type.equalsIgnoreCase(RequestType.RELOAD_VIRTUAL_PROGRAMS_SCHEDULE)) {
+        } else if (type.equalsIgnoreCase(RequestType.RELOAD_VIRTUAL_PROGRAMS_SCHEDULE) || type.equalsIgnoreCase(RequestType.GET_VIRTUAL_PROGRAM_SCHEDULE)) {
             ProgramScheduleList programScheduleList = parseVirtualProgramSchedule(responseString);
             if (programScheduleList != null) {
                 result.setSuccess(true);

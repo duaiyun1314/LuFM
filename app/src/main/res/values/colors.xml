@@ -10,4 +10,7 @@
     <color name="normal_text_subcolor">#ff787878</color>
     <color name="normal_text_thircolor">#ff959595</color>
 
+    <color name="list_item_color">#fff4f5f9</color>
+    <color name="list_divider_color">#ffb8b8ba</color>
+
 </resources>

@@ -8,10 +8,12 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.andy.LuFM.R;
+import com.andy.LuFM.controller.PageLoader;
 import com.andy.LuFM.data.InfoManager;
 import com.andy.LuFM.data.RequestType;
 import com.andy.LuFM.model.ChannelNode;
 import com.andy.LuFM.model.ProgramNode;
+import com.andy.LuFM.view.channeldetail.ChannelDetailView;
 
 import java.util.List;
 
@@ -43,6 +45,9 @@ public class ProgramNodesProvider extends ListDataProvider implements InfoManage
     @Override
     public void onNotification(String type) {
         if (type.equalsIgnoreCase(InfoManager.ISubscribeEventListener.RECV_RELOAD_PROGRAMS_SCHEDULE)) {
+            callback.onLoadSuccess(type);
+        } else if (type.equalsIgnoreCase(InfoManager.ISubscribeEventListener.RECV_PROGRAMS_SCHEDULE)) {
+            callback.onLoadFinish(30);
             callback.onLoadSuccess(type);
         }
 
@@ -113,5 +118,30 @@ public class ProgramNodesProvider extends ListDataProvider implements InfoManage
             TextView updatetime;
             TextView duration;
         }
+    }
+
+    @Override
+    public void loadNextData(Object... aArray) {
+        super.loadNextData(aArray);
+        ChannelNode channelNode = (ChannelNode) getParam();
+        InfoManager.getInstance().loadProgramsScheduleNode(channelNode, this);
+    }
+
+    @Override
+    public int getPageSize() {
+        if (((ChannelNode) getParam()).isNovelChannel()) {
+            return 50;
+        } else {
+            return 30;
+        }
+    }
+
+    /**
+     * provider 有时会需要view的一些参数
+     *
+     * @return
+     */
+    public Object getParam() {
+        return null;
     }
 }

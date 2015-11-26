@@ -20,10 +20,9 @@ public class RecommendListController<Prodiver extends RecommendListProvider> ext
     }
 
     @Override
-    public void assumeView(View view) {
-        super.assumeView(view);
-        mHeadView = new SwitchView(mContext);
-        mListView.addHeaderView(mHeadView);
+    protected View createHeadView() {
+        mHeadView = new SwitchView(mContext,mRefreshLayout);
+        return mHeadView;
     }
 
     @Override

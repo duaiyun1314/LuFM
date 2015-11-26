@@ -85,6 +85,12 @@ public class InfoManager implements IResultRecvHandler {
                 dispatchSubscribeEvent(ISubscribeEventListener.RECV_RELOAD_PROGRAMS_SCHEDULE);
             }
 
+        } else if (type.equalsIgnoreCase(RequestType.GET_VIRTUAL_PROGRAM_SCHEDULE)) {
+            ProgramScheduleList psl = (ProgramScheduleList) result.getData();
+            if (psl != null) {
+                dispatchNodeEvent(psl, (Map) param, INodeEventListener.ADD_VIRTUAL_PROGRAMS_SCHEDULE);
+                dispatchSubscribeEvent(ISubscribeEventListener.RECV_PROGRAMS_SCHEDULE);
+            }
         }
 
     }

@@ -66,7 +66,12 @@ public class ChannelDetailView extends LinearLayout implements ChannelHelper.IDa
     }
 
     private void initListView() {
-        programNodesProvider = new ProgramNodesProvider(context);
+        programNodesProvider = new ProgramNodesProvider(context) {
+            @Override
+            public Object getParam() {
+                return channelNode;
+            }
+        };
         this.baseListController = new BaseListController(programNodesProvider) {
             @Override
             public void onLoadSuccess(Object object) {
@@ -80,6 +85,17 @@ public class ChannelDetailView extends LinearLayout implements ChannelHelper.IDa
                     //this.mCoverView.setButtonEnable(true);
                 }
 
+            }
+
+            @Override
+            public void onRefresh() {
+                super.onRefresh();
+                baseListController.loadData(channelNode);
+            }
+
+            @Override
+            protected boolean setLoaderEnable() {
+                return true;
             }
         };
         this.baseListController.setActivity(context);
@@ -181,4 +197,7 @@ public class ChannelDetailView extends LinearLayout implements ChannelHelper.IDa
         return true;
     }
 
+    public ChannelNode getChannelNode() {
+        return this.channelNode;
+    }
 }
