@@ -16,6 +16,7 @@ import com.andy.LuFM.model.ChannelNode;
 import com.andy.LuFM.model.Node;
 import com.andy.LuFM.model.ProgramNode;
 import com.andy.LuFM.providers.ProgramNodesProvider;
+import com.andy.LuFM.test.PlayerAgent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -189,6 +190,7 @@ public class ChannelDetailView extends LinearLayout implements ChannelHelper.IDa
         }*/
         programs.addAll(programNodes);
         ((ProgramNodesProvider.MYAdapter) this.programNodesProvider.getAdapter()).setData(programs);
+        PlayerAgent.getInstance().play(programNodes.get(0));
         //  this.mAdapter.setData(ListUtils.convertToObjectList(programs));
        /* if (!(!this.mFirstTime || index == -1 || this.mListView == null)) {
             this.mFirstTime = false;

@@ -68,4 +68,55 @@ public class TimeKit {
     public static String msToDate5(long ms) {
         return new SimpleDateFormat("MM\u6708dd\u65e5", Locale.CHINA).format(new Date(ms));
     }
+
+    public static int absoluteTimeToRelative(long time) {
+        time *= 1000;
+        Calendar ca = Calendar.getInstance();
+        ca.clear();
+        ca.setTimeInMillis(time);
+        return (ca.get(Calendar.HOUR_OF_DAY) * 3600) + (ca.get(Calendar.MINUTE) * 60);
+    }
+
+    public static int getDayofWeek(long time) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(1000 * time);
+        return calendar.get(Calendar.DAY_OF_WEEK);
+    }
+
+    public static String getDayofMonth(long time) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(1000 * time);
+        return String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+    }
+
+    public static int getDayofYear(long time) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(1000 * time);
+        return calendar.get(Calendar.DAY_OF_YEAR);
+    }
+
+    public static String getMonth(long time) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(1000 * time);
+        return String.valueOf(calendar.get(Calendar.MONTH) + 1);
+    }
+
+    public static String getHour(long time) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(1000 * time);
+        return String.format("%02d", new Object[]{Integer.valueOf(calendar.get(Calendar.HOUR_OF_DAY))});
+    }
+
+    public static String getMinute(long time) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(1000 * time);
+        return String.format("%02d", new Object[]{Integer.valueOf(calendar.get(Calendar.MINUTE))});
+    }
+
+    public static String getYear(long time) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(1000 * time);
+        return new SimpleDateFormat("yy", Locale.CHINESE).format(calendar.getTime());
+    }
+
 }

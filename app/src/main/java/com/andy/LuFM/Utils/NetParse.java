@@ -15,6 +15,8 @@ import com.andy.LuFM.model.RecommendCategoryNode;
 import com.andy.LuFM.model.RecommendItemNode;
 import com.andy.LuFM.model.SpecialTopicNode;
 import com.andy.LuFM.model.UserInfo;
+import com.andy.LuFM.test.MediaCenter;
+import com.andy.LuFM.test.PingInfoV6;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -22,6 +24,8 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by wanglu on 15/11/20.
@@ -89,8 +93,88 @@ public class NetParse {
 
             }
             iResultRecvHandler.onRecvResult(result, type, param);
+        } else if (type.equalsIgnoreCase(RequestType.GET_LIST_MEDIACENTER)) {
+            MediaCenter center = parseMediaCenter(responseString);
+            if (center != null) {
+                result.setSuccess(true);
+                result.setData(center);
+            }
+            iResultRecvHandler.onRecvResult(result, type, param);
+
         }
 
+    }
+
+    private MediaCenter parseMediaCenter(String json) {
+        if (!(json == null || json.equalsIgnoreCase(""))) {
+            try {
+                JSONObject dataObj1 = new JSONObject(json);
+                JSONObject dataObj = dataObj1.getJSONObject("data");
+                JSONObject radioHls = dataObj.getJSONObject("radiostations_hls");
+                JSONObject radioDownload = dataObj.getJSONObject("radiostations_download");
+                JSONObject storeAudio = dataObj.getJSONObject("storedaudio_m4a");
+                MediaCenter mediaCenter = new MediaCenter();
+                mediaCenter.mapMediaCenters = new HashMap();
+                List<PingInfoV6> lstHls = _parseMediaCenter(radioHls, 0);
+                if (lstHls != null && lstHls.size() > 0) {
+                    mediaCenter.mapMediaCenters.put(MediaCenter.LIVE_CHANNEL_PLAY, lstHls);
+                }
+                List<PingInfoV6> lstDownload = _parseMediaCenter(radioDownload, 0);
+                if (lstDownload != null && lstDownload.size() > 0) {
+                    mediaCenter.mapMediaCenters.put(MediaCenter.LIVE_CHANNEL_DOWNLOAD, lstDownload);
+                }
+                List<PingInfoV6> lstStorage = _parseMediaCenter(storeAudio, 1);
+                if (lstStorage != null && lstStorage.size() > 0) {
+                    mediaCenter.mapMediaCenters.put(MediaCenter.VIRUTAL_CHANNEL, lstStorage);
+                }
+                return mediaCenter;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    private List<PingInfoV6> _parseMediaCenter(JSONObject dataObj, int type) {
+        if (dataObj != null) {
+            try {
+                JSONArray mediaCenters = dataObj.getJSONArray("mediacenters");
+                double pcc = 0.0;
+                try {
+                    pcc = dataObj.getDouble("preference_change_cost");
+                } catch (Exception e) {
+
+                }
+                if (mediaCenters != null) {
+                    List<PingInfoV6> lstPingInfo = new ArrayList();
+                    for (int i = 0; i < mediaCenters.length(); i++) {
+                        JSONObject mediaObj = mediaCenters.getJSONObject(i);
+                        PingInfoV6 info = new PingInfoV6();
+                        info.domain = mediaObj.getString("domain");
+                        info.backupIP = mediaObj.getString("backup_ips");
+                        info.weight = mediaObj.getInt("weight");
+                        info.testpath = mediaObj.getString("test_path");
+                        info.accessExp = mediaObj.getString("access");
+                        info.replayExp = mediaObj.getString("replay");
+                        info.res = mediaObj.getString("result");
+                        info.codename = mediaObj.getString("codename");
+                        info.channelType = type;
+                        info.pcc = pcc;
+                        String net = mediaObj.getString("type");
+                        if (net == null || !net.equalsIgnoreCase("cdn")) {
+                            info.isCDN = false;
+                        } else {
+                            info.isCDN = true;
+                        }
+                        lstPingInfo.add(info);
+                    }
+                    return lstPingInfo;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 
     private RecommendCategoryNode parseRecommendInfo(String responseString) {

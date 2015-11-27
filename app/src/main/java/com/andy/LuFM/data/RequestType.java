@@ -19,4 +19,5 @@ public class RequestType {
     public static final String RELOAD_VIRTUAL_PROGRAMS_SCHEDULE = "RELOAD_VIRTUAL_PROGRAMS_SCHEDULE";
     public static final String UPDATEDB_PROGRAM_NODE_REV = "UPDATEDB_PROGRAM_NODE_REV";
     public static final String UPDATEDB_PROGRAM_NODE = "UPDATEDB_PROGRAM_NODE";
+    public static final String GET_LIST_MEDIACENTER = "GET_LIST_MEDIACENTER";
 }

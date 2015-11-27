@@ -9,6 +9,7 @@ import com.andy.LuFM.model.Node;
 import com.andy.LuFM.model.ProgramScheduleList;
 import com.andy.LuFM.model.RootNode;
 import com.andy.LuFM.model.UserInfo;
+import com.andy.LuFM.test.MediaCenter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -91,6 +92,13 @@ public class InfoManager implements IResultRecvHandler {
                 dispatchNodeEvent(psl, (Map) param, INodeEventListener.ADD_VIRTUAL_PROGRAMS_SCHEDULE);
                 dispatchSubscribeEvent(ISubscribeEventListener.RECV_PROGRAMS_SCHEDULE);
             }
+        } else if (type.equalsIgnoreCase(RequestType.GET_LIST_MEDIACENTER)) {
+            MediaCenter center = (MediaCenter) result.getData();
+            if (center != null) {
+                MediaCenter.getInstance().setMediaCenter(center);
+                // MediaCenter.getInstance().pkMediaCenter();
+            }
+
         }
 
     }
@@ -155,6 +163,11 @@ public class InfoManager implements IResultRecvHandler {
                 }
             }
         }
+    }
+
+    public void loadDataCenterList() {
+        DataManager.getInstance().getData(RequestType.NET_REQUEST, this, new DataCommand(RequestType.GET_LIST_MEDIACENTER, null));
+
     }
 
     public interface INodeEventListener {
@@ -432,6 +445,15 @@ public class InfoManager implements IResultRecvHandler {
             }
             DataManager.getInstance().getData(RequestType.NET_REQUEST, this, new DataCommand(requestType, param));
         }
+    }
+
+    List<Integer> liveChannel = null;
+
+    public boolean isTestLiveChannel(int resid) {
+        if (this.liveChannel != null) {
+            return this.liveChannel.contains(Integer.valueOf(resid));
+        }
+        return false;
     }
 
 }

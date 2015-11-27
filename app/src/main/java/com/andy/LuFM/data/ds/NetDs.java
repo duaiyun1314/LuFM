@@ -56,6 +56,9 @@ public class NetDs implements IDataOperation {
         } else if (type.equalsIgnoreCase(RequestType.GET_VIRTUAL_PROGRAM_SCHEDULE)) {//获得节目单
             String url = Constants.ROOT_URL + "/channelondemands/" + param.get("id") + "/programs/order/0/curpage/" + param.get("page") + "/pagesize/" + param.get("pagesize");
             NetKit.getInstance().getNormalNetInfo(url, type, iResultRecvHandler, param);
+        } else if (type.equalsIgnoreCase(RequestType.GET_LIST_MEDIACENTER)) {
+            String url = Constants.ROOT_URL + "/mediacenterlist";
+            NetKit.getInstance().getNormalNetInfo(url, type, iResultRecvHandler, param);
         }
         return null;
     }
