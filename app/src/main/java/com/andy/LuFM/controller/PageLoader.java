@@ -2,6 +2,7 @@ package com.andy.LuFM.controller;
 
 import android.content.Context;
 import android.database.DataSetObserver;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AbsListView;
@@ -26,6 +27,7 @@ public class PageLoader extends DataSetObserver implements AbsListView.OnScrollL
     private OnLoadListener mOnLoadListener;
     private AbsListView.OnScrollListener mOnScrollListener;
     private boolean enable;
+    private boolean userNead =true;
     private ListAdapter mAdapter;
     /**
      * 正在加载
@@ -82,7 +84,7 @@ public class PageLoader extends DataSetObserver implements AbsListView.OnScrollL
         if (mAdapter == null) {
             throw new RuntimeException("adapter must not be null");
         }
-        //  bindEvent();
+        bindEvent();
     }
 
     private void bindEvent() {
@@ -92,17 +94,22 @@ public class PageLoader extends DataSetObserver implements AbsListView.OnScrollL
             if (mOnLoadListener == null) {
                 setEnable(false);
             } else {
+                Log.i("Sync", "footview 要显示了");
                 setEnable(true);
             }
         }
     }
 
     private void setDisplay(boolean show) {
-        if (show) {
+        if (show && userNead) {
             moreView.setVisibility(View.VISIBLE);
         } else {
             moreView.setVisibility(View.GONE);
         }
+    }
+
+    public void setUserNead(boolean isNead) {
+        this.userNead = isNead;
     }
 
     public Mode getMode() {

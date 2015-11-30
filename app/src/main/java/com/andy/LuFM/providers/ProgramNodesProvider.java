@@ -91,7 +91,6 @@ public class ProgramNodesProvider extends ListDataProvider implements InfoManage
                 holder = (ViewHolder) convertView.getTag();
             }
             ProgramNode programNode = list.get(position);
-            Log.i("Sync", "position:" + position + "   " + programNode.title + "   " + programNode.updateTime + "    " + programNode.duration);
             holder.title.setText(programNode.title);
             holder.updatetime.setText(programNode.updateTime);
             holder.duration.setText(getDurationTime((int) programNode.duration) + "");

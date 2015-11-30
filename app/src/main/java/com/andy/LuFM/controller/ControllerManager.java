@@ -43,7 +43,6 @@ public class ControllerManager {
         if (node != null && node.nodeName.equalsIgnoreCase("recommenditem")) {
             RecommendItemNode p = (RecommendItemNode) node;
             if (p != null) {
-                Log.i("Sync", "打开的item的detail：" + p.mNode.nodeName);
             }
             p.mClickCnt++;
             if (p.mNode != null && !p.mNode.nodeName.equalsIgnoreCase("category")) {

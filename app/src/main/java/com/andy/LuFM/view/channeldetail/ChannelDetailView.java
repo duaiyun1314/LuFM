@@ -8,6 +8,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
+import com.andy.LuFM.TestApplication;
 import com.andy.LuFM.controller.BaseListController;
 import com.andy.LuFM.controller.ControllerManager;
 import com.andy.LuFM.data.InfoManager;
@@ -190,7 +191,8 @@ public class ChannelDetailView extends LinearLayout implements ChannelHelper.IDa
         }*/
         programs.addAll(programNodes);
         ((ProgramNodesProvider.MYAdapter) this.programNodesProvider.getAdapter()).setData(programs);
-        PlayerAgent.getInstance().play(programNodes.get(0));
+        //  PlayerAgent.getInstance().play(programNodes.get(0));
+        ((TestApplication) TestApplication.from()).getPlaybackKickstarter().initPlayback(context, programs, 0, false, true);
         //  this.mAdapter.setData(ListUtils.convertToObjectList(programs));
        /* if (!(!this.mFirstTime || index == -1 || this.mListView == null)) {
             this.mFirstTime = false;

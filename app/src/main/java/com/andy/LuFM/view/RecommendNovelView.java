@@ -53,8 +53,8 @@ public class RecommendNovelView extends BaseRecommendView<RecommendListControlle
     }
 
     @Override
-    public void update() {
-        controller.loadData(Constants.NOVEL_SECTION);
+    public void update(int sectionId) {
+        controller.loadData(sectionId);
 
     }
 

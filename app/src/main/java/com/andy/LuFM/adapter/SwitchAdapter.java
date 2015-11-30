@@ -54,8 +54,6 @@ public class SwitchAdapter extends RecyclingPageAdapter {
             @Override
             public void onClick(View v) {
                 int currentPoint = getPosition(viewPager.getCurrentItem());
-                Log.i("Sync", "click:" + currentPoint);
-
                 ControllerManager.getInstance(context).openControllerByRecommendNode(recommendItemNodes.get(currentPoint));
             }
         });

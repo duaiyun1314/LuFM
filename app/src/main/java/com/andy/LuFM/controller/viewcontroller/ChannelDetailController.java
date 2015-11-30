@@ -21,7 +21,6 @@ public class ChannelDetailController extends ViewController {
     @Override
     public void config(String type, Object param) {
         super.config(type, param);
-        Log.i("Sync", "config了");
         if (type.equalsIgnoreCase("channeldetail")) {
 
 

@@ -1,5 +1,6 @@
 package com.andy.LuFM.view;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -19,7 +20,7 @@ import java.util.List;
  * Created by wanglu on 15/11/17.
  */
 public class RecommendItemView extends LView {
-    private Context mContext;
+    private Activity mContext;
     private int contentPadding;
     private int width;
 
@@ -34,7 +35,7 @@ public class RecommendItemView extends LView {
     public RecommendItemView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         // inflate(context, R.layout.layout_recommend_item, this);
-        this.mContext = context;
+        this.mContext = (Activity) context;
         contentPadding = (int) getResources().getDimension(R.dimen.content_padding);
         setOrientation(HORIZONTAL);
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();

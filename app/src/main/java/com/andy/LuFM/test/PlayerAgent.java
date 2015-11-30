@@ -133,7 +133,6 @@ public class PlayerAgent {
                     InfoManager.getInstance().root().setPlayingNode(temp2);
                     RemoteControl.getInstance().updateProgramInfo(this._context, cn, temp2);
                 }*/
-                Log.i("Sync", "aurl:" + url);
                 _play(url);
             } else if (node.nodeName.equalsIgnoreCase("ringtone")) {
                 // playRingTone(node);

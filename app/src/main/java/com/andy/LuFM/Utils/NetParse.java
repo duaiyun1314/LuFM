@@ -196,7 +196,6 @@ public class NetParse {
                                     if (recommendArray != null) {
                                         for (int j = 0; j < recommendArray.length(); j++) {
                                             itemNode = parseRecommendItemInfo(recommendArray.getJSONObject(j), true);
-                                            Log.i("Sync", "banner:" + (itemNode == null));
                                             if (itemNode != null) {
                                                 categoryNode.insertItemNode(itemNode, 0);
                                             }

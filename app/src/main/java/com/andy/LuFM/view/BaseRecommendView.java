@@ -1,5 +1,6 @@
 package com.andy.LuFM.view;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.AttributeSet;
@@ -16,7 +17,7 @@ public abstract class BaseRecommendView<Controller extends BaseListController, P
     protected Controller controller;
 
 
-    protected Context mContext;
+    protected Activity mContext;
 
     public BaseRecommendView(Context context) {
         super(context);
@@ -34,7 +35,7 @@ public abstract class BaseRecommendView<Controller extends BaseListController, P
     }
 
     private void init(Context context) {
-        this.mContext = context;
+        this.mContext = (Activity) context;
         this.controller = createController();
         this.controller.setActivity(context);
         this.controller.assumeView(this);
@@ -52,7 +53,7 @@ public abstract class BaseRecommendView<Controller extends BaseListController, P
     /**
      * 此方法中view可能要加载数据了
      */
-    public abstract void update();
+    public abstract void update(int sectionId);
 
     @Override
     public void onRefresh() {

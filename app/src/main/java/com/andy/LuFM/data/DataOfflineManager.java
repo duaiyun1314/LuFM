@@ -50,7 +50,6 @@ public class DataOfflineManager {
         if (zipInputStream == null || TextUtils.isEmpty(name) || TextUtils.isEmpty(dbDir)) {
             return;
         }
-        Log.i("Sync", "name:" + name);
         String fileName = dbDir + "/" + name;
         try {
             File file = new File(fileName);

@@ -16,7 +16,7 @@ import com.andy.LuFM.view.channeldetail.ChannelDetailView;
 /**
  * Created by wanglu on 15/11/23.
  */
-public class ChannelFragment extends Fragment {
+public class ChannelFragment extends Fragment implements View.OnClickListener {
     private ChannelDetailView detailView;
     private Object obj;
     private String type;
@@ -32,6 +32,7 @@ public class ChannelFragment extends Fragment {
         detailView = (ChannelDetailView) view.findViewById(R.id.detail_view);
         iv_back = (ImageView) view.findViewById(R.id.iv_back);
         title_label = (TextView) view.findViewById(R.id.title_label);
+        iv_back.setOnClickListener(this);
         if (obj != null) {
             // detailView.update(type, obj);
             setData(type, obj);
@@ -51,5 +52,10 @@ public class ChannelFragment extends Fragment {
     private void updateTitle(ChannelNode param) {
 
         title_label.setText(param.title);
+    }
+
+    @Override
+    public void onClick(View v) {
+        getActivity().onBackPressed();
     }
 }

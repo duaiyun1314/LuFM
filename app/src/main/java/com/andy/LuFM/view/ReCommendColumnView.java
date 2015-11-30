@@ -3,6 +3,7 @@ package com.andy.LuFM.view;
 import android.content.Context;
 import android.view.View;
 
+import com.andy.LuFM.Utils.Constants;
 import com.andy.LuFM.Utils.ViewFactory;
 import com.andy.LuFM.adapter.SectionAdapter;
 import com.andy.LuFM.controller.RecommendListController;
@@ -15,12 +16,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Andy.Wang on 2015/11/13.
+ * Created by wanglu on 15/11/19.
  */
-public class RecommendView extends BaseRecommendView<RecommendListController, RecommendListProvider> {
+public class ReCommendColumnView extends BaseRecommendView<RecommendListController, RecommendListProvider> {
     private RecommendCategoryNode recommendCategoryNode;
+    private int sectionId;
 
-    public RecommendView(Context context) {
+    public ReCommendColumnView(Context context) {
         super(context);
     }
 
@@ -44,7 +46,7 @@ public class RecommendView extends BaseRecommendView<RecommendListController, Re
                     case 2://tag
                         return new RecommendTagView(mContext);
                     case 3://item
-                        return new RecommendItemView(mContext);
+                        return new RecommendItemNovelView(mContext);
                 }
                 return view;
             }
@@ -53,22 +55,24 @@ public class RecommendView extends BaseRecommendView<RecommendListController, Re
 
     @Override
     public void update(int sectionId) {
+        this.sectionId = sectionId;
         controller.loadData(sectionId);
+
     }
 
     @Override
     public void setDate(Object object) {
+
         this.recommendCategoryNode = (RecommendCategoryNode) object;
         List<SectionItem> sectionItemList = parseSection(recommendCategoryNode);
         controller.mHeadView.update(recommendCategoryNode.lstBanner);
         ((SectionAdapter) controller.getAdatper()).setData(sectionItemList);
 
-
     }
 
     @Override
     public int getSection() {
-        return 0;
+        return this.sectionId;
     }
 
     private List<SectionItem> parseSection(RecommendCategoryNode categoryNode) {

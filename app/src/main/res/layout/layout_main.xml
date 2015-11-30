@@ -9,6 +9,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@+id/mini_play"
         android:orientation="vertical">
 
         <include layout="@layout/layout_toolbar" />
@@ -21,7 +22,14 @@
 
     <FrameLayout
         android:id="@+id/detail"
+        android:layout_above="@+id/mini_play"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <FrameLayout
+        android:id="@+id/mini_play"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" />
 
 </RelativeLayout>

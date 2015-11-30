@@ -56,7 +56,7 @@ public class BaseListController<Provider extends ListDataProvider, BaseView exte
         this.loader.setOnScrollListener(new PauseOnScrollListener(ImageLoader.getInstance(), true, true));
         mListView.setAdapter(mProvider.getAdapter());
         this.loader.setAdatper(this.mProvider.getAdapter());
-        this.loader.setEnable(setLoaderEnable());
+        //this.loader.setEnable(setLoaderEnable());
     }
 
     @Override

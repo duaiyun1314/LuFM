@@ -30,6 +30,7 @@ import com.andy.LuFM.fragments.DownloadFragment;
 import com.andy.LuFM.fragments.MineFragment;
 import com.andy.LuFM.listener.ChannelDetailClickListener;
 import com.andy.LuFM.model.CategoryNode;
+import com.andy.LuFM.test.MiniPlayerFragment;
 
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +43,7 @@ public class AllInOneActivity extends AppCompatActivity implements IEventHandler
     private Fragment[] fragments;
     public static final String CHANNEL_DETAIL_TAG = "channel_detail_tag";
     public static final String MAIN_CONTENT_TAG = "main_content_tag";
+    public static final String MINI_PLAYER_TAG = "mini_player_tag";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +112,10 @@ public class AllInOneActivity extends AppCompatActivity implements IEventHandler
         Fragment fragment = fragments[mViewType];
         ft.replace(R.id.content, fragment, MAIN_CONTENT_TAG);
         ft.commit();
+        FragmentTransaction ft1 = getSupportFragmentManager().beginTransaction();
+        Fragment miniPlayerFragment = new MiniPlayerFragment();
+        ft1.replace(R.id.mini_play, miniPlayerFragment, MINI_PLAYER_TAG);
+        ft1.commit();
 
     }
 
@@ -162,7 +168,7 @@ public class AllInOneActivity extends AppCompatActivity implements IEventHandler
 
     @Override
     public void onChannelSelected(String type, Object param) {
-        Log.i("Sync", "onChannelSelected:" + type);
+        //Log.i("Sync", "onChannelSelected:" + type);
         ChannelFragment fragment = (ChannelFragment) getFragmentManager().findFragmentByTag(CHANNEL_DETAIL_TAG);
         if (true) {
             fragment = new ChannelFragment();
@@ -171,12 +177,12 @@ public class AllInOneActivity extends AppCompatActivity implements IEventHandler
             fragmentTransaction.setCustomAnimations(R.animator.slide_in_from_right, R.animator.slide_out_to_left
                     , R.animator.slide_in_from_left, R.animator.slide_out_to_right);
             fragmentTransaction.replace(R.id.detail, fragment, CHANNEL_DETAIL_TAG);
-            android.app.Fragment fragment1 = getFragmentManager().findFragmentById(R.id.content);
+            /*android.app.Fragment fragment1 = getFragmentManager().findFragmentById(R.id.content);
             if (fragment1 != null) {
                 fragmentTransaction.hide(fragment1);
-            }else{
+            } else {
 
-            }
+            }*/
             fragmentTransaction.addToBackStack(null);
 
             fragmentTransaction.commit();

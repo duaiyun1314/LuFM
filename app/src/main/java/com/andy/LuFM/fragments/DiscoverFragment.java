@@ -14,6 +14,7 @@ import com.andy.LuFM.R;
 import com.andy.LuFM.Utils.Constants;
 import com.andy.LuFM.model.CategoryNode;
 import com.andy.LuFM.view.BaseRecommendView;
+import com.andy.LuFM.view.ReCommendColumnView;
 import com.andy.LuFM.view.RecommendNovelView;
 import com.andy.LuFM.view.RecommendView;
 import com.andy.LuFM.view.SlidingTabLayout;
@@ -74,10 +75,15 @@ public class DiscoverFragment extends Fragment {
                 case Constants.NOVEL_SECTION:
                     viewGroup = new RecommendNovelView(getActivity());
                     break;
+                case Constants.CAMPUS_SECTION:
+                    break;
+                default:
+                    viewGroup = new ReCommendColumnView(getActivity());
+                    break;
             }
             if (viewGroup != null) {
                 (container).addView(viewGroup);
-                viewGroup.update();
+                viewGroup.update(node.getSectionId());
             }
 
             return viewGroup;

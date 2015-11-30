@@ -20,8 +20,14 @@ public class RecommendListController<Prodiver extends RecommendListProvider> ext
     }
 
     @Override
+    public void assumeView(View view) {
+        super.assumeView(view);
+        this.loader.setUserNead(false);
+    }
+
+    @Override
     protected View createHeadView() {
-        mHeadView = new SwitchView(mContext,mRefreshLayout);
+        mHeadView = new SwitchView(mContext, mRefreshLayout);
         return mHeadView;
     }
 

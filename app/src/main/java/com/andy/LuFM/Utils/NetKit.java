@@ -70,21 +70,17 @@ public class NetKit {
     }*/
 
     public void getNormalNetInfo(final String url, final String requesttype, final IResultRecvHandler iResultRecvHandler,final Object param) {
-        Log.i("Sync", "url:" + url);
         mClient.get(url, new GsonHttpHandler(null) {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Log.i("Sync", "onFailUre");
             }
 
             @Override
             protected void onError(int statusCode, Header[] headers, String responseString, Throwable cause) {
-                Log.i("Sync", "onError");
             }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseString, Object object) {
-                Log.i("Sync", "oNSuccess");
                 if (netParser != null) {
                     netParser.parse(responseString, requesttype, iResultRecvHandler,param);
                 }
