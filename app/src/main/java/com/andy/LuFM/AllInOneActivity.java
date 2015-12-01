@@ -176,7 +176,7 @@ public class AllInOneActivity extends AppCompatActivity implements IEventHandler
             android.app.FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.setCustomAnimations(R.animator.slide_in_from_right, R.animator.slide_out_to_left
                     , R.animator.slide_in_from_left, R.animator.slide_out_to_right);
-            fragmentTransaction.replace(R.id.detail, fragment, CHANNEL_DETAIL_TAG);
+            fragmentTransaction.replace(R.id.detail, fragment);
             /*android.app.Fragment fragment1 = getFragmentManager().findFragmentById(R.id.content);
             if (fragment1 != null) {
                 fragmentTransaction.hide(fragment1);

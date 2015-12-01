@@ -3,7 +3,9 @@ package com.andy.LuFM.view.channeldetail;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -17,6 +19,7 @@ import com.andy.LuFM.model.ChannelNode;
 import com.andy.LuFM.model.Node;
 import com.andy.LuFM.model.ProgramNode;
 import com.andy.LuFM.providers.ProgramNodesProvider;
+import com.andy.LuFM.test.AudioPlaybackService;
 import com.andy.LuFM.test.PlayerAgent;
 
 import java.util.ArrayList;
@@ -26,13 +29,14 @@ import java.util.List;
 /**
  * Created by wanglu on 15/11/23.
  */
-public class ChannelDetailView extends LinearLayout implements ChannelHelper.IDataChangeObserver {
+public class ChannelDetailView extends LinearLayout implements ChannelHelper.IDataChangeObserver, AdapterView.OnItemClickListener {
     private ChannelNode channelNode;
     private ChannelDetailCoverView coverView;
     private ListView mListView;
     private BaseListController baseListController;
     private ProgramNodesProvider programNodesProvider;
     private Context context;
+    List<ProgramNode> programs = new ArrayList();
 
     public ChannelDetailView(Context context) {
         this(context, null);
@@ -104,6 +108,7 @@ public class ChannelDetailView extends LinearLayout implements ChannelHelper.IDa
         FrameLayout listLayout = new FrameLayout(context);
         this.baseListController.assumeView(listLayout);
         this.mListView = baseListController.mListView;
+        this.mListView.setOnItemClickListener(this);
         LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         addView(listLayout, layoutParams);
 
@@ -114,7 +119,7 @@ public class ChannelDetailView extends LinearLayout implements ChannelHelper.IDa
 
         if (this.channelNode != null) {
             if (this.mListView != null) {
-                this.mListView.setSelection(0);
+                //  this.mListView.setSelection(0);
             }
             if (this.channelNode.hasEmptyProgramSchedule()) {
                 this.baseListController.loadData(channelNode);
@@ -161,7 +166,7 @@ public class ChannelDetailView extends LinearLayout implements ChannelHelper.IDa
                 }
             }
         }*/
-        List<ProgramNode> programs = new ArrayList();
+
         int index = -1;
      /*   if (programNodes.size() > 0) {
             sendProgramsShowLog(programNodes, this.channelNode);
@@ -192,7 +197,17 @@ public class ChannelDetailView extends LinearLayout implements ChannelHelper.IDa
         programs.addAll(programNodes);
         ((ProgramNodesProvider.MYAdapter) this.programNodesProvider.getAdapter()).setData(programs);
         //  PlayerAgent.getInstance().play(programNodes.get(0));
-        ((TestApplication) TestApplication.from()).getPlaybackKickstarter().initPlayback(context, programs, 0, false, true);
+        AudioPlaybackService service = TestApplication.from().getService();
+        if (service == null || !service.isPlayingMusic()) {
+            programNodesProvider.setSelectedItem(0);
+            ((TestApplication) TestApplication.from()).getPlaybackKickstarter().initPlayback(context, programs, 0, false, true);
+        } else if (service.isPlayingMusic()) {
+            int playingChannelId = service.getCurrentSong().getId();
+            if (channelNode.channelId == playingChannelId) {
+                programNodesProvider.setSelectedItem(service.getCurrentSongIndex());
+
+            }
+        }
         //  this.mAdapter.setData(ListUtils.convertToObjectList(programs));
        /* if (!(!this.mFirstTime || index == -1 || this.mListView == null)) {
             this.mFirstTime = false;
@@ -203,5 +218,14 @@ public class ChannelDetailView extends LinearLayout implements ChannelHelper.IDa
 
     public ChannelNode getChannelNode() {
         return this.channelNode;
+    }
+
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        //  mListView.setSelection(position);
+        programNodesProvider.setSelectedItem(position);
+        ((TestApplication) TestApplication.from()).getPlaybackKickstarter().initPlayback(context, programs, position, false, true);
+
     }
 }

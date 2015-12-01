@@ -22,6 +22,7 @@ import java.util.List;
  */
 public class ProgramNodesProvider extends ListDataProvider implements InfoManager.ISubscribeEventListener {
     private ChannelNode channelNode;
+    private int mSelectedPos = -1;
 
     public ProgramNodesProvider(Context context) {
         super(context);
@@ -45,6 +46,7 @@ public class ProgramNodesProvider extends ListDataProvider implements InfoManage
     @Override
     public void onNotification(String type) {
         if (type.equalsIgnoreCase(InfoManager.ISubscribeEventListener.RECV_RELOAD_PROGRAMS_SCHEDULE)) {
+            callback.onLoadFinish(30);
             callback.onLoadSuccess(type);
         } else if (type.equalsIgnoreCase(InfoManager.ISubscribeEventListener.RECV_PROGRAMS_SCHEDULE)) {
             callback.onLoadFinish(30);
@@ -86,6 +88,7 @@ public class ProgramNodesProvider extends ListDataProvider implements InfoManage
                 holder.title = (TextView) convertView.findViewById(R.id.title_label);
                 holder.updatetime = (TextView) convertView.findViewById(R.id.updatetime_label);
                 holder.duration = (TextView) convertView.findViewById(R.id.duration_label);
+                holder.select_tag = convertView.findViewById(R.id.select_tag);
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
@@ -94,6 +97,13 @@ public class ProgramNodesProvider extends ListDataProvider implements InfoManage
             holder.title.setText(programNode.title);
             holder.updatetime.setText(programNode.updateTime);
             holder.duration.setText(getDurationTime((int) programNode.duration) + "");
+            if (mSelectedPos == position) {
+                holder.select_tag.setVisibility(View.VISIBLE);
+                holder.title.setTextColor(mContext.getResources().getColor(R.color.toolbarColor));
+            } else {
+                holder.title.setTextColor(mContext.getResources().getColor(R.color.normal_text_color));
+                holder.select_tag.setVisibility(View.GONE);
+            }
             return convertView;
         }
 
@@ -116,6 +126,7 @@ public class ProgramNodesProvider extends ListDataProvider implements InfoManage
             TextView title;
             TextView updatetime;
             TextView duration;
+            View select_tag;
         }
     }
 
@@ -142,5 +153,10 @@ public class ProgramNodesProvider extends ListDataProvider implements InfoManage
      */
     public Object getParam() {
         return null;
+    }
+
+    public void setSelectedItem(int pos) {
+        mSelectedPos = pos;
+        getAdapter().notifyDataSetChanged();
     }
 }

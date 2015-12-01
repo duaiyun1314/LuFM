@@ -45,7 +45,7 @@ public class SongHelper {
     private String mAlbum;//专辑
     private String mDuration;//持续时间
     private String mThumb;//图像
-    private String mId;
+    private int mId;//channel id
     private String mSource;//播放地址
     private long mSavedPosition;
 
@@ -120,6 +120,7 @@ public class SongHelper {
                 this.setTitle(programNode.title);
                 ChannelNode cn = ChannelHelper.getInstance().getChannel(programNode);
                 if (cn != null) {
+                    this.setId(cn.channelId);
                     this.setAlbum(cn.title);
                     this.setmThumb(cn.getApproximativeThumb(50, 50, true));
                 }
@@ -215,11 +216,11 @@ public class SongHelper {
         mDuration = duration;
     }
 
-    public String getId() {
+    public int getId() {
         return mId;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         mId = id;
     }
 

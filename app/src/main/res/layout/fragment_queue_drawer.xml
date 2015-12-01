@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/queue_drawer_mini_player_layout"
     android:layout_width="match_parent"
     android:layout_height="60dip"
@@ -9,19 +9,19 @@
         android:id="@+id/queue_drawer_album_art"
         android:layout_width="50dip"
         android:layout_height="50dip"
-        android:layout_gravity="center_vertical"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/content_padding"
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"
-        android:layout_marginLeft="@dimen/content_padding"
         android:src="@drawable/recommend_defaultbg" />
 
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="5dp"
+        android:layout_height="55dp"
+        android:layout_alignParentTop="true"
         android:layout_marginLeft="10dip"
+        android:layout_toRightOf="@id/queue_drawer_album_art"
         android:orientation="horizontal">
 
         <LinearLayout
@@ -33,10 +33,8 @@
             <TextView
                 android:id="@+id/songName"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:layout_marginTop="10dp"
+                android:layout_height="0dip"
+                android:layout_weight="1"
                 android:ellipsize="marquee"
                 android:marqueeRepeatLimit="marquee_forever"
                 android:scrollHorizontally="true"
@@ -52,11 +50,8 @@
             <TextView
                 android:id="@+id/artistAlbumName"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignLeft="@+id/songName"
-                android:layout_alignRight="@+id/songName"
-                android:layout_below="@+id/songName"
-                android:layout_marginBottom="10dp"
+                android:layout_height="0dip"
+                android:layout_weight="1"
                 android:ellipsize="marquee"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
@@ -106,5 +101,17 @@
 
     </LinearLayout>
 
+    <SeekBar
+        android:id="@+id/nowPlayingSeekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:indeterminate="false"
+        android:maxHeight="4dip"
+        android:minHeight="4dip"
+        android:progress="0"
+        android:progressDrawable="@drawable/progress_drawable"
+        android:thumb="@drawable/transparent_drawable"
+        android:thumbOffset="0dp" />
 
-</LinearLayout>
+</RelativeLayout>

@@ -45,6 +45,7 @@ public class BaseListController<Provider extends ListDataProvider, BaseView exte
             mListView.addHeaderView(headerview);
         }
         mRefreshLayout.addView(mListView, layoutParams);
+        mRefreshLayout.setDistanceToTriggerSync(150);
         mListView.setOnScrollListener(new PauseOnScrollListener(ImageLoader.getInstance(), true, true));
         PageLoader.OnLoadListener onLoadListener = new PageLoader.OnLoadListener() {
             @Override

@@ -1,8 +1,10 @@
 package com.andy.LuFM.fragments;
 
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +26,12 @@ public class ChannelFragment extends Fragment implements View.OnClickListener {
     private TextView title_label;
 
     public ChannelFragment() {
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        Log.i("Sync", "channeldetai fragment onAttach");
     }
 
     @Override

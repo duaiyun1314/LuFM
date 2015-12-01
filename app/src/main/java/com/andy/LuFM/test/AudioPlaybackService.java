@@ -908,7 +908,7 @@ public class AudioPlaybackService extends Service {
         @Override
         public void onBufferingUpdate(MediaPlayer mp, int percent) {
 
-            if (mApp.getSharedPreferences().getBoolean("NOW_PLAYING_ACTIVE", false) == true) {
+            if (mApp.getSharedPreferences().getBoolean("NOW_PLAYING_ACTIVE", true) == true) {
 
                 if (mp == getCurrentMediaPlayer()) {
                     float max = mp.getDuration() / 1000;
@@ -1153,13 +1153,10 @@ public class AudioPlaybackService extends Service {
              * Set the data source for mMediaPlayer and start preparing it
     		 * asynchronously.
     		 */
-            //	String s = "http://wsod.qingting.fm/vod/00/00/0000000000000000000026526116_24.m4a?deviceid=unknown;;http://upod.qingting.fm/vod/00/00/0000000000000000000026526116_24.m4a?deviceid=unknown;;http://lxod.qingting.fm/vod/00/00/0000000000000000000026526116_24.m4a?deviceid=unknown";
             getMediaPlayer().setDataSource(mContext, getSongDataSource(mCurrentSongIndex));
             getMediaPlayer().setOnPreparedListener(mediaPlayerPrepared);
-            //Uri testUri = Uri.parse(s);
-            //getMediaPlayer().setDataSource(mContext, testUri);
-            //getMediaPlayer().setOnPreparedListener(mediaPlayerPrepared);
             getMediaPlayer().setOnErrorListener(onErrorListener);
+            getMediaPlayer().setOnBufferingUpdateListener(bufferingListener);
             getMediaPlayer().prepareAsync();
 
         } catch (Exception e) {
@@ -1219,6 +1216,7 @@ public class AudioPlaybackService extends Service {
             getMediaPlayer2().setDataSource(mContext, getSongDataSource(songIndex));
             getMediaPlayer2().setOnPreparedListener(mediaPlayer2Prepared);
             getMediaPlayer2().setOnErrorListener(onErrorListener);
+            getMediaPlayer2().setOnBufferingUpdateListener(bufferingListener);
             getMediaPlayer2().prepareAsync();
 
         } catch (Exception e) {
@@ -1604,7 +1602,7 @@ public class AudioPlaybackService extends Service {
         String[] flagValues = new String[]{getCurrentSongIndex() + "",
                 "",
                 "",
-                getMediaPlayer().getDuration() + "",
+                getMediaPlayer().getDuration() / 1000 + "",
                 ""};
 
         mApp.broadcastUpdateUICommand(updateFlags, flagValues);
@@ -1644,7 +1642,7 @@ public class AudioPlaybackService extends Service {
         String[] flagValues = new String[]{getCurrentSongIndex() + "",
                 "",
                 "",
-                getMediaPlayer2().getDuration() + "",
+                getMediaPlayer2().getDuration() / 1000 + "",
                 ""};
 
         mApp.broadcastUpdateUICommand(updateFlags, flagValues);
@@ -1989,7 +1987,7 @@ public class AudioPlaybackService extends Service {
         }
 
     	/*
-    	 * Set the both MediaPlayer objects to loop if the repeat mode
+         * Set the both MediaPlayer objects to loop if the repeat mode
     	 * is TestApplication.REPEAT_SONG.
     	 */
         try {

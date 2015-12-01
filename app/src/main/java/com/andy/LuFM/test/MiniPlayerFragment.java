@@ -15,6 +15,7 @@ package com.andy.LuFM.test;
  * limitations under the License.
  */
 
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -24,8 +25,10 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -39,6 +42,7 @@ import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.andy.LuFM.R;
@@ -58,10 +62,47 @@ public class MiniPlayerFragment extends Fragment {
     private ImageButton mNextButton;
     private TextView mTitleText;
     private TextView mSubText;
+    private SeekBar mSeekBar;
+    //Handler object.
+    private Handler mHandler = new Handler();
 
 
     private boolean mDrawerOpen = false;
     private DisplayImageOptions options;
+    /**
+     * Create a new Runnable to update the seekbar and time every 100ms.
+     */
+    public Runnable seekbarUpdateRunnable = new Runnable() {
+
+        public void run() {
+
+            try {
+                long currentPosition = mApp.getService().getCurrentMediaPlayer().getCurrentPosition();
+                int currentPositionInSecs = (int) currentPosition / 1000;
+                smoothScrollSeekbar(currentPositionInSecs);
+
+                //mSeekbar.setProgress(currentPositionInSecs);
+                mHandler.postDelayed(seekbarUpdateRunnable, 100);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+
+    };
+
+    /**
+     * Smoothly scrolls the seekbar to the indicated position.
+     */
+    private void smoothScrollSeekbar(int progress) {
+        Log.i("Sync", "progresss:" + progress);
+        ObjectAnimator animation = ObjectAnimator.ofInt(mSeekBar, "progress", progress);
+        animation.setDuration(100);
+        animation.setInterpolator(new DecelerateInterpolator());
+        animation.start();
+
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -90,6 +131,7 @@ public class MiniPlayerFragment extends Fragment {
         mNextButton = (ImageButton) rootView.findViewById(R.id.nextButton);
         mTitleText = (TextView) rootView.findViewById(R.id.songName);
         mSubText = (TextView) rootView.findViewById(R.id.artistAlbumName);
+        mSeekBar = (SeekBar) rootView.findViewById(R.id.nowPlayingSeekBar);
 
         // mPlayPauseBackground.setBackgroundResource(UIElementsHelper.getShadowedCircle(mContext));
         mPlayPauseButton.setTag("pause_light");
@@ -148,6 +190,16 @@ public class MiniPlayerFragment extends Fragment {
                 //    showEmptyTextView();
 
             }
+            //Updates the buffering progress on the seekbar.
+            if (intent.hasExtra(TestApplication.UPDATE_BUFFERING_PROGRESS))
+                mSeekBar.setSecondaryProgress(Integer.parseInt(
+                        bundle.getString(
+                                TestApplication.UPDATE_BUFFERING_PROGRESS)));
+            //Updates the duration of the SeekBar.
+            if (intent.hasExtra(TestApplication.UPDATE_SEEKBAR_DURATION))
+                setSeekbarDuration(Integer.parseInt(
+                        bundle.getString(
+                                TestApplication.UPDATE_SEEKBAR_DURATION)));
 
         }
 
@@ -429,6 +481,27 @@ public class MiniPlayerFragment extends Fragment {
         //  mPlayPauseBackground.setBackgroundResource(UIElementsHelper.getShadowedCircle(mContext));
         mPlayPauseButton.setTag("pause_light");
 
+        //Update the seekbar.
+        try {
+            mSeekBar.setThumb(getResources().getDrawable(R.drawable.transparent_drawable));
+            setSeekbarDuration(mApp.getService().getCurrentMediaPlayer().getDuration() / 1000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * Sets the seekbar's duration. Also updates the
+     * elapsed/remaining duration text.
+     */
+    private void setSeekbarDuration(int duration) {
+        Log.e("Sync", "duration:" + duration);
+        mSeekBar.setMax(duration);
+        int progress = mApp.getService().getCurrentMediaPlayer().getCurrentPosition() / 1000;
+        Log.d("Sync", "progress:" + progress);
+        //   mSeekBar.setProgress(duration / 5);
+        mHandler.postDelayed(seekbarUpdateRunnable, 100);
     }
 
     @Override
