@@ -26,9 +26,6 @@ public class ControllerManager {
 
     private ControllerManager(Activity context) {
         this.context = context;
-        if (channelDetailClickListener == null) {
-            channelDetailClickListener = (ChannelDetailClickListener) context;
-        }
     }
 
     public static ControllerManager getInstance(Activity context) {
@@ -164,15 +161,12 @@ public class ControllerManager {
     }
 
     public void redirect2View(String name, Object param) {
-        try {
            /* ViewController controller = getController(name);
             controller.config(name, param);*/
-            if (channelDetailClickListener != null) {
-                channelDetailClickListener.onChannelSelected(name, param);
-            }
-            // pushControllerByProperAnimation(controller);
-        } catch (Exception e) {
+        if (channelDetailClickListener != null) {
+            channelDetailClickListener.onChannelSelected(name, param);
         }
+        // pushControllerByProperAnimation(controller);
     }
 
     private ViewController getController(String type) {
@@ -180,5 +174,23 @@ public class ControllerManager {
             return new ChannelDetailController(context);
         }
         return null;
+    }
+
+    public void unRegisterListener() {
+        if (channelDetailClickListener != null) {
+            channelDetailClickListener = null;
+        }
+    }
+
+    /**
+     * 通知activity switchFragment ，由于fragment的存在activity很有可能销毁了重建（eg. 按home键然后重新启动）这时候
+     * listener指定的acitivity引用会改变导致回调时还是调用的指向的之前的acitivity，所以应该在activity创建时注册，销毁时解绑
+     * 保证listener与当前运行的activity一致，避免出现activity has been destroyed
+     *
+     * @param context
+     */
+    public void RegisterListener(Activity context) {
+        this.channelDetailClickListener = (ChannelDetailClickListener) context;
+
     }
 }

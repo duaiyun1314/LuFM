@@ -96,7 +96,6 @@ public class MiniPlayerFragment extends Fragment {
      * Smoothly scrolls the seekbar to the indicated position.
      */
     private void smoothScrollSeekbar(int progress) {
-        Log.i("Sync", "progresss:" + progress);
         ObjectAnimator animation = ObjectAnimator.ofInt(mSeekBar, "progress", progress);
         animation.setDuration(100);
         animation.setInterpolator(new DecelerateInterpolator());
@@ -153,16 +152,6 @@ public class MiniPlayerFragment extends Fragment {
             }
 
         });
-
-        //KitKat translucent navigation/status bar.
-      /*  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            int navBarHeight = TestApplication.getNavigationBarHeight(mContext);
-            if (mListView != null) {
-                mListView.setPadding(0, 0, 0, navBarHeight);
-                mListView.setClipToPadding(false);
-            }
-
-        }*/
 
         return rootView;
     }
@@ -496,11 +485,8 @@ public class MiniPlayerFragment extends Fragment {
      * elapsed/remaining duration text.
      */
     private void setSeekbarDuration(int duration) {
-        Log.e("Sync", "duration:" + duration);
         mSeekBar.setMax(duration);
         int progress = mApp.getService().getCurrentMediaPlayer().getCurrentPosition() / 1000;
-        Log.d("Sync", "progress:" + progress);
-        //   mSeekBar.setProgress(duration / 5);
         mHandler.postDelayed(seekbarUpdateRunnable, 100);
     }
 

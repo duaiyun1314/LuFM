@@ -134,7 +134,7 @@ public class ProgramHelper extends Node {
                 psl.channelId = channelId;
                 setProgramSchedule(psl.channelId, 0, node);
             } else if (type.equalsIgnoreCase(InfoManager.INodeEventListener.ADD_RELOAD_VIRTUAL_PROGRAMS_SCHEDULE)) {
-                Log.d(TAG, "sym:\u91cd\u65b0\u83b7\u53d6\u4e13\u8f91\u8282\u76ee\u5355\u6210\u529f");
+                Log.d(TAG, "sym:重新获取专辑节目单成功");
                 addProgramSchedule((ProgramScheduleList) node, map);
                 if (node != null && node.nodeName.equalsIgnoreCase("programschedulelist")) {
                     order = 0;
@@ -153,7 +153,7 @@ public class ProgramHelper extends Node {
             return false;
         }
         if (mapParam == null) {
-            Log.e(TAG, "sym:mapParam == null\uff0c\u8fd9\u662f\u4ec0\u4e48\u9b3c\uff1f!");
+            Log.e(TAG, "sym:mapParam == null，这是什么鬼？!");
             return false;
         }
         String id = (String) mapParam.get("id");
@@ -166,7 +166,7 @@ public class ProgramHelper extends Node {
         int page = Integer.valueOf((String) mapParam.get("page")).intValue();
         int size = Integer.valueOf((String) mapParam.get("pagesize")).intValue();
         ProgramScheduleList[] values = (ProgramScheduleList[]) this.mapProgramNodes.get(Integer.valueOf(channelId));
-        Log.d(TAG, "sym:ProgramHelper\u66f4\u65b0\u7f13\u5b58");
+        Log.d(TAG, "sym:ProgramHelper更新缓存");
         if (values == null || values[order] == null || values[order].type != 1) {
             setProgramSchedule(channelId, order, node);
         } else {
@@ -185,7 +185,7 @@ public class ProgramHelper extends Node {
             }
             int index;
             if (page == 1) {
-                Log.d(TAG, "sym:\u4e0b\u62c9\u5237\u65b0\u4e13\u8f91id=" + channelId);
+                Log.d(TAG, "sym:下拉刷新专辑id=" + channelId);
                 ProgramNode oldFirst = (ProgramNode) oldList.get(0);
                 index = -1;
                 for (i = 0; i < lstAddPrograms.size(); i++) {
@@ -197,7 +197,7 @@ public class ProgramHelper extends Node {
                 if (index == -1) {
                     return setProgramSchedule(channelId, order, node);
                 }
-                Log.d(TAG, "sym:\u66f4\u65b0" + index + "\u6761");
+                Log.d(TAG, "sym:更新" + index + "条");
                 for (i = 0; i < lstAddPrograms.size(); i++) {
                     int j = 0;
                     boolean repeat = false;
@@ -232,7 +232,7 @@ public class ProgramHelper extends Node {
                     }
                 }
             } else if (page > oldPage) {
-                Log.d(TAG, String.format("sym:\u52a0\u8f7d\u66f4\u591a,id=%d,page=%d,order=%d", new Object[]{Integer.valueOf(channelId), Integer.valueOf(page), Integer.valueOf(order)}));
+                Log.d(TAG, String.format("sym:加载更多,id=%d,page=%d,order=%d", new Object[]{Integer.valueOf(channelId), Integer.valueOf(page), Integer.valueOf(order)}));
                 ProgramNode oldLast = (ProgramNode) oldList.get(oldList.size() - 1);
                 index = -1;
                 if (oldLast != null) {
@@ -271,6 +271,7 @@ public class ProgramHelper extends Node {
     }
 
     private boolean setProgramSchedule(int channelId, int order, Node node) {
+        Log.i(TAG, "setProgramSchedule");
         if (node == null) {
             return false;
         }

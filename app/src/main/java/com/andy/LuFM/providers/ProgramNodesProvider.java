@@ -46,10 +46,10 @@ public class ProgramNodesProvider extends ListDataProvider implements InfoManage
     @Override
     public void onNotification(String type) {
         if (type.equalsIgnoreCase(InfoManager.ISubscribeEventListener.RECV_RELOAD_PROGRAMS_SCHEDULE)) {
-            callback.onLoadFinish(30);
+            // callback.onLoadFinish(30);
             callback.onLoadSuccess(type);
         } else if (type.equalsIgnoreCase(InfoManager.ISubscribeEventListener.RECV_PROGRAMS_SCHEDULE)) {
-            callback.onLoadFinish(30);
+            //callback.onLoadFinish(30);
             callback.onLoadSuccess(type);
         }
 

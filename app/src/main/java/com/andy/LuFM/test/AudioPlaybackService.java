@@ -1720,13 +1720,14 @@ public class AudioPlaybackService extends Service {
             getCurrentMediaPlayer().stop();
 
             //Update the UI and scrobbler.
-            String[] updateFlags = new String[]{TestApplication.UPDATE_PLAYBACK_CONTROLS};
+           /* String[] updateFlags = new String[]{TestApplication.UPDATE_PLAYBACK_CONTROLS};
             String[] flagValues = new String[]{""};
 
             mApp.broadcastUpdateUICommand(updateFlags, flagValues);
             updateNotification(mApp.getService().getCurrentSong());
             updateWidgets();
-            scrobbleTrack(2);
+            scrobbleTrack(2);*/
+            stopSelf();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -2506,7 +2507,7 @@ public class AudioPlaybackService extends Service {
         @Override
         public void onServiceCursorReady(List<ProgramNode> list, int currentSongIndex, boolean playAll) {
 
-            if (list.size() == 0) {
+            if (list == null || list.size() == 0) {
                 Toast.makeText(mContext, "no_audio_files_found", Toast.LENGTH_SHORT).show();
                 if (mApp.getNowPlayingActivity() != null)
                     mApp.getNowPlayingActivity().finish();

@@ -1,5 +1,6 @@
 package com.andy.LuFM.Utils;
 
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.andy.LuFM.data.IResultRecvHandler;
@@ -47,7 +48,37 @@ public class NetParse {
 
     }
 
+    private class ParseAsyncTask extends AsyncTask<Void, Void, Result> {
+
+        private String responseString;
+        private String type;
+        private IResultRecvHandler iResultRecvHandler;
+        private Object param;
+
+        private ParseAsyncTask(String responseString, String type, IResultRecvHandler iResultRecvHandler, Object param) {
+            this.responseString = responseString;
+            this.type = type;
+            this.iResultRecvHandler = iResultRecvHandler;
+            this.param = param;
+        }
+
+        @Override
+        protected Result doInBackground(Void... params) {
+            return parseMethod(responseString, type);
+        }
+
+        @Override
+        protected void onPostExecute(Result result) {
+            super.onPostExecute(result);
+            iResultRecvHandler.onRecvResult(result, type, param);
+        }
+    }
+
     public void parse(String responseString, String type, IResultRecvHandler iResultRecvHandler, Object param) {
+        new ParseAsyncTask(responseString, type, iResultRecvHandler, param).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
+    }
+
+    public Result parseMethod(String responseString, String type) {
         Result result = new Result();
         if (type == RequestType.DATA_TYPE_GET_RECOMMEND) {
             RecommendCategoryNode recommendCategoryNode = parseRecommendInfo(responseString);
@@ -57,8 +88,8 @@ public class NetParse {
             } else {
                 result.setSuccess(false);
             }
+            return result;
 
-            iResultRecvHandler.onRecvResult(result, type, param);
         } else if (type == RequestType.GET_LIVE_CHANNEL_INFO || type == RequestType.GET_VIRTUAL_CHANNEL_INFO) {
             // Log.i("Sync", "responseStrin:" + type + "  " + responseString);
             ChannelNode channelNode = parseChannelNode(responseString);
@@ -68,8 +99,7 @@ public class NetParse {
             } else {
                 result.setSuccess(false);
             }
-
-            iResultRecvHandler.onRecvResult(result, type, param);
+            return result;
         } else if (type.equalsIgnoreCase(RequestType.GET_PODCASTER_BASEINFO)) {
             try {
                 JSONObject data = (new JSONObject(responseString)).getJSONObject("data");
@@ -84,7 +114,7 @@ public class NetParse {
                 e.printStackTrace();
                 result.setSuccess(false);
             }
-            iResultRecvHandler.onRecvResult(result, type, param);
+            return result;
         } else if (type.equalsIgnoreCase(RequestType.RELOAD_VIRTUAL_PROGRAMS_SCHEDULE) || type.equalsIgnoreCase(RequestType.GET_VIRTUAL_PROGRAM_SCHEDULE)) {
             ProgramScheduleList programScheduleList = parseVirtualProgramSchedule(responseString);
             if (programScheduleList != null) {
@@ -92,16 +122,17 @@ public class NetParse {
                 result.setData(programScheduleList);
 
             }
-            iResultRecvHandler.onRecvResult(result, type, param);
+            return result;
         } else if (type.equalsIgnoreCase(RequestType.GET_LIST_MEDIACENTER)) {
             MediaCenter center = parseMediaCenter(responseString);
             if (center != null) {
                 result.setSuccess(true);
                 result.setData(center);
             }
-            iResultRecvHandler.onRecvResult(result, type, param);
+            return result;
 
         }
+        return result;
 
     }
 

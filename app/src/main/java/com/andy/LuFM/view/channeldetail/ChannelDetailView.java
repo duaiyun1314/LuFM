@@ -1,6 +1,8 @@
 package com.andy.LuFM.view.channeldetail;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -37,6 +39,7 @@ public class ChannelDetailView extends LinearLayout implements ChannelHelper.IDa
     private ProgramNodesProvider programNodesProvider;
     private Context context;
     List<ProgramNode> programs = new ArrayList();
+    private Handler mHandler = new Handler();
 
     public ChannelDetailView(Context context) {
         this(context, null);
@@ -87,16 +90,20 @@ public class ChannelDetailView extends LinearLayout implements ChannelHelper.IDa
                     setData(channelNode.getAllLstProgramNode());
                 } else if (type.equalsIgnoreCase(InfoManager.ISubscribeEventListener.RECV_RELOAD_PROGRAMS_SCHEDULE)) {
                     setData(channelNode.reloadAllLstProgramNode());
-                    //this.mListView.onRefreshComplete();
-                    //this.mCoverView.setButtonEnable(true);
                 }
-
+                super.onLoadFinish(30);
             }
 
             @Override
             public void onRefresh() {
                 super.onRefresh();
-                baseListController.loadData(channelNode);
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        baseListController.loadData(channelNode);
+                    }
+                }, 300);
+
             }
 
             @Override
@@ -122,7 +129,12 @@ public class ChannelDetailView extends LinearLayout implements ChannelHelper.IDa
                 //  this.mListView.setSelection(0);
             }
             if (this.channelNode.hasEmptyProgramSchedule()) {
-                this.baseListController.loadData(channelNode);
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        baseListController.loadData(channelNode);
+                    }
+                }, 300);
                 // this.mCoverView.setButtonEnable(false);
                 return;
             }
@@ -194,6 +206,7 @@ public class ChannelDetailView extends LinearLayout implements ChannelHelper.IDa
             QTMSGManage.getInstance().sendStatistcsMessage("resumerecent_display");
             programs.add(this.mRecentNode);
         }*/
+        programs.clear();
         programs.addAll(programNodes);
         ((ProgramNodesProvider.MYAdapter) this.programNodesProvider.getAdapter()).setData(programs);
         //  PlayerAgent.getInstance().play(programNodes.get(0));

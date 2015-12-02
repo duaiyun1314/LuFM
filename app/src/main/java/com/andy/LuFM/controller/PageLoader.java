@@ -138,7 +138,7 @@ public class PageLoader extends DataSetObserver implements AbsListView.OnScrollL
         setLoading(isLoading);
         if (isFinall) {
             normalTextView.setVisibility(View.GONE);
-            //finallyTextView.setVisibility(View.VISIBLE);
+            finallyTextView.setVisibility(View.VISIBLE);
         } else {
             normalTextView.setVisibility(View.VISIBLE);
             finallyTextView.setVisibility(View.GONE);

@@ -2,8 +2,9 @@ package com.andy.LuFM.fragments;
 
 
 import android.app.Activity;
-import android.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +19,7 @@ import com.andy.LuFM.view.channeldetail.ChannelDetailView;
 /**
  * Created by wanglu on 15/11/23.
  */
-public class ChannelFragment extends Fragment implements View.OnClickListener {
+public class ChannelFragment extends BaseFragment implements View.OnClickListener {
     private ChannelDetailView detailView;
     private Object obj;
     private String type;
@@ -29,9 +30,15 @@ public class ChannelFragment extends Fragment implements View.OnClickListener {
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        Log.i("Sync", "channeldetai fragment onAttach context");
+    }
+
+    @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        Log.i("Sync", "channeldetai fragment onAttach");
+        Log.i("Sync", "channeldetai fragment onAttach activity");
     }
 
     @Override
@@ -49,6 +56,7 @@ public class ChannelFragment extends Fragment implements View.OnClickListener {
     }
 
     public void setData(String type, Object param) {
+        Log.i("Sync", "fragment setdata");
         obj = param;
         this.type = type;
         if (detailView != null) {

@@ -1,6 +1,7 @@
 package com.andy.LuFM.controller;
 
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -57,7 +58,6 @@ public class BaseListController<Provider extends ListDataProvider, BaseView exte
         this.loader.setOnScrollListener(new PauseOnScrollListener(ImageLoader.getInstance(), true, true));
         mListView.setAdapter(mProvider.getAdapter());
         this.loader.setAdatper(this.mProvider.getAdapter());
-        //this.loader.setEnable(setLoaderEnable());
     }
 
     @Override
@@ -72,7 +72,6 @@ public class BaseListController<Provider extends ListDataProvider, BaseView exte
             @Override
             public void run() {
                 mRefreshLayout.setRefreshing(true);
-                //onRefresh();
                 mProvider.loadData(aArray);
             }
         }, 0);
@@ -82,12 +81,17 @@ public class BaseListController<Provider extends ListDataProvider, BaseView exte
         mProvider.loadNextData(aArray);
     }
 
+    /**
+     * 用来改变刷新加载的相关状态，需要在onLoadSuccess（）以后手动调用
+     * must be called after calling onLoadSuccess because the adapter data changed in onLoadSuccess method
+     *
+     * @param size
+     */
     @Override
     public void onLoadFinish(int size) {
         super.onLoadFinish(size);
         mRefreshLayout.setRefreshing(false);
-        //mProvider.getAdapter().notifyDataSetChanged();
-        if (mProvider.getAdapter().getCount() < mProvider.getPageSize() || size == 0) {
+        if (mProvider.getAdapter().getCount() % mProvider.getPageSize() > 0 || size == 0) {
             loader.setFinally();
         } else {
             loader.setLoading(false);
@@ -104,6 +108,11 @@ public class BaseListController<Provider extends ListDataProvider, BaseView exte
         return mProvider.getAdapter();
     }
 
+    /**
+     * 定制HeadView
+     *
+     * @return
+     */
     protected View createHeadView() {
         return null;
     }

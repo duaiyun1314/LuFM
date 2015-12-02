@@ -1,8 +1,10 @@
 package com.andy.LuFM;
 
-import android.app.FragmentManager;
+import android.content.Intent;
 import android.os.Handler;
+import android.os.PersistableBundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,6 +14,7 @@ import android.widget.RadioGroup;
 
 import com.andy.LuFM.Utils.Constants;
 import com.andy.LuFM.Utils.ImageLoaderUtil;
+import com.andy.LuFM.controller.ControllerManager;
 import com.andy.LuFM.data.DataCommand;
 import com.andy.LuFM.data.DataManager;
 import com.andy.LuFM.data.DataOfflineManager;
@@ -30,7 +33,9 @@ import com.andy.LuFM.fragments.DownloadFragment;
 import com.andy.LuFM.fragments.MineFragment;
 import com.andy.LuFM.listener.ChannelDetailClickListener;
 import com.andy.LuFM.model.CategoryNode;
+import com.andy.LuFM.test.AudioPlaybackService;
 import com.andy.LuFM.test.MiniPlayerFragment;
+import com.andy.LuFM.test.NowPlayingActivity;
 
 import java.util.HashMap;
 import java.util.List;
@@ -48,12 +53,18 @@ public class AllInOneActivity extends AppCompatActivity implements IEventHandler
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.e("Sync", "onCreate");
         initUtils();
         setContentView(R.layout.layout_splash);
         initDataOperation();
         initFragments();
         initData();
+        initListener();
 
+    }
+
+    private void initListener() {
+        ControllerManager.getInstance(this).RegisterListener(this);
     }
 
     private void initUtils() {
@@ -108,6 +119,7 @@ public class AllInOneActivity extends AppCompatActivity implements IEventHandler
     }
 
     private void setMainPane() {
+        if (isFinishing()) return;
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         Fragment fragment = fragments[mViewType];
         ft.replace(R.id.content, fragment, MAIN_CONTENT_TAG);
@@ -168,36 +180,47 @@ public class AllInOneActivity extends AppCompatActivity implements IEventHandler
 
     @Override
     public void onChannelSelected(String type, Object param) {
-        //Log.i("Sync", "onChannelSelected:" + type);
-        ChannelFragment fragment = (ChannelFragment) getFragmentManager().findFragmentByTag(CHANNEL_DETAIL_TAG);
-        if (true) {
+        ChannelFragment fragment = null;
+        if (fragment == null) {
             fragment = new ChannelFragment();
-            fragment.setData(type, param);
-            android.app.FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-            fragmentTransaction.setCustomAnimations(R.animator.slide_in_from_right, R.animator.slide_out_to_left
-                    , R.animator.slide_in_from_left, R.animator.slide_out_to_right);
-            fragmentTransaction.replace(R.id.detail, fragment);
-            /*android.app.Fragment fragment1 = getFragmentManager().findFragmentById(R.id.content);
-            if (fragment1 != null) {
-                fragmentTransaction.hide(fragment1);
-            } else {
-
-            }*/
-            fragmentTransaction.addToBackStack(null);
-
-            fragmentTransaction.commit();
         }
+        fragment.setData(type, param);
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.setCustomAnimations(R.anim.slide_in_from_right, R.anim.slide_out_to_left
+                , R.anim.slide_in_from_left, R.anim.slide_out_to_right);
+        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        fragmentTransaction.replace(R.id.channel_detail, fragment, CHANNEL_DETAIL_TAG);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commitAllowingStateLoss();
 
 
     }
 
+
     @Override
     public void onBackPressed() {
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager.getBackStackEntryCount() > 0) {
             fragmentManager.popBackStack();
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //注销监听器
+        ControllerManager.getInstance(this).unRegisterListener();
+        //如果没有播放任务，停止service
+        AudioPlaybackService service = TestApplication.from().getService();
+        if (service != null && !service.isPlayingMusic()) {
+            service.stopPlayback();
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        //super.onSaveInstanceState(outState);
     }
 }
