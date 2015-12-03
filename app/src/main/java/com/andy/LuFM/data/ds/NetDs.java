@@ -59,6 +59,10 @@ public class NetDs implements IDataOperation {
         } else if (type.equalsIgnoreCase(RequestType.GET_LIST_MEDIACENTER)) {
             String url = Constants.ROOT_URL + "/mediacenterlist";
             NetKit.getInstance().getNormalNetInfo(url, type, iResultRecvHandler, param);
+        } else if (type.equalsIgnoreCase(RequestType.GET_SPECIAL_TOPIC_CHANNELS)) {
+            String url = Constants.ROOT_URL + "/topics/" + param.get("id");
+            NetKit.getInstance().getNormalNetInfo(url, type, iResultRecvHandler, param);
+
         }
         return null;
     }

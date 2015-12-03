@@ -2,14 +2,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#00ffffff"
+    android:background="#ffffff"
     android:clickable="true"
     android:orientation="vertical"
     tools:context=".AllInOneActivity">
 
-    <FrameLayout
-        android:id="@+id/view_container"
+    <include layout="@layout/layout_detail_toolbar" />
+
+    <com.andy.LuFM.view.topicview.SpecialTopicView
+        android:id="@+id/topic_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:divider="@null" />
 
 </LinearLayout>

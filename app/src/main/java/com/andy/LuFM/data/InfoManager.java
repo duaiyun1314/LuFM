@@ -8,6 +8,7 @@ import com.andy.LuFM.model.ChannelNode;
 import com.andy.LuFM.model.Node;
 import com.andy.LuFM.model.ProgramScheduleList;
 import com.andy.LuFM.model.RootNode;
+import com.andy.LuFM.model.SpecialTopicNode;
 import com.andy.LuFM.model.UserInfo;
 import com.andy.LuFM.test.MediaCenter;
 
@@ -97,6 +98,17 @@ public class InfoManager implements IResultRecvHandler {
                 // MediaCenter.getInstance().pkMediaCenter();
             }
 
+        } else if (type.equalsIgnoreCase(RequestType.GET_SPECIAL_TOPIC_CHANNELS)) {
+            SpecialTopicNode stNode = (SpecialTopicNode) result.getData();
+            if (stNode != null) {
+                List<ChannelNode> lstNodes = stNode.getlstChannels();
+                if (lstNodes != null && lstNodes.size() > 0) {
+                    dispatchNodeEvent(lstNodes, mapParam, INodeEventListener.ADD_SPECIAL_TOPIC_CHANNELS);
+                }
+                dispatchNodeEvent(stNode, mapParam, INodeEventListener.ADD_SPECIAL_TOPIC);
+                dispatchSubscribeEvent(ISubscribeEventListener.RECV_SPECIAL_TOPIC_CHANNELS);
+            }
+
         }
 
     }
@@ -110,6 +122,12 @@ public class InfoManager implements IResultRecvHandler {
         }
     }
 
+    /**
+     * 通知存储node的类
+     * @param node
+     * @param map
+     * @param type
+     */
     private void dispatchNodeEvent(Object node, Map<String, String> map, String type) {
         if (node != null && this.mapNodeEventListeners.containsKey(type)) {
             List<INodeEventListener> lstListeners = (List) this.mapNodeEventListeners.get(type);
@@ -123,6 +141,10 @@ public class InfoManager implements IResultRecvHandler {
         dispatchSubscribeEvent(type, DataExceptionStatus.OK);
     }*/
 
+    /**
+     * 只是通知最初请求的类加载完成
+     * @param type
+     */
     private void dispatchSubscribeEvent(String type) {
         if (this.mapSubscribeEventListeners.containsKey(type)) {
             int i;
@@ -452,6 +474,20 @@ public class InfoManager implements IResultRecvHandler {
             return this.liveChannel.contains(Integer.valueOf(resid));
         }
         return false;
+    }
+
+    public void loadSpecialTopicNode(SpecialTopicNode node, ISubscribeEventListener listener) {
+        if (node != null) {
+            if (listener != null) {
+                registerSubscribeEventListener(listener, ISubscribeEventListener.RECV_SPECIAL_TOPIC_CHANNELS);
+            }
+            if (node != null) {
+                registerNodeEventListener(node, INodeEventListener.ADD_SPECIAL_TOPIC);
+            }
+            Map<String, Object> requestParam = new HashMap();
+            requestParam.put("id", String.valueOf(node.getApiId()));
+            DataManager.getInstance().getData(RequestType.NET_REQUEST, this, new DataCommand(RequestType.GET_SPECIAL_TOPIC_CHANNELS, requestParam));
+        }
     }
 
 }

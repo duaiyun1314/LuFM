@@ -43,7 +43,11 @@ public class BaseListController<Provider extends ListDataProvider, BaseView exte
         mListView.setDivider(null);
         View headerview = createHeadView();
         if (headerview != null) {
-            mListView.addHeaderView(headerview);
+            if (setHeaderClickable()) {
+                mListView.addHeaderView(headerview);
+            } else {
+                mListView.addHeaderView(headerview, null, false);
+            }
         }
         mRefreshLayout.addView(mListView, layoutParams);
         mRefreshLayout.setDistanceToTriggerSync(150);
@@ -119,5 +123,14 @@ public class BaseListController<Provider extends ListDataProvider, BaseView exte
 
     protected boolean setLoaderEnable() {
         return false;
+    }
+
+    /**
+     * headerview 是否可点击
+     *
+     * @return
+     */
+    protected boolean setHeaderClickable() {
+        return true;
     }
 }

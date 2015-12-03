@@ -20,4 +20,6 @@ public class RequestType {
     public static final String UPDATEDB_PROGRAM_NODE_REV = "UPDATEDB_PROGRAM_NODE_REV";
     public static final String UPDATEDB_PROGRAM_NODE = "UPDATEDB_PROGRAM_NODE";
     public static final String GET_LIST_MEDIACENTER = "GET_LIST_MEDIACENTER";
+    public static final String GETDB_CHANNEL_NODE = "GETDB_CHANNEL_NODE";
+    public static final String GET_SPECIAL_TOPIC_CHANNELS = "GET_SPECIAL_TOPIC_CHANNELS";
 }

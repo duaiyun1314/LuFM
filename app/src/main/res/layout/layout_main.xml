@@ -20,10 +20,11 @@
             android:layout_height="match_parent" />
     </LinearLayout>
 
-    <FrameLayout
-        android:id="@+id/channel_detail"
+    <com.andy.LuFM.view.SecondaryViewGroup
+        android:id="@+id/second_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:visibility="gone"
         android:layout_above="@+id/mini_play" />
 
     <FrameLayout

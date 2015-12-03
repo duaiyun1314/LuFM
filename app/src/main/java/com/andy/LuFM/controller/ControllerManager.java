@@ -14,6 +14,7 @@ import com.andy.LuFM.model.Node;
 import com.andy.LuFM.model.ProgramNode;
 import com.andy.LuFM.model.RecommendCategoryNode;
 import com.andy.LuFM.model.RecommendItemNode;
+import com.andy.LuFM.model.SpecialTopicNode;
 
 /**
  * Created by wanglu on 15/11/20.
@@ -21,14 +22,14 @@ import com.andy.LuFM.model.RecommendItemNode;
 public class ControllerManager {
     private static ControllerManager instance;
     private int mChannelSource;
-    private Activity context;
+    private Context context;
     private ChannelDetailClickListener channelDetailClickListener;
 
-    private ControllerManager(Activity context) {
+    private ControllerManager(Context context) {
         this.context = context;
     }
 
-    public static ControllerManager getInstance(Activity context) {
+    public static ControllerManager getInstance(Context context) {
         if (instance == null) {
             instance = new ControllerManager(context);
 
@@ -43,6 +44,7 @@ public class ControllerManager {
             }
             p.mClickCnt++;
             if (p.mNode != null && !p.mNode.nodeName.equalsIgnoreCase("category")) {
+                Log.i("Sync", "点击的类型：" + p.mNode.nodeName);
                 if (p.mNode.nodeName.equalsIgnoreCase("channel")) {
                   /*  ChannelNode cn = p.mNode;
                     if (p.ratingStar != -1) {
@@ -88,9 +90,17 @@ public class ControllerManager {
                     }
                     redirectToActivityViewByNode(p.mNode);*/
                 } else if (p.mNode.nodeName.equalsIgnoreCase("specialtopic")) {
-                    //openSpecialTopicController((SpecialTopicNode) p.mNode);
+                    openSpecialTopicController((SpecialTopicNode) p.mNode);
                 }
             }
+        }
+
+    }
+
+    private void openSpecialTopicController(SpecialTopicNode mNode) {
+        if (mNode != null) {
+            String name = "specialtopic";
+            redirect2View(name, mNode);
         }
 
     }
@@ -143,19 +153,8 @@ public class ControllerManager {
                 }*/
                 // DoubleClick.getInstance().visitChannel(((ProgramNode) node).channelId, ((ProgramNode) node).getChannelName());
             } else if (node.nodeName.equalsIgnoreCase("channel")) {
-               /* url = InfoManager.getInstance().h5Channel(((ChannelNode) node).channelId);
-                if (url == null || url.equalsIgnoreCase(bi.b)) {
-                    redirect2View(name, node);
-                } else {
-                    redirectToActiviyByUrl(url, ((ChannelNode) node).title, false);
-                }
-                if (play) {
-                    ((ChannelNode) node).setAutoPlay(true);
-                } else {
-                    ((ChannelNode) node).setAutoPlay(false);
-                }
-                DoubleClick.getInstance().visitChannel(((ChannelNode) node).channelId, ((ChannelNode) node).title);
-           */
+                redirect2View(name, node);
+
             }
         }
     }

@@ -9,6 +9,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
@@ -27,7 +29,6 @@ import com.andy.LuFM.data.ds.NetDs;
 import com.andy.LuFM.data.ds.ProgramNodeDs;
 import com.andy.LuFM.event.EventType;
 import com.andy.LuFM.event.IEventHandler;
-import com.andy.LuFM.fragments.ChannelFragment;
 import com.andy.LuFM.fragments.DiscoverFragment;
 import com.andy.LuFM.fragments.DownloadFragment;
 import com.andy.LuFM.fragments.MineFragment;
@@ -35,7 +36,7 @@ import com.andy.LuFM.listener.ChannelDetailClickListener;
 import com.andy.LuFM.model.CategoryNode;
 import com.andy.LuFM.test.AudioPlaybackService;
 import com.andy.LuFM.test.MiniPlayerFragment;
-import com.andy.LuFM.test.NowPlayingActivity;
+import com.andy.LuFM.view.SecondaryViewGroup;
 
 import java.util.HashMap;
 import java.util.List;
@@ -46,6 +47,7 @@ public class AllInOneActivity extends AppCompatActivity implements IEventHandler
     public List<CategoryNode> categoryNodes;
     private RadioGroup radioGroup;
     private Fragment[] fragments;
+    private SecondaryViewGroup secondaryContainer;
     public static final String CHANNEL_DETAIL_TAG = "channel_detail_tag";
     public static final String MAIN_CONTENT_TAG = "main_content_tag";
     public static final String MINI_PLAYER_TAG = "mini_player_tag";
@@ -116,6 +118,7 @@ public class AllInOneActivity extends AppCompatActivity implements IEventHandler
         radioGroup = (RadioGroup) findViewById(R.id.radio_group);
         radioGroup.setOnCheckedChangeListener(this);
         ((RadioButton) radioGroup.getChildAt(mViewType)).setChecked(true);
+        secondaryContainer = (SecondaryViewGroup) findViewById(R.id.second_view);
     }
 
     private void setMainPane() {
@@ -180,28 +183,57 @@ public class AllInOneActivity extends AppCompatActivity implements IEventHandler
 
     @Override
     public void onChannelSelected(String type, Object param) {
-        ChannelFragment fragment = null;
-        if (fragment == null) {
-            fragment = new ChannelFragment();
+        if (secondaryContainer.getVisibility() == View.GONE) {
+            //  secondaryContainer.removeAllViews();
+            secondaryContainer.setVisibility(View.VISIBLE);
         }
-        fragment.setData(type, param);
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.setCustomAnimations(R.anim.slide_in_from_right, R.anim.slide_out_to_left
-                , R.anim.slide_in_from_left, R.anim.slide_out_to_right);
-        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        fragmentTransaction.replace(R.id.channel_detail, fragment, CHANNEL_DETAIL_TAG);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commitAllowingStateLoss();
-
-
+        secondaryContainer.switchView(type, param);
+       /* if (type.equalsIgnoreCase("channeldetail")) {
+            ChannelFragment fragment = null;
+            if (fragment == null) {
+                fragment = new ChannelFragment();
+            }
+            fragment.setData(type, param);
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.setCustomAnimations(R.anim.slide_in_from_right, 0
+                    , 0, R.anim.slide_out_to_right);
+            fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+            fragmentTransaction.replace(R.id.channel_detail, fragment, CHANNEL_DETAIL_TAG);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commitAllowingStateLoss();
+        } else if (type.equalsIgnoreCase("specialtopic")) {
+            TopicFragment fragment = null;
+            if (fragment == null) {
+                fragment = new TopicFragment();
+            }
+            fragment.setData(type, param);
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.setCustomAnimations(R.anim.slide_in_from_right, 0
+                    , 0, R.anim.slide_out_to_right);
+            fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+            fragmentTransaction.replace(R.id.channel_detail, fragment, "topics");
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commitAllowingStateLoss();
+        }
+*/
     }
 
 
     @Override
     public void onBackPressed() {
-        FragmentManager fragmentManager = getSupportFragmentManager();
+       /* FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager.getBackStackEntryCount() > 0) {
             fragmentManager.popBackStack();
+        } else {
+            super.onBackPressed();
+        }*/
+        if (secondaryContainer.getContainerCount() > 0) {
+            boolean isRemoveCompleted = secondaryContainer.removeChild();
+            if (isRemoveCompleted) {
+             //   secondaryContainer.removeAllViews();
+                secondaryContainer.setVisibility(View.GONE);
+            }
+
         } else {
             super.onBackPressed();
         }

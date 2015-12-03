@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.andy.LuFM.R;
+
 /**
  * Created by Andy.Wang on 2015/11/13.
  */
@@ -15,8 +17,7 @@ public class MineFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        TextView tv = new TextView(getActivity());
-        tv.setText("我的");
-        return tv;
+        View view = inflater.inflate(R.layout.fragment_mine, null);
+        return view;
     }
 }

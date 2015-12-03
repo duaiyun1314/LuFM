@@ -44,6 +44,7 @@ public class ChannelHelper extends Node {
         this.LIVE_CHANNELS_PAGE_SIZE = 1000;
         this.ERROR_CHANNELS = 1;
         this.nodeName = "channelhelper";
+        init();
     }
 
     public static ChannelHelper getInstance() {
@@ -51,6 +52,44 @@ public class ChannelHelper extends Node {
             _instance = new ChannelHelper();
         }
         return _instance;
+    }
+
+    public void init() {
+        InfoManager.getInstance().registerNodeEventListener(this, InfoManager.INodeEventListener.ADD_CATEGORY_ALL_CHANNELS);
+        InfoManager.getInstance().registerNodeEventListener(this, InfoManager.INodeEventListener.ADD_VIRTUAL_CHANNELS_BYATTR);
+        InfoManager.getInstance().registerNodeEventListener(this, InfoManager.INodeEventListener.ADD_LIVE_CHANNELS_BYATTR);
+        InfoManager.getInstance().registerNodeEventListener(this, InfoManager.INodeEventListener.ADD_SPECIAL_TOPIC_CHANNELS);
+    }
+
+    public List<ChannelNode> getLstChannelsByKey(String key) {
+        if (key == null) {
+            return null;
+        }
+        if (this.mapChannelNodes.get(key) != null) {
+            return (List) this.mapChannelNodes.get(key);
+        }
+        /*if (!allowReadCache(key)) {
+            return null;
+        }*/
+        List<ChannelNode> lstNodes = getLstChannelsFromDB(key);
+        if (lstNodes == null || lstNodes.size() == 0) {
+            return null;
+        }
+        this.mapChannelNodes.put(key, lstNodes);
+        return lstNodes;
+    }
+
+    private List<ChannelNode> getLstChannelsFromDB(String key) {
+        if (key == null || key.equalsIgnoreCase("")) {
+            return null;
+        }
+        Map<String, Object> param = new HashMap();
+        param.put("key", key);
+        Result result = DataManager.getInstance().getData(RequestType.CHANNEL_INFO, null, new DataCommand(RequestType.GETDB_CHANNEL_NODE, param));
+        if (result.isSuccess()) {
+            return (List) result.getData();
+        }
+        return null;
     }
 
     public ChannelNode getFakeChannel(int channelId, int catid, String name, int type) {
@@ -209,6 +248,77 @@ public class ChannelHelper extends Node {
                     updateChannel((ChannelNode) node);
                 }*/
             }
+        }
+    }
+
+    @Override
+    public void onNodeUpdated(Object obj, Map<String, String> map, String type) {
+        super.onNodeUpdated(obj, map, type);
+        if (type.equalsIgnoreCase(InfoManager.INodeEventListener.ADD_SPECIAL_TOPIC_CHANNELS)) {
+            List<ChannelNode> lstNodes = (List) obj;
+            if (lstNodes.size() > 0 && map != null) {
+                addChannels(lstNodes, 1, String.valueOf(1000001 + Integer.valueOf((String) map.get("id")).intValue()), 0);
+            }
+
+        }
+    }
+
+    private void addChannels(List<ChannelNode> lstChannels, int channelType, String key, int pos) {
+        if (lstChannels != null) {
+            int i;
+            ChannelNode temp;
+            if (channelType == 1) {
+                for (i = 0; i < lstChannels.size(); i++) {
+                    temp = (ChannelNode) this.mapVirtualChannels.get(((ChannelNode) lstChannels.get(i)).channelId);
+                    if (temp != null) {
+                        temp.updatePartialInfo((ChannelNode) lstChannels.get(i));
+                    } else {
+                        this.mapVirtualChannels.put(((ChannelNode) lstChannels.get(i)).channelId, (ChannelNode) lstChannels.get(i));
+                    }
+                }
+            } else {
+                for (i = 0; i < lstChannels.size(); i++) {
+                    temp = (ChannelNode) this.mapLiveChannels.get(((ChannelNode) lstChannels.get(i)).channelId);
+                    if (temp != null) {
+                        temp.updatePartialInfo((ChannelNode) lstChannels.get(i));
+                    } else {
+                        this.mapLiveChannels.put(((ChannelNode) lstChannels.get(i)).channelId, (ChannelNode) lstChannels.get(i));
+                    }
+                }
+            }
+            if (key == null) {
+                return;
+            }
+            if (this.mapChannelNodes.get(key) == null) {
+                this.mapChannelNodes.put(key, lstChannels);
+                return;
+            }
+            List<ChannelNode> lstnodes = (List) this.mapChannelNodes.get(key);
+            int size = lstnodes.size();
+            if (pos != size || size <= 0) {
+                for (i = 0; i < lstChannels.size(); i++) {
+                    boolean hasExisted = false;
+                    for (int j = 0; j < lstnodes.size(); j++) {
+                        if (((ChannelNode) lstnodes.get(j)).channelId == ((ChannelNode) lstChannels.get(i)).channelId) {
+                            hasExisted = true;
+                            ((ChannelNode) lstnodes.get(j)).updatePartialInfo((ChannelNode) lstChannels.get(i));
+                            break;
+                        }
+                    }
+                    if (!hasExisted) {
+                        if (i < lstnodes.size()) {
+                            lstnodes.add(i, (ChannelNode) lstChannels.get(i));
+                        } else {
+                            lstnodes.add((ChannelNode) lstChannels.get(i));
+                        }
+                    }
+                }
+                return;
+            }
+            ChannelNode node = (ChannelNode) lstnodes.get(lstnodes.size() - 1);
+            node.nextSibling = (Node) lstChannels.get(0);
+            ((ChannelNode) lstChannels.get(0)).prevSibling = node;
+            lstnodes.addAll(lstChannels);
         }
     }
 

@@ -38,14 +38,11 @@ public class NetParse {
 
     }
 
-    public synchronized static NetParse getInstance()
-
-    {
+    public synchronized static NetParse getInstance() {
         if (instance == null) {
             instance = new NetParse();
         }
         return instance;
-
     }
 
     private class ParseAsyncTask extends AsyncTask<Void, Void, Result> {
@@ -91,7 +88,6 @@ public class NetParse {
             return result;
 
         } else if (type == RequestType.GET_LIVE_CHANNEL_INFO || type == RequestType.GET_VIRTUAL_CHANNEL_INFO) {
-            // Log.i("Sync", "responseStrin:" + type + "  " + responseString);
             ChannelNode channelNode = parseChannelNode(responseString);
             if (channelNode != null) {
                 result.setSuccess(true);
@@ -131,6 +127,13 @@ public class NetParse {
             }
             return result;
 
+        } else if (type.equalsIgnoreCase(RequestType.GET_SPECIAL_TOPIC_CHANNELS)) {
+            SpecialTopicNode specialTopicNode = parseSpecialTopicChannels(responseString);
+            if (specialTopicNode != null) {
+                result.setSuccess(true);
+                result.setData(specialTopicNode);
+            }
+            return result;
         }
         return result;
 
@@ -712,6 +715,38 @@ public class NetParse {
                     }
                     pslist.mLstProgramsScheduleNodes.add(programSchedule);
                     return pslist;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    public SpecialTopicNode parseSpecialTopicChannels(String json) {
+        if (!(json == null || json.equalsIgnoreCase(""))) {
+            try {
+                JSONObject obj = new JSONObject(json);
+                JSONObject dataObj = obj.getJSONObject("data");
+                if (dataObj != null) {
+                    SpecialTopicNode stNode = _parseSpecialTopicNode(dataObj);
+                    JSONArray channelsArray = dataObj.getJSONArray("channels");
+                    if (channelsArray != null) {
+                        List<ChannelNode> lstNodes = new ArrayList();
+                        for (int i = 0; i < channelsArray.length(); i++) {
+                            ChannelNode node = _parseChannelNode(channelsArray.getJSONObject(i));
+                            if (node != null) {
+                                lstNodes.add(node);
+                            }
+                        }
+                        if (stNode != null) {
+                            stNode.setChannels(lstNodes);
+                            return stNode;
+                        }
+                    }
+                    if (stNode != null) {
+                        return stNode;
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();

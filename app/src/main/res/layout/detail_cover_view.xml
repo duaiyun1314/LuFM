@@ -9,8 +9,8 @@
         android:id="@+id/info_container"
         android:layout_width="match_parent"
         android:layout_height="120dip"
-        android:orientation="horizontal"
-        android:layout_margin="16dip">
+        android:layout_margin="16dip"
+        android:orientation="horizontal">
 
         <ImageView
             android:id="@+id/info_pic"
@@ -31,8 +31,7 @@
                 android:ellipsize="marquee"
                 android:maxLines="3"
                 android:textColor="@color/normal_text_color"
-                android:textSize="16dip"
-                android:text="a饿啊kl；考虑给你；内燃机来说可能嘎曲看完了过了年我国nasa理科啊列宁格勒啊论文呢考虑给你"/>
+                android:textSize="16dip" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -61,8 +60,8 @@
     <LinearLayout
         android:layout_width="120dip"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginLeft="16dip">
+        android:layout_marginLeft="16dip"
+        android:orientation="horizontal">
 
         <TextView
             android:layout_width="wrap_content"

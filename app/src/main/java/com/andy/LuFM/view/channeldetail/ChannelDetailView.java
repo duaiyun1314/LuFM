@@ -1,6 +1,7 @@
 package com.andy.LuFM.view.channeldetail;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
@@ -12,6 +13,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
+import com.andy.LuFM.R;
 import com.andy.LuFM.TestApplication;
 import com.andy.LuFM.controller.BaseListController;
 import com.andy.LuFM.controller.ControllerManager;
@@ -53,8 +55,9 @@ public class ChannelDetailView extends LinearLayout implements ChannelHelper.IDa
         super(context, attrs, defStyleAttr);
         this.context = context;
         setOrientation(VERTICAL);
+        setBackgroundColor(getResources().getColor(R.color.list_item_color));
+        inflate(context, R.layout.layout_detail_toolbar, this);
         LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-
         coverView = new ChannelDetailCoverView(context);
         addView(coverView, layoutParams);
 

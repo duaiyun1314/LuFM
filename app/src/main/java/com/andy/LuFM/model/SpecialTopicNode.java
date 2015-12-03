@@ -1,6 +1,7 @@
 package com.andy.LuFM.model;
 
 import com.andy.LuFM.Utils.TimeKit;
+import com.andy.LuFM.data.InfoManager;
 
 import java.util.List;
 import java.util.Map;
@@ -67,7 +68,7 @@ public class SpecialTopicNode extends Node {
     }
 
     public void onNodeUpdated(Object obj, Map<String, String> map, String type) {
-        if (type.equalsIgnoreCase("ADD_SPECIAL_TOPIC")) {
+        if (type.equalsIgnoreCase(InfoManager.INodeEventListener.ADD_SPECIAL_TOPIC)) {
             SpecialTopicNode node = (SpecialTopicNode) obj;
             if (node.id == this.id) {
                 updatePartialInfo(node);
