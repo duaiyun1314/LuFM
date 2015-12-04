@@ -48,7 +48,11 @@ public abstract class BaseRecommendView<Controller extends BaseListController, P
 
     protected abstract Provider createProvider();
 
-    protected abstract ViewFactory createViewFactory();
+    protected ViewFactory createViewFactory() {
+        return null;
+    }
+
+    ;
 
     /**
      * 此方法中view可能要加载数据了

@@ -10,11 +10,17 @@ import java.util.Map;
  */
 public class RootNode extends Node {
     public Map<Integer, RecommendCategoryNode> mapRecommendCategoryNode;
+    public RecommendPlayingInfoNode mRecommendPlayingInfo;
+    public LiveNode mLiveNode;
+
     private ChannelNode mPlayingChannelNode;
 
 
     public RootNode() {
         mapRecommendCategoryNode = new HashMap<>();
+        this.mRecommendPlayingInfo = new RecommendPlayingInfoNode();
+        mLiveNode = new LiveNode();
+
     }
 
     public RecommendCategoryNode getRecommendCategoryNode(int sectionId) {

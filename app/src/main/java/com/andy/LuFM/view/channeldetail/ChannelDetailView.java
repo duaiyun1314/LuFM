@@ -10,9 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
+import com.andy.LuFM.AllInOneActivity;
 import com.andy.LuFM.R;
 import com.andy.LuFM.TestApplication;
 import com.andy.LuFM.controller.BaseListController;
@@ -33,7 +36,7 @@ import java.util.List;
 /**
  * Created by wanglu on 15/11/23.
  */
-public class ChannelDetailView extends LinearLayout implements ChannelHelper.IDataChangeObserver, AdapterView.OnItemClickListener {
+public class ChannelDetailView extends LinearLayout implements ChannelHelper.IDataChangeObserver, AdapterView.OnItemClickListener, View.OnClickListener {
     private ChannelNode channelNode;
     private ChannelDetailCoverView coverView;
     private ListView mListView;
@@ -42,6 +45,8 @@ public class ChannelDetailView extends LinearLayout implements ChannelHelper.IDa
     private Context context;
     List<ProgramNode> programs = new ArrayList();
     private Handler mHandler = new Handler();
+    private ImageButton iv_back;
+    private TextView title_label;
 
     public ChannelDetailView(Context context) {
         this(context, null);
@@ -57,6 +62,9 @@ public class ChannelDetailView extends LinearLayout implements ChannelHelper.IDa
         setOrientation(VERTICAL);
         setBackgroundColor(getResources().getColor(R.color.list_item_color));
         inflate(context, R.layout.layout_detail_toolbar, this);
+        iv_back = (ImageButton) findViewById(R.id.iv_back);
+        iv_back.setOnClickListener(this);
+        title_label = (TextView) findViewById(R.id.title_label);
         LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         coverView = new ChannelDetailCoverView(context);
         addView(coverView, layoutParams);
@@ -69,6 +77,7 @@ public class ChannelDetailView extends LinearLayout implements ChannelHelper.IDa
         if (this.channelNode != temp) {
             this.channelNode = temp;
             this.coverView.update("setdata", param);
+            title_label.setText(this.channelNode.title);
             ChannelHelper.getInstance().addObserver(this.channelNode.channelId, this);
             //init listview
             initListView();
@@ -151,6 +160,7 @@ public class ChannelDetailView extends LinearLayout implements ChannelHelper.IDa
         if (this.channelNode != null && this.channelNode.channelId == channelNode.channelId) {
             this.channelNode.updateAllInfo(channelNode);
             this.coverView.update("setData", this.channelNode);
+            title_label.setText(this.channelNode.title);
             //  dispatchActionEvent("resetNavi", null);
         }
     }
@@ -239,9 +249,14 @@ public class ChannelDetailView extends LinearLayout implements ChannelHelper.IDa
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        //  mListView.setSelection(position);
         programNodesProvider.setSelectedItem(position);
         ((TestApplication) TestApplication.from()).getPlaybackKickstarter().initPlayback(context, programs, position, false, true);
 
+    }
+
+    @Override
+    public void onClick(View v) {
+        AllInOneActivity allInOneActivity = (AllInOneActivity) getContext();
+        allInOneActivity.onBackPressed();
     }
 }

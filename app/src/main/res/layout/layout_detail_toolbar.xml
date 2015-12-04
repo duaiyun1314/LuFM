@@ -6,12 +6,12 @@
     android:orientation="vertical"
     tools:context=".AllInOneActivity">
 
-    <ImageView
+    <ImageButton
         android:id="@+id/iv_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:src="@drawable/navi_back"
+        android:background="@drawable/navi_back"
 
         />
 

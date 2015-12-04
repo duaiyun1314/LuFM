@@ -80,4 +80,32 @@ public class CategoryNode extends Node {
     public void setNodeName(String nodeName) {
         this.nodeName = nodeName;
     }
+    public boolean isRegionCategory() {
+        if (this.name.startsWith("\u7701")) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isLiveCategory() {
+        if (this.type == 0 || this.type == 3 || this.type == 4) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isLiveContentCategory() {
+        if (this.type == 3) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isLiveRegionCategory() {
+        if (this.type == 4) {
+            return true;
+        }
+        return false;
+    }
+
 }

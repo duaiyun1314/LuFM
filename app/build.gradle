@@ -36,4 +36,5 @@ dependencies {
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.+'
     compile files('libs/gson-2.2.4.jar')
     compile project(':materialish-progress')
+    compile 'com.android.support:recyclerview-v7:23.1.0'
 }

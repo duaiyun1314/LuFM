@@ -64,9 +64,8 @@ public class SecondaryViewGroup extends LinearLayout {
             return true;
         } else {
             View childView = contentViewContainer.getChildAt(count - 1);
+            //childView.startAnimation(rightOutAnim);
             contentViewContainer.removeView(childView);
-            childView.startAnimation(rightOutAnim);
-            // contentViewContainer.startAnimation(rightOutAnim);
             if (contentViewContainer.getChildCount() > 0) {
                 return false;
             } else {

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/list_item_color"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#22113333"
+        android:paddingBottom="5dip"
+        android:paddingLeft="@dimen/content_padding"
+        android:paddingRight="@dimen/content_padding"
+        android:paddingTop="@dimen/content_padding">
+
+        <View
+            android:id="@+id/tag_view_content"
+            android:layout_width="3dip"
+            android:layout_height="18dip"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:background="?colorPrimary" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="3dip"
+            android:layout_toRightOf="@id/tag_view_content"
+            android:text="地区"
+            android:textSize="16dp" />
+    </RelativeLayout>
+
+    <com.andy.LuFM.view.RadioHeaderContainer
+        android:id="@+id/radio_region"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#22113333"
+        android:paddingBottom="5dip"
+        android:paddingLeft="@dimen/content_padding"
+        android:paddingRight="@dimen/content_padding"
+        android:paddingTop="@dimen/content_padding">
+
+        <View
+            android:id="@+id/tag_view_region"
+            android:layout_width="3dip"
+            android:layout_height="18dip"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:background="?colorPrimary" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="3dip"
+            android:layout_toRightOf="@id/tag_view_region"
+            android:text="内容"
+            android:textSize="16dp" />
+    </RelativeLayout>
+
+    <com.andy.LuFM.view.RadioHeaderContainer
+        android:id="@+id/radio_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="5dip"
+        android:paddingLeft="@dimen/content_padding"
+        android:paddingRight="@dimen/content_padding"
+        android:paddingTop="@dimen/content_padding">
+
+        <View
+            android:id="@+id/tag_view_live"
+            android:layout_width="3dip"
+            android:layout_height="18dip"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:background="?colorPrimary" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="3dip"
+            android:layout_toRightOf="@id/tag_view_live"
+            android:text="正在直播"
+            android:textSize="16dp" />
+    </RelativeLayout>
+</LinearLayout>

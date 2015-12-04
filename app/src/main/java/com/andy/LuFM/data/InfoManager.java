@@ -7,12 +7,14 @@ import com.andy.LuFM.model.CategoryNode;
 import com.andy.LuFM.model.ChannelNode;
 import com.andy.LuFM.model.Node;
 import com.andy.LuFM.model.ProgramScheduleList;
+import com.andy.LuFM.model.RecommendPlayingItemNode;
 import com.andy.LuFM.model.RootNode;
 import com.andy.LuFM.model.SpecialTopicNode;
 import com.andy.LuFM.model.UserInfo;
 import com.andy.LuFM.test.MediaCenter;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +44,16 @@ public class InfoManager implements IResultRecvHandler {
 
     public RootNode root() {
         return this.mRootNode;
+    }
+
+    public void loadRecommendPlayingProgramsInfo(ISubscribeEventListener listener) {
+        int day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+        Map<String, Object> param = new HashMap();
+        param.put("day", String.valueOf(day));
+        if (listener != null) {
+            registerSubscribeEventListener(listener, ISubscribeEventListener.RECV_RECOMMEND_PLAYING_PROGRAMS_INFO);
+        }
+        DataManager.getInstance().getData(RequestType.NET_REQUEST, this, new DataCommand(RequestType.GET_RECOMMEND_PLAYING, param));
     }
 
     public void _loadLiveChannelNode(int channelId, Node node) {
@@ -109,6 +121,13 @@ public class InfoManager implements IResultRecvHandler {
                 dispatchSubscribeEvent(ISubscribeEventListener.RECV_SPECIAL_TOPIC_CHANNELS);
             }
 
+        } else if (type.equalsIgnoreCase(RequestType.GET_RECOMMEND_PLAYING)) {
+            List<RecommendPlayingItemNode> lstNodes3 = (List) result.getData();
+            if (lstNodes3 != null) {
+                root().mRecommendPlayingInfo.setRecommendList(lstNodes3);
+                dispatchSubscribeEvent(ISubscribeEventListener.RECV_RECOMMEND_PLAYING_PROGRAMS_INFO);
+            }
+
         }
 
     }
@@ -124,6 +143,7 @@ public class InfoManager implements IResultRecvHandler {
 
     /**
      * 通知存储node的类
+     *
      * @param node
      * @param map
      * @param type
@@ -143,6 +163,7 @@ public class InfoManager implements IResultRecvHandler {
 
     /**
      * 只是通知最初请求的类加载完成
+     *
      * @param type
      */
     private void dispatchSubscribeEvent(String type) {

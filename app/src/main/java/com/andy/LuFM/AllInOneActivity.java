@@ -139,6 +139,11 @@ public class AllInOneActivity extends AppCompatActivity implements IEventHandler
             restoreChildFromDB();
         }
         if (!(this.categoryNodes == null || this.categoryNodes.size() <= 0 || ((CategoryNode) this.categoryNodes.get(0)).getSectionId() == 0)) {
+            CategoryNode radioNode = new CategoryNode();
+            radioNode.setSectionId(9999);
+            radioNode.setName("\u7535\u53f0");
+            radioNode.setCategoryId(99998);
+            this.categoryNodes.add(0, radioNode);
             CategoryNode node = new CategoryNode();
             node.setSectionId(0);
             node.setCategoryId(99999);
@@ -230,7 +235,7 @@ public class AllInOneActivity extends AppCompatActivity implements IEventHandler
         if (secondaryContainer.getContainerCount() > 0) {
             boolean isRemoveCompleted = secondaryContainer.removeChild();
             if (isRemoveCompleted) {
-             //   secondaryContainer.removeAllViews();
+                //   secondaryContainer.removeAllViews();
                 secondaryContainer.setVisibility(View.GONE);
             }
 

@@ -16,4 +16,5 @@ public class Constants {
     public static final String GET_PODCASTER_BASE_INFO = "http://api2.qingting.fm/v6/media/podcasters/";
     public static final int NOVEL_SECTION = 208;
     public static final int CAMPUS_SECTION = 166;
+    public static final int RADIO_SECTION = 9999;
 }

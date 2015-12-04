@@ -16,6 +16,7 @@ import com.andy.LuFM.model.CategoryNode;
 import com.andy.LuFM.view.BaseRecommendView;
 import com.andy.LuFM.view.ReCommendColumnView;
 import com.andy.LuFM.view.RecommendNovelView;
+import com.andy.LuFM.view.RecommendRadioView;
 import com.andy.LuFM.view.RecommendView;
 import com.andy.LuFM.view.SlidingTabLayout;
 
@@ -76,6 +77,9 @@ public class DiscoverFragment extends Fragment {
                     viewGroup = new RecommendNovelView(getActivity());
                     break;
                 case Constants.CAMPUS_SECTION:
+                    break;
+                case Constants.RADIO_SECTION:
+                    viewGroup = new RecommendRadioView(getActivity());
                     break;
                 default:
                     viewGroup = new ReCommendColumnView(getActivity());

@@ -10,9 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
+import com.andy.LuFM.AllInOneActivity;
 import com.andy.LuFM.R;
 import com.andy.LuFM.controller.ChannelListController;
 import com.andy.LuFM.controller.ControllerManager;
@@ -27,7 +30,7 @@ import java.util.List;
 /**
  * Created by Andy.Wang on 2015/12/3.
  */
-public class SpecialTopicView extends LinearLayout implements AdapterView.OnItemClickListener {
+public class SpecialTopicView extends LinearLayout implements AdapterView.OnItemClickListener, View.OnClickListener {
     private SpecialTopicNode topicNode;
     private ListView mListView;
     private Context context;
@@ -35,6 +38,8 @@ public class SpecialTopicView extends LinearLayout implements AdapterView.OnItem
     private ChannelListController baseListController;
     private TopicChannelsProvider channelsProvider;
     private Handler mHandler = new Handler();
+    private ImageButton iv_back;
+    private TextView title_label;
 
     public SpecialTopicView(Context context) {
         this(context, null);
@@ -50,6 +55,9 @@ public class SpecialTopicView extends LinearLayout implements AdapterView.OnItem
         setOrientation(VERTICAL);
         setBackgroundColor(getResources().getColor(R.color.list_item_color));
         inflate(context, R.layout.layout_detail_toolbar, this);
+        iv_back = (ImageButton) findViewById(R.id.iv_back);
+        iv_back.setOnClickListener(this);
+        title_label = (TextView) findViewById(R.id.title_label);
     }
 
     public void update(String type, Object param) {
@@ -112,5 +120,12 @@ public class SpecialTopicView extends LinearLayout implements AdapterView.OnItem
         channelNodes.addAll(list);
         ((TopicChannelsProvider.MYAdapter) this.channelsProvider.getAdapter()).setData(channelNodes);
         this.baseListController.mHeadView.update(topicNode, channelsProvider.getOptions());
+        title_label.setText(topicNode.title);
+    }
+
+    @Override
+    public void onClick(View v) {
+        AllInOneActivity allInOneActivity = (AllInOneActivity) getContext();
+        allInOneActivity.onBackPressed();
     }
 }

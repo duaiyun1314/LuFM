@@ -14,6 +14,7 @@ import com.andy.LuFM.model.ProgramSchedule;
 import com.andy.LuFM.model.ProgramScheduleList;
 import com.andy.LuFM.model.RecommendCategoryNode;
 import com.andy.LuFM.model.RecommendItemNode;
+import com.andy.LuFM.model.RecommendPlayingItemNode;
 import com.andy.LuFM.model.SpecialTopicNode;
 import com.andy.LuFM.model.UserInfo;
 import com.andy.LuFM.test.MediaCenter;
@@ -134,9 +135,75 @@ public class NetParse {
                 result.setData(specialTopicNode);
             }
             return result;
+        } else if (type.equalsIgnoreCase(RequestType.GET_RECOMMEND_PLAYING)) {
+            List<RecommendPlayingItemNode> recommendPlayingItemNodes = parseRecommendPlayingPrograms(responseString);
+            if (recommendPlayingItemNodes != null && recommendPlayingItemNodes.size() > 0) {
+                result.setSuccess(true);
+                result.setData(recommendPlayingItemNodes);
+            }
+            return result;
         }
         return result;
 
+    }
+
+    private List<RecommendPlayingItemNode> parseRecommendPlayingPrograms(String json) {
+        if (!(json == null || json.equalsIgnoreCase(""))) {
+            try {
+                JSONObject dataObj = new JSONObject(json);
+                JSONArray dataArray = dataObj.getJSONArray("data");
+                List<RecommendPlayingItemNode> lstNodes = new ArrayList();
+                for (int i = 0; i < dataArray.length(); i++) {
+                    RecommendPlayingItemNode node = _parseRecommendPlayingProgram(dataArray.getJSONObject(i));
+                    if (node != null) {
+                        lstNodes.add(node);
+                    }
+                }
+                return lstNodes;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    private RecommendPlayingItemNode _parseRecommendPlayingProgram(JSONObject dataObj) {
+        if (dataObj != null) {
+            try {
+                JSONObject detail = dataObj.getJSONObject("detail");
+                if (detail == null) {
+                    return null;
+                }
+                RecommendPlayingItemNode node = new RecommendPlayingItemNode();
+                node.channelName = dataObj.getString("sub_title");
+                node.programName = dataObj.getString("title");
+                node.thumb = dataObj.getString("thumb");
+                if (dataObj.has("channel_star")) {
+                    node.ratingStar = dataObj.getInt("channel_star");
+                }
+                if (detail.has("channel_star")) {
+                    node.ratingStar = detail.getInt("channel_star");
+                }
+                JSONObject media = detail.getJSONObject("mediainfo");
+                if (media != null) {
+                    node.resId = media.getInt("id");
+                }
+                node.channelId = detail.getInt("channel_id");
+                node.programid = detail.getInt("id");
+                node.startTime = detail.getString("start_time");
+                if (node.startTime != null && node.startTime.equalsIgnoreCase("00:00:00")) {
+                    node.startTime = "00:00:01";
+                }
+                node.endTime = detail.getString("end_time");
+                if (node.endTime == null || !node.endTime.equalsIgnoreCase("00:00:00")) {
+                    return node;
+                }
+                node.endTime = "23:59:59";
+                return node;
+            } catch (Exception e) {
+            }
+        }
+        return null;
     }
 
     private MediaCenter parseMediaCenter(String json) {

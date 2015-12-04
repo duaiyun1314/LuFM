@@ -89,7 +89,7 @@ public class ChannelDetailCoverView extends LinearLayout implements InfoManager.
             setPodcasterInfo(this.mPodcasterInfo);
             InfoManager.getInstance().loadPodcasterBaseInfo(this.mPodcasterId, this);
         }
-        this.ratingBar.setStar(this.mChannelNode.ratingStar);
+        this.ratingBar.setStar(this.mChannelNode.ratingStar / 10f * 5);
         //update tag view
         if (mChannelNode.programCnt > 0) {
             this.tag_name.setText(String.format("\u5171%d\u671f", new Object[]{Integer.valueOf(mChannelNode.programCnt)}));

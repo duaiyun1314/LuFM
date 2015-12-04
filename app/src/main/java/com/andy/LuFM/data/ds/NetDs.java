@@ -63,6 +63,10 @@ public class NetDs implements IDataOperation {
             String url = Constants.ROOT_URL + "/topics/" + param.get("id");
             NetKit.getInstance().getNormalNetInfo(url, type, iResultRecvHandler, param);
 
+        } else if (type.equalsIgnoreCase(RequestType.GET_RECOMMEND_PLAYING)) {
+            String url = Constants.ROOT_URL + "/recommends/nowplaying/day/" + param.get("day");
+            NetKit.getInstance().getNormalNetInfo(url, type, iResultRecvHandler, param);
+
         }
         return null;
     }
