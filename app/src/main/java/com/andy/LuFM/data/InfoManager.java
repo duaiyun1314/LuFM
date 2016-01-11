@@ -11,7 +11,7 @@ import com.andy.LuFM.model.RecommendPlayingItemNode;
 import com.andy.LuFM.model.RootNode;
 import com.andy.LuFM.model.SpecialTopicNode;
 import com.andy.LuFM.model.UserInfo;
-import com.andy.LuFM.test.MediaCenter;
+import com.andy.LuFM.player.MediaCenter;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -32,7 +32,6 @@ public class InfoManager implements IResultRecvHandler {
     private int ERROR_PROGRAM_CNT = 0;
 
     private InfoManager() {
-
     }
 
     public static synchronized InfoManager getInstance() {
@@ -127,7 +126,6 @@ public class InfoManager implements IResultRecvHandler {
                 root().mRecommendPlayingInfo.setRecommendList(lstNodes3);
                 dispatchSubscribeEvent(ISubscribeEventListener.RECV_RECOMMEND_PLAYING_PROGRAMS_INFO);
             }
-
         }
 
     }
@@ -510,5 +508,6 @@ public class InfoManager implements IResultRecvHandler {
             DataManager.getInstance().getData(RequestType.NET_REQUEST, this, new DataCommand(RequestType.GET_SPECIAL_TOPIC_CHANNELS, requestParam));
         }
     }
+
 
 }

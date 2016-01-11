@@ -3,10 +3,6 @@ package com.andy.LuFM.controller;
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
-
-import com.andy.LuFM.controller.viewcontroller.ChannelDetailController;
-import com.andy.LuFM.controller.viewcontroller.ViewController;
-import com.andy.LuFM.data.InfoManager;
 import com.andy.LuFM.helper.ChannelHelper;
 import com.andy.LuFM.listener.ChannelDetailClickListener;
 import com.andy.LuFM.model.ChannelNode;
@@ -166,13 +162,6 @@ public class ControllerManager {
             channelDetailClickListener.onChannelSelected(name, param);
         }
         // pushControllerByProperAnimation(controller);
-    }
-
-    private ViewController getController(String type) {
-        if (type.equalsIgnoreCase("channeldetail")) {
-            return new ChannelDetailController(context);
-        }
-        return null;
     }
 
     public void unRegisterListener() {

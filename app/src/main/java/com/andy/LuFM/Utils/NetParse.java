@@ -1,7 +1,6 @@
 package com.andy.LuFM.Utils;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.andy.LuFM.data.IResultRecvHandler;
 import com.andy.LuFM.data.RequestType;
@@ -17,14 +16,13 @@ import com.andy.LuFM.model.RecommendItemNode;
 import com.andy.LuFM.model.RecommendPlayingItemNode;
 import com.andy.LuFM.model.SpecialTopicNode;
 import com.andy.LuFM.model.UserInfo;
-import com.andy.LuFM.test.MediaCenter;
-import com.andy.LuFM.test.PingInfoV6;
+import com.andy.LuFM.player.MediaCenter;
+import com.andy.LuFM.player.PingInfoV6;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

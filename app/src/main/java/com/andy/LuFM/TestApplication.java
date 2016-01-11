@@ -1,37 +1,24 @@
 package com.andy.LuFM;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.database.Cursor;
-import android.database.MergeCursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.DisplayMetrics;
 import android.view.View;
-import android.view.Window;
 import android.webkit.WebView;
-import android.widget.Toast;
 
-import com.andy.LuFM.test.AudioPlaybackService;
-import com.andy.LuFM.test.NowPlayingActivity;
-import com.andy.LuFM.test.PlaybackKickstarter;
+import com.andy.LuFM.player.AudioPlaybackService;
+import com.andy.LuFM.player.NowPlayingActivity;
+import com.andy.LuFM.player.PlaybackKickstarter;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 
 /**
  * Singleton class that provides access to common objects

@@ -110,7 +110,6 @@
         android:maxHeight="4dip"
         android:minHeight="4dip"
         android:progress="0"
-        android:progressDrawable="@drawable/progress_drawable"
         android:thumb="@drawable/transparent_drawable"
         android:thumbOffset="0dp" />
 

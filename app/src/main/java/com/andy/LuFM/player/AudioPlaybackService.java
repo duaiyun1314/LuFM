@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.andy.LuFM.test;
+package com.andy.LuFM.player;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
@@ -24,7 +24,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.Cursor;
 import android.database.MergeCursor;
 import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
@@ -53,7 +52,6 @@ import com.andy.LuFM.model.Node;
 import com.andy.LuFM.model.ProgramNode;
 
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

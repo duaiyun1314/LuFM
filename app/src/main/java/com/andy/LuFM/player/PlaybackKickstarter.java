@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.andy.LuFM.test;
+package com.andy.LuFM.player;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.os.AsyncTask;
 import android.widget.Toast;
 
 import com.andy.LuFM.TestApplication;
 import com.andy.LuFM.model.ProgramNode;
+import com.andy.LuFM.player.AudioPlaybackService;
+import com.andy.LuFM.player.NowPlayingActivity;
 
 import java.util.List;
 

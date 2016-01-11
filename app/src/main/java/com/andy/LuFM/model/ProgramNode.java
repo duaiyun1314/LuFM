@@ -2,7 +2,7 @@ package com.andy.LuFM.model;
 
 import com.andy.LuFM.Utils.TimeKit;
 import com.andy.LuFM.helper.ChannelHelper;
-import com.andy.LuFM.test.MediaCenter;
+import com.andy.LuFM.player.MediaCenter;
 
 import java.util.Calendar;
 import java.util.List;

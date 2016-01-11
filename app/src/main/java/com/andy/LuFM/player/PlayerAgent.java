@@ -1,14 +1,10 @@
-package com.andy.LuFM.test;
-
-import android.util.Log;
+package com.andy.LuFM.player;
 
 import com.andy.LuFM.data.InfoManager;
 import com.andy.LuFM.helper.ChannelHelper;
 import com.andy.LuFM.model.ChannelNode;
 import com.andy.LuFM.model.Node;
 import com.andy.LuFM.model.ProgramNode;
-
-import java.util.List;
 
 /**
  * Created by Andy.Wang on 2015/11/27.

@@ -1,9 +1,7 @@
 package com.andy.LuFM.view.channeldetail;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Handler;
-import android.os.Looper;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -19,15 +17,12 @@ import com.andy.LuFM.AllInOneActivity;
 import com.andy.LuFM.R;
 import com.andy.LuFM.TestApplication;
 import com.andy.LuFM.controller.BaseListController;
-import com.andy.LuFM.controller.ControllerManager;
 import com.andy.LuFM.data.InfoManager;
 import com.andy.LuFM.helper.ChannelHelper;
 import com.andy.LuFM.model.ChannelNode;
-import com.andy.LuFM.model.Node;
 import com.andy.LuFM.model.ProgramNode;
 import com.andy.LuFM.providers.ProgramNodesProvider;
-import com.andy.LuFM.test.AudioPlaybackService;
-import com.andy.LuFM.test.PlayerAgent;
+import com.andy.LuFM.player.AudioPlaybackService;
 
 import java.util.ArrayList;
 import java.util.List;

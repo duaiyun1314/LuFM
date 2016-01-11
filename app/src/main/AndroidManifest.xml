@@ -23,15 +23,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".test.AudioPlaybackService" />
-        <receiver android:name=".test.HeadsetButtonsReceiver">
+        <service android:name=".player.AudioPlaybackService" />
+        <receiver android:name=".player.HeadsetButtonsReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
         </receiver>
 
-        <activity android:name=".test.KitKatFixActivity" />
-        <activity android:name=".test.NowPlayingActivity" />
+        <activity android:name=".player.KitKatFixActivity" />
+        <activity android:name=".player.NowPlayingActivity" />
     </application>
 
 </manifest>

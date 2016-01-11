@@ -2,7 +2,6 @@ package com.andy.LuFM;
 
 import android.app.Application;
 
-import com.andy.LuFM.Utils.ImageLoaderUtil;
 import com.andy.LuFM.dbutil.DaoMaster;
 
 /**

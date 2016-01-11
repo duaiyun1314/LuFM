@@ -1,13 +1,7 @@
 package com.andy.LuFM.providers;
 
 import android.content.Context;
-import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.TextView;
-
-import com.andy.LuFM.Utils.TimeKit;
 import com.andy.LuFM.Utils.ViewFactory;
 import com.andy.LuFM.adapter.SectionAdapter;
 import com.andy.LuFM.data.DataCommand;
