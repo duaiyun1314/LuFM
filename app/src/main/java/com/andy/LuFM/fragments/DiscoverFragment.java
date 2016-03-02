@@ -23,7 +23,8 @@ import com.andy.LuFM.view.SlidingTabLayout;
 import java.util.List;
 
 /**
- * Created by Andy.Wang on 2015/11/13.
+ * 发现模块
+ * @author Andy.Wang
  */
 public class DiscoverFragment extends Fragment {
     private ViewPager mViewPager;
@@ -70,7 +71,7 @@ public class DiscoverFragment extends Fragment {
             CategoryNode node = lists.get(position);
             BaseRecommendView viewGroup = null;
             switch (node.getSectionId()) {
-                case 0:
+                case Constants.HOMEPAGE_SECTION:
                     viewGroup = new RecommendView(getActivity());
                     break;
                 case Constants.NOVEL_SECTION:

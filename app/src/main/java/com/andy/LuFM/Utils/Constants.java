@@ -9,13 +9,21 @@ public class Constants {
 
 
     public static final String PARENT_ID = "parentid";
-    public static final String ROOT_URL = "http://api2.qingting.fm/v6/media";
     public static final String BASE_URL = "http://api2.qingting.fm/v6/media/";
-    public static final String RECOMMEND_INFO_URL = "http://api2.qingting.fm/v6/media/recommends/guides/section/";
-    public static final String VIRTUAL_CHANNLE_INFO_URL = "http://api2.qingting.fm/v6/media/channelondemands/";
-    public static final String LIVE_CHANNLE_INFO_URL = "http://api2.qingting.fm/v6/media/channellives/";
-    public static final String GET_PODCASTER_BASE_INFO = "http://api2.qingting.fm/v6/media/podcasters/";
+    /**
+     * 精选
+     */
+    public static final int HOMEPAGE_SECTION = 0;
+    /**
+     * 小说
+     */
     public static final int NOVEL_SECTION = 208;
+    /**
+     * 校园
+     */
     public static final int CAMPUS_SECTION = 166;
+    /**
+     * 电台
+     */
     public static final int RADIO_SECTION = 9999;
 }

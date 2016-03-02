@@ -1,6 +1,22 @@
 apply plugin: 'com.android.application'
 
 android {
+    /**
+     * 唯一必须得属性为compileSdkVersion和buildToolsVersion
+     */
+    compileSdkVersion 23
+    buildToolsVersion "23.0.1"
+
+    /**
+     * defaultConfig方法包含了该app的核心属性，该属性会重写在AndroidManifest.xml中的对应属性。
+     */
+    defaultConfig {
+        applicationId "com.andy.LuFM"
+        minSdkVersion 15
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+    }
 
     /**
      * 签名信息设置
@@ -13,28 +29,23 @@ android {
             storePassword KEY_PASSWORD
         }
     }
-    compileSdkVersion 23
-    buildToolsVersion "23.0.1"
-
-    defaultConfig {
-        applicationId "com.andy.LuFM"
-        minSdkVersion 15
-        targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
-    }
+    /**
+     * 文件结构设置
+     */
     sourceSets {
         main {
-
             java.srcDirs = ['src/main/java', 'src/main/java-gen']
-
         }
-
     }
 
+    /**
+     * buildTypes方法定义了如何构建不同版本的app
+     */
     buildTypes {
         release {
-            minifyEnabled false
+            //去除无用的资源 两个配置配合使用
+            shrinkResources true
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -46,7 +57,6 @@ dependencies {
     compile 'de.greenrobot:greendao:1.3.7'
     compile 'com.loopj.android:android-async-http:1.4.9'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.+'
-    //compile files('libs/gson-2.2.4.jar')
     compile project(':materialish-progress')
     compile 'com.android.support:recyclerview-v7:23.1.0'
     compile 'com.squareup.retrofit:adapter-rxjava:2.0.0-beta2'

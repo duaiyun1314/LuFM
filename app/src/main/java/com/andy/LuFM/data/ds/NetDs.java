@@ -23,7 +23,7 @@ import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
- * Created by wanglu on 15/11/16.
+ * 处理网络请求
  */
 public class NetDs implements IDataOperation {
     private static NetDs instance;
@@ -53,7 +53,6 @@ public class NetDs implements IDataOperation {
             final Map<String, Object> param = dataCommand.getParam();
             if (type.equals(RequestType.DATA_TYPE_GET_RECOMMEND)) {
                 String sectionId = (Integer) param.get("sectionId") + "";
-                Log.i("Syncc", "type:" + type + " id:" + sectionId);
                 observable = getAPI.getRecommendInfo(sectionId);
             } else if (type.equalsIgnoreCase(RequestType.GET_LIVE_CHANNEL_INFO)) {
                 String id = param.get("id") + "";

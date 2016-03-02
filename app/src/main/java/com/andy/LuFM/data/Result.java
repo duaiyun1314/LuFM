@@ -1,7 +1,7 @@
 package com.andy.LuFM.data;
 
 /**
- * Created by Andy.Wang on 2015/11/11.
+ * 数据操作层返回结果
  */
 public class Result {
     private String code;

@@ -25,6 +25,14 @@ public class DataManager {
         requests.put(operation.dataRequestName(), operation);
     }
 
+    /**
+     * 主要的获取数据（网络、数据库、本地file）的方法
+     *
+     * @param requestName 请求类型（net、db、file）
+     * @param handler     result回调
+     * @param dataCommand 请求命令，包含请求类型的具体指向、相关参数
+     * @return result
+     */
     public Result getData(String requestName, IResultRecvHandler handler, DataCommand dataCommand) {
         Result result = new Result();
         IDataOperation iDataOperation = requests.get(requestName.trim());

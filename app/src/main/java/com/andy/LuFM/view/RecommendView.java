@@ -62,8 +62,6 @@ public class RecommendView extends BaseRecommendView<RecommendListController, Re
         List<SectionItem> sectionItemList = parseSection(recommendCategoryNode);
         controller.mHeadView.update(recommendCategoryNode.lstBanner);
         ((SectionAdapter) controller.getAdatper()).setData(sectionItemList);
-
-
     }
 
     @Override
