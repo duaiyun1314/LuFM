@@ -1,16 +1,18 @@
 package com.andy.LuFM.controller;
 
-import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
+
+import com.andy.LuFM.event.SwitchContentEvent;
 import com.andy.LuFM.helper.ChannelHelper;
-import com.andy.LuFM.listener.ChannelDetailClickListener;
 import com.andy.LuFM.model.ChannelNode;
 import com.andy.LuFM.model.Node;
 import com.andy.LuFM.model.ProgramNode;
 import com.andy.LuFM.model.RecommendCategoryNode;
 import com.andy.LuFM.model.RecommendItemNode;
 import com.andy.LuFM.model.SpecialTopicNode;
+
+import de.greenrobot.event.EventBus;
 
 /**
  * Created by wanglu on 15/11/20.
@@ -19,7 +21,6 @@ public class ControllerManager {
     private static ControllerManager instance;
     private int mChannelSource;
     private Context context;
-    private ChannelDetailClickListener channelDetailClickListener;
 
     private ControllerManager(Context context) {
         this.context = context;
@@ -158,27 +159,12 @@ public class ControllerManager {
     public void redirect2View(String name, Object param) {
            /* ViewController controller = getController(name);
             controller.config(name, param);*/
-        if (channelDetailClickListener != null) {
-            channelDetailClickListener.onChannelSelected(name, param);
-        }
+        SwitchContentEvent event = new SwitchContentEvent();
+        event.type = name;
+        event.params = param;
+        EventBus.getDefault().post(event);
         // pushControllerByProperAnimation(controller);
     }
 
-    public void unRegisterListener() {
-        if (channelDetailClickListener != null) {
-            channelDetailClickListener = null;
-        }
-    }
 
-    /**
-     * 通知activity switchFragment ，由于fragment的存在activity很有可能销毁了重建（eg. 按home键然后重新启动）这时候
-     * listener指定的acitivity引用会改变导致回调时还是调用的指向的之前的acitivity，所以应该在activity创建时注册，销毁时解绑
-     * 保证listener与当前运行的activity一致，避免出现activity has been destroyed
-     *
-     * @param context
-     */
-    public void RegisterListener(Activity context) {
-        this.channelDetailClickListener = (ChannelDetailClickListener) context;
-
-    }
 }

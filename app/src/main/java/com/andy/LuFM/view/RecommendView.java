@@ -77,12 +77,10 @@ public class RecommendView extends BaseRecommendView<RecommendListController, Re
             for (int i = 0; i < recList.size(); i++) {
                 List<RecommendItemNode> subList = (List) recList.get(i);
                 if (subList.size() > 0) {
-                    //list.add(new SectionItem(0, null));
                     list.add(new SectionItem(2, subList.get(0)));
                     list.add(new SectionItem(3, subList));
                 }
             }
-            // list.add(new SectionItem(0, null));
 
             return list;
         }

@@ -2,13 +2,13 @@ package com.andy.LuFM;
 
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import com.andy.LuFM.Utils.Constants;
 import com.andy.LuFM.Utils.ImageLoaderUtil;
@@ -25,33 +25,34 @@ import com.andy.LuFM.data.ds.NetDs;
 import com.andy.LuFM.data.ds.ProgramNodeDs;
 import com.andy.LuFM.event.EventType;
 import com.andy.LuFM.event.IEventHandler;
+import com.andy.LuFM.event.SwitchContentEvent;
+import com.andy.LuFM.fragments.ChannelDetailFragment;
 import com.andy.LuFM.fragments.DiscoverFragment;
 import com.andy.LuFM.fragments.DownloadFragment;
 import com.andy.LuFM.fragments.MineFragment;
-import com.andy.LuFM.listener.ChannelDetailClickListener;
+import com.andy.LuFM.fragments.SpecialTopicFragment;
 import com.andy.LuFM.model.CategoryNode;
 import com.andy.LuFM.player.AudioPlaybackService;
 import com.andy.LuFM.player.MiniPlayerFragment;
-import com.andy.LuFM.view.SecondaryViewGroup;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AllInOneActivity extends AppCompatActivity implements IEventHandler, RadioGroup.OnCheckedChangeListener, ChannelDetailClickListener {
+public class AllInOneActivity extends BaseActivity implements IEventHandler, RadioGroup.OnCheckedChangeListener {
     private int mViewType = 1;
     public List<CategoryNode> categoryNodes;
     private RadioGroup radioGroup;
     private Fragment[] fragments;
-    private SecondaryViewGroup secondaryContainer;
+    private Fragment mCurrentContent;
     public static final String CHANNEL_DETAIL_TAG = "channel_detail_tag";
+    public static final String SPECIAL_TOPIC_TAG = "special_topic_tag";
     public static final String MAIN_CONTENT_TAG = "main_content_tag";
     public static final String MINI_PLAYER_TAG = "mini_player_tag";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.e("Sync", "onCreate");
         initUtils();
         setContentView(R.layout.layout_splash);
         initDataOperation();
@@ -62,13 +63,16 @@ public class AllInOneActivity extends AppCompatActivity implements IEventHandler
     }
 
     private void initListener() {
-        ControllerManager.getInstance(this).RegisterListener(this);
     }
 
     private void initUtils() {
+        //初始化图片加载工具
         ImageLoaderUtil.initImageLoader(getApplicationContext());
     }
 
+    /**
+     * 初始化fragment
+     */
     private void initFragments() {
         fragments = new Fragment[3];
         fragments[0] = new MineFragment();
@@ -76,6 +80,9 @@ public class AllInOneActivity extends AppCompatActivity implements IEventHandler
         fragments[2] = new DownloadFragment();
     }
 
+    /**
+     * 初始化data操作源，不同的操作类型（根据request name）会被分配到相对应的操作类中处理
+     */
     private void initDataOperation() {
         DataManager.getInstance().addRequests(CategoryNodeDs.getInstance());
         DataManager.getInstance().addRequests(NetDs.getInstance());
@@ -110,11 +117,11 @@ public class AllInOneActivity extends AppCompatActivity implements IEventHandler
         }, 3000);
     }
 
+
     private void initView() {
         radioGroup = (RadioGroup) findViewById(R.id.radio_group);
         radioGroup.setOnCheckedChangeListener(this);
         ((RadioButton) radioGroup.getChildAt(mViewType)).setChecked(true);
-        secondaryContainer = (SecondaryViewGroup) findViewById(R.id.second_view);
     }
 
     private void setMainPane() {
@@ -182,59 +189,60 @@ public class AllInOneActivity extends AppCompatActivity implements IEventHandler
         setMainPane();
     }
 
-    @Override
-    public void onChannelSelected(String type, Object param) {
-        if (secondaryContainer.getVisibility() == View.GONE) {
-            //  secondaryContainer.removeAllViews();
-            secondaryContainer.setVisibility(View.VISIBLE);
-        }
-        secondaryContainer.switchView(type, param);
-       /* if (type.equalsIgnoreCase("channeldetail")) {
-            ChannelFragment fragment = null;
-            if (fragment == null) {
-                fragment = new ChannelFragment();
-            }
-            fragment.setData(type, param);
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.setCustomAnimations(R.anim.slide_in_from_right, 0
-                    , 0, R.anim.slide_out_to_right);
-            fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-            fragmentTransaction.replace(R.id.channel_detail, fragment, CHANNEL_DETAIL_TAG);
-            fragmentTransaction.addToBackStack(null);
-            fragmentTransaction.commitAllowingStateLoss();
+
+    /**
+     * 切换fragment的事件回调
+     *
+     * @param event 切换fragment的事件
+     */
+    public void onEventMainThread(SwitchContentEvent event) {
+        String type = event.type;
+        Object param = event.params;
+        if (type.equalsIgnoreCase("channeldetail")) {
+            ChannelDetailFragment channelDetailFragment = new ChannelDetailFragment();
+            channelDetailFragment.update(type, param);
+            switchContent(channelDetailFragment, CHANNEL_DETAIL_TAG);
         } else if (type.equalsIgnoreCase("specialtopic")) {
-            TopicFragment fragment = null;
-            if (fragment == null) {
-                fragment = new TopicFragment();
-            }
-            fragment.setData(type, param);
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.setCustomAnimations(R.anim.slide_in_from_right, 0
-                    , 0, R.anim.slide_out_to_right);
-            fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-            fragmentTransaction.replace(R.id.channel_detail, fragment, "topics");
-            fragmentTransaction.addToBackStack(null);
-            fragmentTransaction.commitAllowingStateLoss();
+            SpecialTopicFragment specialTopicFragment = new SpecialTopicFragment();
+            specialTopicFragment.update(type, param);
+            switchContent(specialTopicFragment, SPECIAL_TOPIC_TAG);
         }
-*/
     }
 
+    /**
+     * fragment 切换
+     *
+     * @param to
+     */
+    public void switchContent(Fragment to, String tag) {
+        if (mCurrentContent == null) {
+            mCurrentContent = to;
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.setCustomAnimations(R.anim.slide_in_from_right, R.anim.slide_out_to_right, R.anim.slide_in_from_right, R.anim.slide_out_to_right);
+            transaction.add(R.id.second_view, to, tag);
+            transaction.addToBackStack(null);
+            transaction.commit();
+            return;
+        }
+        if (mCurrentContent != to) {
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.setCustomAnimations(R.anim.slide_in_from_right, R.anim.slide_out_to_right, R.anim.slide_in_from_right, R.anim.slide_out_to_right);
+            if (!to.isAdded()) { // 先判断是否被add过
+                transaction.add(R.id.second_view, to, tag);
+            } else {
+                transaction.show(to);
+            }
+            transaction.addToBackStack(null);
+            transaction.commit();
+            mCurrentContent = to;
+        }
+    }
 
     @Override
     public void onBackPressed() {
-       /* FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager.getBackStackEntryCount() > 0) {
             fragmentManager.popBackStack();
-        } else {
-            super.onBackPressed();
-        }*/
-        if (secondaryContainer.getContainerCount() > 0) {
-            boolean isRemoveCompleted = secondaryContainer.removeChild();
-            if (isRemoveCompleted) {
-                //   secondaryContainer.removeAllViews();
-                secondaryContainer.setVisibility(View.GONE);
-            }
-
         } else {
             super.onBackPressed();
         }
@@ -243,8 +251,7 @@ public class AllInOneActivity extends AppCompatActivity implements IEventHandler
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //注销监听器
-        ControllerManager.getInstance(this).unRegisterListener();
+
         //如果没有播放任务，停止service
         AudioPlaybackService service = TestApplication.from().getService();
         if (service != null && !service.isPlayingMusic()) {
@@ -252,8 +259,4 @@ public class AllInOneActivity extends AppCompatActivity implements IEventHandler
         }
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        //super.onSaveInstanceState(outState);
-    }
 }

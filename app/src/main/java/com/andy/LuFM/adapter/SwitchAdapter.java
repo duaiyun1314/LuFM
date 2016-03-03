@@ -67,6 +67,10 @@ public class SwitchAdapter extends RecyclingPageAdapter {
         return isInfiniteLoop ? Integer.MAX_VALUE : recommendItemNodes.size();
     }
 
+    public int getItemCount() {
+        return recommendItemNodes == null ? 0 : recommendItemNodes.size();
+    }
+
     private int getPosition(int position) {
         return isInfiniteLoop ? position % recommendItemNodes.size() : position;
     }

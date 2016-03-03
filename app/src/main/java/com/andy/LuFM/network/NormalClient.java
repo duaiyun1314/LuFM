@@ -10,7 +10,7 @@ import retrofit.RxJavaCallAdapterFactory;
  * Created by Andy.Wang on 2016/1/8.
  */
 public class NormalClient {
-     NormalGetAPI nbaplus;
+     NormalGetAPI normalGetAPI;
 
     NormalClient() {
         Retrofit retrofit0 = new Retrofit.Builder()
@@ -19,12 +19,12 @@ public class NormalClient {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
-        nbaplus = retrofit0.create(NormalGetAPI.class);
+        normalGetAPI = retrofit0.create(NormalGetAPI.class);
 
 
     }
 
     public NormalGetAPI getCilent() {
-        return nbaplus;
+        return normalGetAPI;
     }
 }

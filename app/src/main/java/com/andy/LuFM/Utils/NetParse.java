@@ -71,7 +71,7 @@ public class NetParse {
     }
 
     public void parse(String responseString, String type, IResultRecvHandler iResultRecvHandler, Object param) {
-        new ParseAsyncTask(responseString, type, iResultRecvHandler, param).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
+        new ParseAsyncTask(responseString, type, iResultRecvHandler, param).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, new Void[]{});
     }
 
     public Result parseMethod(String responseString, String type) {

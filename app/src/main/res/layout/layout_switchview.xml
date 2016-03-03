@@ -7,7 +7,12 @@
     <com.andy.LuFM.view.autoSrcollViewpager.AutoScrollViewPager
         android:id="@+id/vp"
         android:layout_width="match_parent"
-        android:layout_height="175dip" />
+        android:layout_height="220dip" />
 
+    <com.andy.LuFM.view.SlidingTabLineLayout
+        android:id="@+id/sliding_tabs"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="#ffffff" />
 
 </LinearLayout>
