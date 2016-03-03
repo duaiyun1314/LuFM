@@ -85,10 +85,10 @@ public class SlidingTabLineLayout extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        canvas.drawLine(startX, 0, startX + distance, height, paint);
+        canvas.drawRect(startX, 0, startX + distance, height, paint);
         //判断第一条线滑出屏幕了 滑出的部分从另一侧滑进
         if ((startX + distance) > width) {
-            canvas.drawLine(0, 0, startX + distance - width, height, paint);
+            canvas.drawRect(0, 0, startX + distance - width, height, paint);
         }
     }
 
