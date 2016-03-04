@@ -166,5 +166,16 @@ public class ControllerManager {
         // pushControllerByProperAnimation(controller);
     }
 
+    /**
+     * 单独打开具体的类别视图
+     *
+     * @param item
+     */
+    public void openCatogoryView(Object item) {
+        SwitchContentEvent event = new SwitchContentEvent();
+        event.type = SwitchContentEvent.SWITCH_TYPE_CATEGORY_DETAIL;
+        event.params = item;
+        EventBus.getDefault().post(event);
 
+    }
 }

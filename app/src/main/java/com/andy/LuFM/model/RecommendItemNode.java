@@ -5,7 +5,7 @@ import android.text.TextUtils;
 import com.andy.LuFM.Utils.TimeKit;
 
 /**
- * Created by wanglu on 15/11/16.
+ * 主视图列表item对应的bean
  */
 public class RecommendItemNode extends Node {
     public String belongName;

@@ -15,6 +15,7 @@ import com.andy.LuFM.providers.BaseProvider;
  */
 public abstract class BaseRecommendView<Controller extends BaseListController, Provider extends BaseProvider> extends FrameLayout implements SwipeRefreshLayout.OnRefreshListener {
     protected Controller controller;
+    protected boolean isMoreClickable = true;
 
 
     protected Activity mContext;
@@ -72,4 +73,8 @@ public abstract class BaseRecommendView<Controller extends BaseListController, P
     public abstract void setDate(Object object);
 
     public abstract int getSection();
+
+    public void setMoreClickable(boolean isClickable) {
+        this.isMoreClickable = isClickable;
+    }
 }

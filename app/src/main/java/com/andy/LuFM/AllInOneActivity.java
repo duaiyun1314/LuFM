@@ -26,6 +26,7 @@ import com.andy.LuFM.data.ds.ProgramNodeDs;
 import com.andy.LuFM.event.EventType;
 import com.andy.LuFM.event.IEventHandler;
 import com.andy.LuFM.event.SwitchContentEvent;
+import com.andy.LuFM.fragments.CategoryDetailFragment;
 import com.andy.LuFM.fragments.ChannelDetailFragment;
 import com.andy.LuFM.fragments.DiscoverFragment;
 import com.andy.LuFM.fragments.DownloadFragment;
@@ -47,6 +48,7 @@ public class AllInOneActivity extends BaseActivity implements IEventHandler, Rad
     private Fragment mCurrentContent;
     public static final String CHANNEL_DETAIL_TAG = "channel_detail_tag";
     public static final String SPECIAL_TOPIC_TAG = "special_topic_tag";
+    public static final String CATEGORY_DETAIL_TAG = "category_detail_tag";
     public static final String MAIN_CONTENT_TAG = "main_content_tag";
     public static final String MINI_PLAYER_TAG = "mini_player_tag";
 
@@ -198,14 +200,18 @@ public class AllInOneActivity extends BaseActivity implements IEventHandler, Rad
     public void onEventMainThread(SwitchContentEvent event) {
         String type = event.type;
         Object param = event.params;
-        if (type.equalsIgnoreCase("channeldetail")) {
+        if (type.equalsIgnoreCase(SwitchContentEvent.SWITCH_TYPE_CHANNEL_DETAIL)) {
             ChannelDetailFragment channelDetailFragment = new ChannelDetailFragment();
             channelDetailFragment.update(type, param);
             switchContent(channelDetailFragment, CHANNEL_DETAIL_TAG);
-        } else if (type.equalsIgnoreCase("specialtopic")) {
+        } else if (type.equalsIgnoreCase(SwitchContentEvent.SWITCH_TYPE_SPECIAL_TOPIC)) {
             SpecialTopicFragment specialTopicFragment = new SpecialTopicFragment();
             specialTopicFragment.update(type, param);
             switchContent(specialTopicFragment, SPECIAL_TOPIC_TAG);
+        } else if (type.equalsIgnoreCase(SwitchContentEvent.SWITCH_TYPE_CATEGORY_DETAIL)) {
+            CategoryDetailFragment categoryDetailFragment = new CategoryDetailFragment();
+            categoryDetailFragment.update(type, param);
+            switchContent(categoryDetailFragment, CATEGORY_DETAIL_TAG);
         }
     }
 
