@@ -43,7 +43,7 @@ public class RecommendNovelView extends BaseRecommendView<RecommendListControlle
                 View view = null;
                 switch (sectionType) {
                     case 2://tag
-                        return new RecommendTagView(mContext, isMoreClickable);
+                        return new RecommendTagView(mContext, false);
                     case 3://item
                         return new RecommendItemNovelView(mContext);
                 }
