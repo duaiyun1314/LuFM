@@ -6,14 +6,14 @@
     android:layout_height="match_parent"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:background="#ff0000"
-    tools:ignore="ContentDescription" >
+    tools:ignore="ContentDescription">
 
     <ImageView
         android:id="@+id/notification_base_image"
         android:layout_width="@dimen/notification_big_icon_width"
         android:layout_height="@dimen/notification_big_icon_height"
-        android:gravity="center" />
+        android:gravity="center"
+        android:src="@mipmap/ic_launcher" />
 
     <LinearLayout
         android:layout_width="0dp"
@@ -21,8 +21,8 @@
         android:layout_gravity="center_vertical"
         android:layout_weight="1"
         android:orientation="vertical"
-        android:paddingLeft="@dimen/notification_info_container_padding_left"
-        android:paddingBottom="@dimen/notification_info_container_padding_bottom" >
+        android:paddingBottom="@dimen/notification_info_container_padding_bottom"
+        android:paddingLeft="@dimen/notification_info_container_padding_left">
 
         <TextView
             android:id="@+id/notification_base_line_one"
@@ -41,31 +41,16 @@
     </LinearLayout>
 
     <ImageButton
-        android:id="@+id/notification_base_previous"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-       	style="@style/NotificationAction.Previous" />
-
-    <ImageButton
         android:id="@+id/notification_base_play"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         style="@style/NotificationAction.Play"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
     <ImageButton
         android:id="@+id/notification_base_next"
+        style="@style/NotificationAction.Next"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        style="@style/NotificationAction.Next" />
+        android:layout_height="wrap_content" />
 
-    <ImageButton
-        android:id="@+id/notification_base_collapse"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        style="@style/NotificationAction.Collapse"
-        android:paddingLeft="15dp"
-        android:paddingRight="10dp" />
 
 </LinearLayout>

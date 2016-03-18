@@ -2,13 +2,13 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/queue_drawer_mini_player_layout"
     android:layout_width="match_parent"
-    android:layout_height="60dip"
-    android:background="#a3a3a3">
+    android:layout_height="55dip"
+    android:background="@drawable/miniplayer_bg">
 
     <ImageView
         android:id="@+id/queue_drawer_album_art"
-        android:layout_width="50dip"
-        android:layout_height="50dip"
+        android:layout_width="43dip"
+        android:layout_height="43dip"
         android:layout_centerVertical="true"
         android:layout_marginLeft="@dimen/content_padding"
         android:adjustViewBounds="true"
@@ -27,6 +27,8 @@
         <LinearLayout
             android:layout_width="0dip"
             android:layout_height="match_parent"
+            android:layout_marginBottom="6dip"
+            android:layout_marginTop="6dip"
             android:layout_weight="3"
             android:orientation="vertical">
 
@@ -38,14 +40,11 @@
                 android:ellipsize="marquee"
                 android:marqueeRepeatLimit="marquee_forever"
                 android:scrollHorizontally="true"
-                android:shadowColor="#FF454545"
-                android:shadowDx="0"
-                android:shadowDy="0"
                 android:shadowRadius="5"
                 android:singleLine="true"
                 android:text="Unknown Song Title"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp" />
+                android:textColor="#606060"
+                android:textSize="16sp" />
 
             <TextView
                 android:id="@+id/artistAlbumName"
@@ -55,16 +54,13 @@
                 android:ellipsize="marquee"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
+                android:gravity="bottom"
                 android:marqueeRepeatLimit="marquee_forever"
                 android:scrollHorizontally="true"
-                android:shadowColor="#FF454545"
-                android:shadowDx="0"
-                android:shadowDy="0"
-                android:shadowRadius="5"
                 android:singleLine="true"
-                android:text="Unknown Artist - Unknown Album"
-                android:textColor="#FFFFFF"
-                android:textSize="14sp" />
+                android:text="Unknown Artist"
+                android:textColor="#99606060"
+                android:textSize="12sp" />
         </LinearLayout>
 
         <RelativeLayout
@@ -73,15 +69,13 @@
             android:layout_height="48dp"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:layout_gravity="center"
-            android:background="@drawable/shadowed_circle_red">
+            android:layout_gravity="center">
 
             <ImageButton
                 android:id="@+id/playPauseButton"
-                android:layout_width="18dp"
-                android:layout_height="18dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:layout_centerInParent="true"
-                android:adjustViewBounds="true"
                 android:background="#00000000"
                 android:scaleType="centerInside"
                 android:src="@drawable/pause_light"
@@ -91,26 +85,28 @@
 
         <ImageButton
             android:id="@+id/nextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="24dip"
+            android:layout_height="24dip"
             android:layout_gravity="center"
-            android:layout_weight="1"
+            android:layout_marginLeft="16dip"
+            android:layout_marginRight="16dip"
             android:alpha="0.9"
             android:background="?android:selectableItemBackground"
-            android:src="@drawable/btn_playback_next_light" />
+            android:src="@drawable/next_light" />
 
     </LinearLayout>
 
-    <SeekBar
+
+    <ProgressBar
         android:id="@+id/nowPlayingSeekBar"
+        style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="4dip"
         android:layout_alignParentBottom="true"
-        android:indeterminate="false"
-        android:maxHeight="4dip"
-        android:minHeight="4dip"
+        android:background="@android:color/transparent"
         android:progress="0"
-        android:thumb="@drawable/transparent_drawable"
-        android:thumbOffset="0dp" />
+        android:progressDrawable="@drawable/progress_drawable"
+
+        />
 
 </RelativeLayout>

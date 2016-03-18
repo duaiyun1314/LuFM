@@ -26,4 +26,10 @@ public class Constants {
      * 电台
      */
     public static final int RADIO_SECTION = 9999;
+
+    public static final String KEY_PLAYER_SEEK_TO_PROGRESS = "seek_to_progress";
+    /**
+     * 是否开启随机模式
+     */
+    public static final String SHUFFLE_ON = "shuffle_on";
 }

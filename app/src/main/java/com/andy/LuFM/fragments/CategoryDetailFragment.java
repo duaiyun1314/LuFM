@@ -82,7 +82,6 @@ public class CategoryDetailFragment extends Fragment implements View.OnClickList
                 break;
         }
         if (viewGroup != null) {
-            viewGroup.setMoreClickable(false);
             viewGroup.update(node.sectionId);
 
         }

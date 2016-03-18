@@ -1,6 +1,8 @@
 package com.andy.LuFM.view.channeldetail;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -15,9 +17,10 @@ import android.widget.TextView;
 
 import com.andy.LuFM.AllInOneActivity;
 import com.andy.LuFM.R;
-import com.andy.LuFM.TestApplication;
+import com.andy.LuFM.PlayApplication;
 import com.andy.LuFM.controller.BaseListController;
 import com.andy.LuFM.data.InfoManager;
+import com.andy.LuFM.event.PlayActionEvent;
 import com.andy.LuFM.helper.ChannelHelper;
 import com.andy.LuFM.model.ChannelNode;
 import com.andy.LuFM.model.ProgramNode;
@@ -26,6 +29,8 @@ import com.andy.LuFM.player.AudioPlaybackService;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import de.greenrobot.event.EventBus;
 
 
 /**
@@ -63,6 +68,7 @@ public class ChannelDetailView extends LinearLayout implements ChannelHelper.IDa
         LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         coverView = new ChannelDetailCoverView(context);
         addView(coverView, layoutParams);
+        EventBus.getDefault().register(this);
 
     }
 
@@ -217,17 +223,18 @@ public class ChannelDetailView extends LinearLayout implements ChannelHelper.IDa
         programs.clear();
         programs.addAll(programNodes);
         ((ProgramNodesProvider.MYAdapter) this.programNodesProvider.getAdapter()).setData(programs);
-        //  PlayerAgent.getInstance().play(programNodes.get(0));
-        AudioPlaybackService service = TestApplication.from().getService();
+        AudioPlaybackService service = PlayApplication.from().getService();
         if (service == null || !service.isPlayingMusic()) {
             programNodesProvider.setSelectedItem(0);
-            ((TestApplication) TestApplication.from()).getPlaybackKickstarter().initPlayback(context, programs, 0, false, true);
+            ((PlayApplication) PlayApplication.from()).getPlaybackKickstarter().initPlayback(context, programs, 0, false, true);
         } else if (service.isPlayingMusic()) {
             int playingChannelId = service.getCurrentSong().getId();
             if (channelNode.channelId == playingChannelId) {
                 programNodesProvider.setSelectedItem(service.getCurrentSongIndex());
 
             }
+            ((PlayApplication) PlayApplication.from()).getPlaybackKickstarter().getBuildCursorListener().onServiceCursorUpdated(programNodes);
+
         }
         //  this.mAdapter.setData(ListUtils.convertToObjectList(programs));
        /* if (!(!this.mFirstTime || index == -1 || this.mListView == null)) {
@@ -245,7 +252,7 @@ public class ChannelDetailView extends LinearLayout implements ChannelHelper.IDa
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         programNodesProvider.setSelectedItem(position);
-        ((TestApplication) TestApplication.from()).getPlaybackKickstarter().initPlayback(context, programs, position, false, true);
+        ((PlayApplication) PlayApplication.from()).getPlaybackKickstarter().initPlayback(context, programs, position, false, true);
 
     }
 
@@ -253,5 +260,26 @@ public class ChannelDetailView extends LinearLayout implements ChannelHelper.IDa
     public void onClick(View v) {
         AllInOneActivity allInOneActivity = (AllInOneActivity) getContext();
         allInOneActivity.onBackPressed();
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        EventBus.getDefault().unregister(this);
+    }
+
+    public void onEventMainThread(PlayActionEvent actionEvent) {
+        Intent intent = actionEvent.getIntent();
+        Bundle bundle = intent.getExtras();
+
+        if (bundle.containsKey(PlayApplication.UPDATE_PAGER_POSTIION)) {
+            AudioPlaybackService service = PlayApplication.from().getService();
+            int playingChannelId = service.getCurrentSong().getId();
+            if (channelNode.channelId == playingChannelId) {
+                programNodesProvider.setSelectedItem(service.getCurrentSongIndex());
+
+            }
+
+        }
     }
 }

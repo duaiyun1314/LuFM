@@ -31,27 +31,27 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
-import android.view.animation.ScaleAnimation;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.andy.LuFM.PlayApplication;
 import com.andy.LuFM.R;
-import com.andy.LuFM.TestApplication;
+import com.andy.LuFM.event.PlayActionEvent;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+
+import de.greenrobot.event.EventBus;
 
 
 public class MiniPlayerFragment extends Fragment {
 
     private Context mContext;
-    private TestApplication mApp;
+    private PlayApplication mApp;
 
     private ImageView mMiniPlayerAlbumArt;
     private RelativeLayout mPlayPauseBackground;
@@ -59,7 +59,7 @@ public class MiniPlayerFragment extends Fragment {
     private ImageButton mNextButton;
     private TextView mTitleText;
     private TextView mSubText;
-    private SeekBar mSeekBar;
+    private ProgressBar mSeekBar;
     //Handler object.
     private Handler mHandler = new Handler();
 
@@ -109,6 +109,7 @@ public class MiniPlayerFragment extends Fragment {
                 .showImageOnLoading(R.drawable.recommend_defaultbg)
                 .showImageOnFail(R.drawable.recommend_defaultbg)
                 .build();
+        EventBus.getDefault().register(this);
     }
 
     @SuppressWarnings("deprecation")
@@ -117,7 +118,7 @@ public class MiniPlayerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         mContext = getActivity();
-        mApp = TestApplication.from();
+        mApp = PlayApplication.from();
 
         View rootView = inflater.inflate(R.layout.fragment_queue_drawer, null);
 
@@ -127,7 +128,7 @@ public class MiniPlayerFragment extends Fragment {
         mNextButton = (ImageButton) rootView.findViewById(R.id.nextButton);
         mTitleText = (TextView) rootView.findViewById(R.id.songName);
         mSubText = (TextView) rootView.findViewById(R.id.artistAlbumName);
-        mSeekBar = (SeekBar) rootView.findViewById(R.id.nowPlayingSeekBar);
+        mSeekBar = (ProgressBar) rootView.findViewById(R.id.nowPlayingSeekBar);
 
         // mPlayPauseBackground.setBackgroundResource(UIElementsHelper.getShadowedCircle(mContext));
         mPlayPauseButton.setTag("pause_light");
@@ -153,50 +154,43 @@ public class MiniPlayerFragment extends Fragment {
         return rootView;
     }
 
-    /**
-     * Broadcast receiver interface that will update this activity as necessary.
-     */
-    BroadcastReceiver mReceiver = new BroadcastReceiver() {
+    public void onEventMainThread(PlayActionEvent actionEvent) {
+        Intent intent = actionEvent.getIntent();
+        Bundle bundle = intent.getExtras();
 
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Bundle bundle = intent.getExtras();
-
-            if (bundle.containsKey(TestApplication.UPDATE_PAGER_POSTIION)) {
-                //Update the queue fragment with the new song info.
-                initMiniPlayer();
-
-            }
-
-            //Updates the playback control buttons.
-            if (intent.hasExtra(TestApplication.UPDATE_PLAYBACK_CONTROLS))
-                setPlayPauseButton();
-
-            if (bundle.containsKey(TestApplication.SERVICE_STOPPING)) {
-                //    showEmptyTextView();
-
-            }
-            //Updates the buffering progress on the seekbar.
-            if (intent.hasExtra(TestApplication.UPDATE_BUFFERING_PROGRESS))
-                mSeekBar.setSecondaryProgress(Integer.parseInt(
-                        bundle.getString(
-                                TestApplication.UPDATE_BUFFERING_PROGRESS)));
-            //Updates the duration of the SeekBar.
-            if (intent.hasExtra(TestApplication.UPDATE_SEEKBAR_DURATION))
-                setSeekbarDuration(Integer.parseInt(
-                        bundle.getString(
-                                TestApplication.UPDATE_SEEKBAR_DURATION)));
+        if (bundle.containsKey(PlayApplication.UPDATE_PAGER_POSTIION)) {
+            //Update the queue fragment with the new song info.
+            initMiniPlayer();
 
         }
 
-    };
+        //Updates the playback control buttons.
+        if (intent.hasExtra(PlayApplication.UPDATE_PLAYBACK_CONTROLS))
+            setPlayPauseButton();
+
+        if (bundle.containsKey(PlayApplication.SERVICE_STOPPING)) {
+            //    showEmptyTextView();
+
+        }
+        //Updates the buffering progress on the seekbar.
+        if (intent.hasExtra(PlayApplication.UPDATE_BUFFERING_PROGRESS))
+            mSeekBar.setSecondaryProgress(Integer.parseInt(
+                    bundle.getString(
+                            PlayApplication.UPDATE_BUFFERING_PROGRESS)));
+        //Updates the duration of the SeekBar.
+        if (intent.hasExtra(PlayApplication.UPDATE_SEEKBAR_DURATION))
+            setSeekbarDuration(Integer.parseInt(
+                    bundle.getString(
+                            PlayApplication.UPDATE_SEEKBAR_DURATION)));
+
+    }
 
     /**
      * Helper method that checks whether the audio playback service
      * is running or not.
      */
     private void checkServiceRunning() {
-        if (mApp.isServiceRunning() && mApp.getService().getCursor() != null) {
+        if (mApp.isServiceRunning() && mApp.getService().getData() != null) {
             initMiniPlayer();
             setPlayPauseButton();
         } else {
@@ -223,82 +217,14 @@ public class MiniPlayerFragment extends Fragment {
     private void setPlayPauseButton() {
         if (mApp.isServiceRunning()) {
             if (mApp.getService().isPlayingMusic())
-                animatePlayToPause();
+                mPlayPauseButton.setImageResource(R.drawable.pause_light);
             else
-                animatePauseToPlay();
+                mPlayPauseButton.setImageResource(R.drawable.play_light);
 
         }
 
     }
 
-    /**
-     * Animates the play button to a pause button.
-     */
-    private void animatePlayToPause() {
-
-        //Check to make sure the current icon is the play icon.
-        if (mPlayPauseButton.getTag() != "play_light")
-            return;
-
-        //Fade out the play button.
-        final ScaleAnimation scaleOut = new ScaleAnimation(1.0f, 0.0f, 1.0f, 0.0f,
-                mPlayPauseButton.getWidth() / 2,
-                mPlayPauseButton.getHeight() / 2);
-        scaleOut.setDuration(150);
-        scaleOut.setInterpolator(new AccelerateInterpolator());
-
-
-        //Scale in the pause button.
-        final ScaleAnimation scaleIn = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f,
-                mPlayPauseButton.getWidth() / 2,
-                mPlayPauseButton.getHeight() / 2);
-        scaleIn.setDuration(150);
-        scaleIn.setInterpolator(new DecelerateInterpolator());
-
-        scaleOut.setAnimationListener(new Animation.AnimationListener() {
-
-            @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                mPlayPauseButton.setImageResource(R.drawable.pause_light);
-                mPlayPauseButton.setPadding(0, 0, 0, 0);
-                mPlayPauseButton.startAnimation(scaleIn);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-
-        });
-
-        scaleIn.setAnimationListener(new Animation.AnimationListener() {
-
-            @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                mPlayPauseButton.setScaleX(1.0f);
-                mPlayPauseButton.setScaleY(1.0f);
-                mPlayPauseButton.setTag("pause_light");
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-
-        });
-
-        mPlayPauseButton.startAnimation(scaleOut);
-    }
 
     /**
      * Animates the pause button to a play button.
@@ -309,64 +235,7 @@ public class MiniPlayerFragment extends Fragment {
         if (mPlayPauseButton.getTag() != "pause_light")
             return;
 
-        //Scale out the pause button.
-        final ScaleAnimation scaleOut = new ScaleAnimation(1.0f, 0.0f, 1.0f, 0.0f,
-                mPlayPauseButton.getWidth() / 2,
-                mPlayPauseButton.getHeight() / 2);
-        scaleOut.setDuration(150);
-        scaleOut.setInterpolator(new AccelerateInterpolator());
 
-
-        //Scale in the play button.
-        final ScaleAnimation scaleIn = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f,
-                mPlayPauseButton.getWidth() / 2,
-                mPlayPauseButton.getHeight() / 2);
-        scaleIn.setDuration(150);
-        scaleIn.setInterpolator(new DecelerateInterpolator());
-
-        scaleOut.setAnimationListener(new Animation.AnimationListener() {
-
-            @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                mPlayPauseButton.setImageResource(R.drawable.play_light);
-                mPlayPauseButton.setPadding(0, 0, -5, 0);
-                mPlayPauseButton.startAnimation(scaleIn);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-
-        });
-
-        scaleIn.setAnimationListener(new Animation.AnimationListener() {
-
-            @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                mPlayPauseButton.setScaleX(1.0f);
-                mPlayPauseButton.setScaleY(1.0f);
-                mPlayPauseButton.setTag("play_light");
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-
-        });
-
-        mPlayPauseButton.startAnimation(scaleOut);
     }
 
     /**
@@ -382,9 +251,9 @@ public class MiniPlayerFragment extends Fragment {
 
             //Update the playback UI elements.
             if (mApp.getService().isPlayingMusic())
-                animatePauseToPlay();
+                mPlayPauseButton.setImageResource(R.drawable.play_light);
             else
-                animatePlayToPause();
+                mPlayPauseButton.setImageResource(R.drawable.pause_light);
 
             /*
              * Toggle the playback state in a separate thread. This
@@ -469,7 +338,6 @@ public class MiniPlayerFragment extends Fragment {
 
         //Update the seekbar.
         try {
-            mSeekBar.setThumb(getResources().getDrawable(R.drawable.transparent_drawable));
             setSeekbarDuration(mApp.getService().getCurrentMediaPlayer().getDuration() / 1000);
         } catch (Exception e) {
             e.printStackTrace();
@@ -487,21 +355,6 @@ public class MiniPlayerFragment extends Fragment {
         mHandler.postDelayed(seekbarUpdateRunnable, 100);
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        LocalBroadcastManager.getInstance(mContext)
-                .registerReceiver((mReceiver), new IntentFilter(TestApplication.UPDATE_UI_BROADCAST));
-
-    }
-
-    @Override
-    public void onStop() {
-        LocalBroadcastManager.getInstance(mContext).unregisterReceiver(mReceiver);
-        super.onStop();
-
-    }
-
     public boolean isDrawerOpen() {
         return mDrawerOpen;
     }
@@ -510,5 +363,10 @@ public class MiniPlayerFragment extends Fragment {
         mDrawerOpen = isOpen;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
 }
 

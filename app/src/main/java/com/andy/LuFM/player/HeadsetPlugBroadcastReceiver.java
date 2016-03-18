@@ -19,7 +19,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.andy.LuFM.TestApplication;
+import com.andy.LuFM.PlayApplication;
 
 
 /**
@@ -30,12 +30,12 @@ import com.andy.LuFM.TestApplication;
  */
 public class HeadsetPlugBroadcastReceiver extends BroadcastReceiver {
 
-    private TestApplication mApp;
+    private PlayApplication mApp;
 
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        mApp = (TestApplication) context.getApplicationContext();
+        mApp = (PlayApplication) context.getApplicationContext();
 
         if (intent.getAction().equals(Intent.ACTION_HEADSET_PLUG)) {
             int state = intent.getIntExtra("state", -1);

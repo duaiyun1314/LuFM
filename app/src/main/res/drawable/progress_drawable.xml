@@ -2,9 +2,9 @@
 
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <!--  背景  -->
-    <item android:id="@android:id/background">
+    <!--<item android:id="@android:id/background">
         <shape>
-            <!-- <corners android:radius="5dip" />-->
+            &lt;!&ndash; <corners android:radius="5dip" />&ndash;&gt;
             <gradient
                 android:angle="270"
                 android:centerColor="#a3a3a3"
@@ -12,7 +12,7 @@
                 android:endColor="#a3a3a3"
                 android:startColor="#a3a3a3" />
         </shape>
-    </item>
+    </item>-->
     <!--  第二进度条  -->
     <item android:id="@android:id/secondaryProgress">
         <clip>

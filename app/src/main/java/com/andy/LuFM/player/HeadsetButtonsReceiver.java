@@ -20,8 +20,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.KeyEvent;
 
-import com.andy.LuFM.TestApplication;
-import com.andy.LuFM.player.AudioPlaybackService;
+import com.andy.LuFM.PlayApplication;
 
 
 /**
@@ -32,7 +31,7 @@ import com.andy.LuFM.player.AudioPlaybackService;
  */
 public class HeadsetButtonsReceiver extends BroadcastReceiver {
 	
-	private TestApplication mApp;
+	private PlayApplication mApp;
 	
     public HeadsetButtonsReceiver() {
         super();
@@ -41,7 +40,7 @@ public class HeadsetButtonsReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
     			
-    	mApp = (TestApplication) context.getApplicationContext();
+    	mApp = (PlayApplication) context.getApplicationContext();
     	
     	//There's no point in going any further if the service isn't running.
     	if (mApp.isServiceRunning()) {

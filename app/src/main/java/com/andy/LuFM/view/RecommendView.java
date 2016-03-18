@@ -42,7 +42,7 @@ public class RecommendView extends BaseRecommendView<RecommendListController, Re
                 View view = null;
                 switch (sectionType) {
                     case 2://tag
-                        return new RecommendTagView(mContext, isMoreClickable);
+                        return new RecommendTagView(mContext);
                     case 3://item
                         return new RecommendItemView(mContext);
                 }
@@ -88,8 +88,4 @@ public class RecommendView extends BaseRecommendView<RecommendListController, Re
 
     }
 
-    @Override
-    public void setMoreClickable(boolean isClickable) {
-        super.setMoreClickable(isClickable);
-    }
 }

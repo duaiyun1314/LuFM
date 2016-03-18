@@ -64,11 +64,11 @@
     </style>
 
     <style name="NotificationAction.Play" parent="@style/NotificationAction">
-        <item name="android:src">@drawable/btn_playback_play_light</item>
+        <item name="android:src">@drawable/n_play</item>
     </style>
 
     <style name="NotificationAction.Next" parent="@style/NotificationAction">
-        <item name="android:src">@drawable/btn_playback_next_light</item>
+        <item name="android:src">@drawable/n_next</item>
     </style>
 
     <style name="NotificationAction.Collapse" parent="@style/NotificationAction">

@@ -19,10 +19,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 
-import com.andy.LuFM.TestApplication;
+import com.andy.LuFM.PlayApplication;
 import com.andy.LuFM.model.ProgramNode;
-import com.andy.LuFM.player.AudioPlaybackService;
-import com.andy.LuFM.player.NowPlayingActivity;
 
 import java.util.List;
 
@@ -36,7 +34,7 @@ import java.util.List;
 public class PlaybackKickstarter implements AudioPlaybackService.PrepareServiceListener {
 
     private Context mContext;
-    private TestApplication mApp;
+    private PlayApplication mApp;
 
     private List<ProgramNode> programNodes;
     private int mCurrentSongIndex;
@@ -91,7 +89,7 @@ public class PlaybackKickstarter implements AudioPlaybackService.PrepareServiceL
                              boolean showTextNowPlayingActivity,
                              boolean playAll) {
 
-        mApp = (TestApplication) mContext.getApplicationContext();
+        mApp = (PlayApplication) mContext.getApplicationContext();
         mCurrentSongIndex = currentSongIndex;
         mPlayAll = playAll;
         programNodes = lists;
@@ -132,7 +130,7 @@ public class PlaybackKickstarter implements AudioPlaybackService.PrepareServiceL
     @Override
     public void onServiceRunning(AudioPlaybackService service) {
         //Build the cursor and pass it on to the service.
-        mApp = (TestApplication) mContext.getApplicationContext();
+        mApp = (PlayApplication) mContext.getApplicationContext();
         mApp.setIsServiceRunning(true);
         mApp.setService(service);
         mApp.getService().setPrepareServiceListener(this);

@@ -2,8 +2,8 @@
 <resources>
 
 
-    <color name="statusColor">#900000</color>
-    <color name="toolbarColor">#ff3300</color>
+    <color name="statusColor">#D14946</color>
+    <color name="toolbarColor">#D14946</color>
     <color name="textColor">#474747</color>
 
     <color name="normal_text_color">#272930</color>

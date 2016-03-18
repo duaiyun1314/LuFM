@@ -20,7 +20,7 @@ import android.media.audiofx.BassBoost;
 import android.media.audiofx.Equalizer;
 import android.media.audiofx.PresetReverb;
 import android.media.audiofx.Virtualizer;
-import com.andy.LuFM.TestApplication;
+import com.andy.LuFM.PlayApplication;
 
 
 /**
@@ -33,7 +33,7 @@ public class EqualizerHelper {
 
 	//Context and helper objects.
 	Context mContext;
-	TestApplication mApp;
+	PlayApplication mApp;
 	
 	//Equalizer objects.
 	private Equalizer mEqualizer;
@@ -63,7 +63,7 @@ public class EqualizerHelper {
 		
 		//Context and helper objects.
 		mContext = context.getApplicationContext();
-		mApp = (TestApplication) mContext;
+		mApp = (PlayApplication) mContext;
 		
 		//Init mMediaPlayer's equalizer engine.
 		mEqualizer = new Equalizer(0, audioSessionId1);

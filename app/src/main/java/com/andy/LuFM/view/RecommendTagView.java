@@ -18,19 +18,6 @@ public class RecommendTagView extends LView implements View.OnClickListener {
     private TextView mTagName;
     private LinearLayout mMore;
     private RecommendItemNode node;
-    private boolean isMoreClickable = true;
-
-
-    public RecommendTagView(Context context, boolean isMoreClickable) {
-        this(context, null);
-        if (isMoreClickable) {
-            mMore.setOnClickListener(this);
-        } else {
-            mMore.setVisibility(View.GONE);
-        }
-
-    }
-
     public RecommendTagView(Context context) {
         this(context, null);
     }
@@ -44,6 +31,7 @@ public class RecommendTagView extends LView implements View.OnClickListener {
         inflate(context, R.layout.layout_recommend_tag, this);
         mTagName = (TextView) findViewById(R.id.tag_name);
         mMore = (LinearLayout) findViewById(R.id.more_container);
+        mMore.setOnClickListener(this);
 
     }
 

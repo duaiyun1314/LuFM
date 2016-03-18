@@ -4,15 +4,12 @@ import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Toast;
 
 import com.andy.LuFM.Utils.Constants;
 import com.andy.LuFM.Utils.ImageLoaderUtil;
-import com.andy.LuFM.controller.ControllerManager;
 import com.andy.LuFM.data.DataCommand;
 import com.andy.LuFM.data.DataManager;
 import com.andy.LuFM.data.DataOfflineManager;
@@ -259,7 +256,7 @@ public class AllInOneActivity extends BaseActivity implements IEventHandler, Rad
         super.onDestroy();
 
         //如果没有播放任务，停止service
-        AudioPlaybackService service = TestApplication.from().getService();
+        AudioPlaybackService service = PlayApplication.from().getService();
         if (service != null && !service.isPlayingMusic()) {
             service.stopPlayback();
         }

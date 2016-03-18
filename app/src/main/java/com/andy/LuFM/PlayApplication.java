@@ -10,6 +10,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.view.View;
 import android.webkit.WebView;
 
+import com.andy.LuFM.event.PlayActionEvent;
 import com.andy.LuFM.player.AudioPlaybackService;
 import com.andy.LuFM.player.NowPlayingActivity;
 import com.andy.LuFM.player.PlaybackKickstarter;
@@ -20,15 +21,17 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
+import de.greenrobot.event.EventBus;
+
 /**
  * Singleton class that provides access to common objects
  * and methods used in the application.
  *
  * @author Saravan Pantham
  */
-public class TestApplication extends LuFmApplication {
+public class PlayApplication extends LuFmApplication {
 
-    public static TestApplication mApp;
+    public static PlayApplication mApp;
     //Context.
     private Context mContext;
 
@@ -173,7 +176,7 @@ public class TestApplication extends LuFmApplication {
     public static final int REPEAT_SONG = 2;
     public static final int A_B_REPEAT = 3;
 
-    public static TestApplication from() {
+    public static PlayApplication from() {
         if (mApp != null) {
             return mApp;
         }
@@ -201,7 +204,7 @@ public class TestApplication extends LuFmApplication {
         mImageLoaderConfiguration = new ImageLoaderConfiguration.Builder(getApplicationContext())
                 .memoryCache(new WeakMemoryCache())
                 .memoryCacheSizePercentage(13)
-                        //     .imageDownloader(new ByteArrayUniversalImageLoader(mContext))
+                //     .imageDownloader(new ByteArrayUniversalImageLoader(mContext))
                 .build();
         mImageLoader.init(mImageLoaderConfiguration);
 
@@ -268,9 +271,9 @@ public class TestApplication extends LuFmApplication {
         for (int i = 0; i < updateFlags.length; i++) {
             intent.putExtra(updateFlags[i], flagValues[i]);
         }
-
-        mLocalBroadcastManager = LocalBroadcastManager.getInstance(mContext);
-        mLocalBroadcastManager.sendBroadcast(intent);
+        PlayActionEvent actionEvent = new PlayActionEvent();
+        actionEvent.setIntent(intent);
+        EventBus.getDefault().post(actionEvent);
 
     }
 

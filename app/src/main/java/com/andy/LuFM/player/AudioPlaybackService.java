@@ -43,8 +43,8 @@ import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
+import com.andy.LuFM.PlayApplication;
 import com.andy.LuFM.R;
-import com.andy.LuFM.TestApplication;
 import com.andy.LuFM.data.InfoManager;
 import com.andy.LuFM.helper.ChannelHelper;
 import com.andy.LuFM.model.ChannelNode;
@@ -71,7 +71,7 @@ public class AudioPlaybackService extends Service {
     private Service mService;
 
     //Global Objects Provider.
-    private TestApplication mApp;
+    private PlayApplication mApp;
 
     //PrepareServiceListener instance.
     private PrepareServiceListener mPrepareServiceListener;
@@ -113,11 +113,11 @@ public class AudioPlaybackService extends Service {
     public static final int mNotificationId = 1080; //NOTE: Using 0 as a notification ID causes Android to ignore the notification call.
 
     //Custom actions for media player controls via the notification bar.
-    public static final String LAUNCH_NOW_PLAYING_ACTION = "com.jams.music.player.LAUNCH_NOW_PLAYING_ACTION";
-    public static final String PREVIOUS_ACTION = "com.jams.music.player.PREVIOUS_ACTION";
-    public static final String PLAY_PAUSE_ACTION = "com.jams.music.player.PLAY_PAUSE_ACTION";
-    public static final String NEXT_ACTION = "com.jams.music.player.NEXT_ACTION";
-    public static final String STOP_SERVICE = "com.jams.music.player.STOP_SERVICE";
+    public static final String LAUNCH_NOW_PLAYING_ACTION = "com.andy.LuFM.LAUNCH_NOW_PLAYING_ACTION";
+    public static final String PREVIOUS_ACTION = "com.andy.LuFM.PREVIOUS_ACTION";
+    public static final String PLAY_PAUSE_ACTION = "com.andy.LuFMr.PLAY_PAUSE_ACTION";
+    public static final String NEXT_ACTION = "com.andy.LuFM.NEXT_ACTION";
+    public static final String STOP_SERVICE = "com.andy.LuFM.STOP_SERVICE";
 
     //Indicates if an enqueue/queue reordering operation was performed on the original queue.
     private boolean mEnqueuePerformed = false;
@@ -191,7 +191,7 @@ public class AudioPlaybackService extends Service {
         mService = this;
         mHandler = new Handler();
 
-        mApp = (TestApplication) getApplicationContext();
+        mApp = (PlayApplication) getApplicationContext();
         mApp.setService((AudioPlaybackService) this);
         mAudioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
 
@@ -274,7 +274,7 @@ public class AudioPlaybackService extends Service {
         getMediaPlayer2().reset();
 
         //Loop the players if the repeat mode is set to repeat the current song.
-        if (getRepeatMode() == TestApplication.REPEAT_SONG) {
+        if (getRepeatMode() == PlayApplication.REPEAT_SONG) {
             getMediaPlayer().setLooping(true);
             getMediaPlayer2().setLooping(true);
         }
@@ -298,9 +298,9 @@ public class AudioPlaybackService extends Service {
      * Initializes the list of pointers to each cursor row.
      */
     private void initPlaybackIndecesList(boolean playAll) {
-        if (getCursor() != null && getPlaybackIndecesList() != null) {
+        if (getData() != null && getPlaybackIndecesList() != null) {
             getPlaybackIndecesList().clear();
-            for (int i = 0; i < getCursor().size(); i++) {
+            for (int i = 0; i < getData().size(); i++) {
                 getPlaybackIndecesList().add(i);
             }
 
@@ -364,7 +364,7 @@ public class AudioPlaybackService extends Service {
         mNotificationBuilder = new NotificationCompat.Builder(mContext);
         mNotificationBuilder.setOngoing(true);
         mNotificationBuilder.setAutoCancel(false);
-        mNotificationBuilder.setSmallIcon(R.drawable.ic_arrow_more);
+        mNotificationBuilder.setSmallIcon(R.mipmap.ic_launcher);
 
         //Open up the player screen when the user taps on the notification.
         Intent launchNowPlayingIntent = new Intent();
@@ -374,12 +374,8 @@ public class AudioPlaybackService extends Service {
 
         //Grab the notification layouts.
         RemoteViews notificationView = new RemoteViews(mContext.getPackageName(), R.layout.notification_custom_layout);
-        RemoteViews expNotificationView = new RemoteViews(mContext.getPackageName(), R.layout.notification_custom_expanded_layout);
 
         //Initialize the notification layout buttons.
-        Intent previousTrackIntent = new Intent();
-        previousTrackIntent.setAction(AudioPlaybackService.PREVIOUS_ACTION);
-        PendingIntent previousTrackPendingIntent = PendingIntent.getBroadcast(mContext.getApplicationContext(), 0, previousTrackIntent, 0);
 
         Intent playPauseTrackIntent = new Intent();
         playPauseTrackIntent.setAction(AudioPlaybackService.PLAY_PAUSE_ACTION);
@@ -395,75 +391,46 @@ public class AudioPlaybackService extends Service {
 
         //Check if audio is playing and set the appropriate play/pause button.
         if (mApp.getService().isPlayingMusic()) {
-            notificationView.setImageViewResource(R.id.notification_base_play, R.drawable.btn_playback_pause);
-            expNotificationView.setImageViewResource(R.id.notification_expanded_base_play, R.drawable.btn_playback_pause);
+            notificationView.setImageViewResource(R.id.notification_base_play, R.drawable.n_stop);
         } else {
-            notificationView.setImageViewResource(R.id.notification_base_play, R.drawable.btn_playback_play);
-            expNotificationView.setImageViewResource(R.id.notification_expanded_base_play, R.drawable.btn_playback_play);
+            notificationView.setImageViewResource(R.id.notification_base_play, R.drawable.n_play);
         }
 
         //Set the notification content.
-        expNotificationView.setTextViewText(R.id.notification_expanded_base_line_one, songHelper.getTitle());
-        expNotificationView.setTextViewText(R.id.notification_expanded_base_line_two, songHelper.getArtist());
-        expNotificationView.setTextViewText(R.id.notification_expanded_base_line_three, songHelper.getAlbum());
 
         notificationView.setTextViewText(R.id.notification_base_line_one, songHelper.getTitle());
-        notificationView.setTextViewText(R.id.notification_base_line_two, songHelper.getArtist());
+        notificationView.setTextViewText(R.id.notification_base_line_two, songHelper.getAlbum());
 
         //Set the states of the next/previous buttons and their pending intents.
         if (mApp.getService().isOnlySongInQueue()) {
             //This is the only song in the queue, so disable the previous/next buttons.
-            expNotificationView.setViewVisibility(R.id.notification_expanded_base_next, View.INVISIBLE);
-            expNotificationView.setViewVisibility(R.id.notification_expanded_base_previous, View.INVISIBLE);
-            expNotificationView.setOnClickPendingIntent(R.id.notification_expanded_base_play, playPauseTrackPendingIntent);
 
             notificationView.setViewVisibility(R.id.notification_base_next, View.INVISIBLE);
-            notificationView.setViewVisibility(R.id.notification_base_previous, View.INVISIBLE);
             notificationView.setOnClickPendingIntent(R.id.notification_base_play, playPauseTrackPendingIntent);
 
         } else if (mApp.getService().isFirstSongInQueue()) {
             //This is the the first song in the queue, so disable the previous button.
-            expNotificationView.setViewVisibility(R.id.notification_expanded_base_previous, View.INVISIBLE);
-            expNotificationView.setViewVisibility(R.id.notification_expanded_base_next, View.VISIBLE);
-            expNotificationView.setOnClickPendingIntent(R.id.notification_expanded_base_play, playPauseTrackPendingIntent);
-            expNotificationView.setOnClickPendingIntent(R.id.notification_expanded_base_next, nextTrackPendingIntent);
 
-            notificationView.setViewVisibility(R.id.notification_base_previous, View.INVISIBLE);
             notificationView.setViewVisibility(R.id.notification_base_next, View.VISIBLE);
             notificationView.setOnClickPendingIntent(R.id.notification_base_play, playPauseTrackPendingIntent);
             notificationView.setOnClickPendingIntent(R.id.notification_base_next, nextTrackPendingIntent);
 
         } else if (mApp.getService().isLastSongInQueue()) {
             //This is the last song in the cursor, so disable the next button.
-            expNotificationView.setViewVisibility(R.id.notification_expanded_base_previous, View.VISIBLE);
-            expNotificationView.setViewVisibility(R.id.notification_expanded_base_next, View.INVISIBLE);
-            expNotificationView.setOnClickPendingIntent(R.id.notification_expanded_base_play, playPauseTrackPendingIntent);
-            expNotificationView.setOnClickPendingIntent(R.id.notification_expanded_base_next, nextTrackPendingIntent);
 
-            notificationView.setViewVisibility(R.id.notification_base_previous, View.VISIBLE);
             notificationView.setViewVisibility(R.id.notification_base_next, View.INVISIBLE);
             notificationView.setOnClickPendingIntent(R.id.notification_base_play, playPauseTrackPendingIntent);
             notificationView.setOnClickPendingIntent(R.id.notification_base_next, nextTrackPendingIntent);
 
         } else {
             //We're smack dab in the middle of the queue, so keep the previous and next buttons enabled.
-            expNotificationView.setViewVisibility(R.id.notification_expanded_base_previous, View.VISIBLE);
-            expNotificationView.setViewVisibility(R.id.notification_expanded_base_next, View.VISIBLE);
-            expNotificationView.setOnClickPendingIntent(R.id.notification_expanded_base_play, playPauseTrackPendingIntent);
-            expNotificationView.setOnClickPendingIntent(R.id.notification_expanded_base_next, nextTrackPendingIntent);
-            expNotificationView.setOnClickPendingIntent(R.id.notification_expanded_base_previous, previousTrackPendingIntent);
 
-            notificationView.setViewVisibility(R.id.notification_base_previous, View.VISIBLE);
             notificationView.setViewVisibility(R.id.notification_base_next, View.VISIBLE);
             notificationView.setOnClickPendingIntent(R.id.notification_base_play, playPauseTrackPendingIntent);
             notificationView.setOnClickPendingIntent(R.id.notification_base_next, nextTrackPendingIntent);
-            notificationView.setOnClickPendingIntent(R.id.notification_base_previous, previousTrackPendingIntent);
 
         }
 
-        //Set the "Stop Service" pending intents.
-        expNotificationView.setOnClickPendingIntent(R.id.notification_expanded_base_collapse, stopServicePendingIntent);
-        notificationView.setOnClickPendingIntent(R.id.notification_base_collapse, stopServicePendingIntent);
 
         //Set the album art.
         // expNotificationView.setImageViewBitmap(R.id.notification_expanded_base_image, songHelper.getAlbumArt());
@@ -476,7 +443,7 @@ public class AudioPlaybackService extends Service {
         Notification notification = mNotificationBuilder.build();
 
         //Attach the expanded layout to the notification and set its flags.
-        notification.bigContentView = expNotificationView;
+        //notification.bigContentView = expNotificationView;
         notification.flags = Notification.FLAG_FOREGROUND_SERVICE |
                 Notification.FLAG_NO_CLEAR |
                 Notification.FLAG_ONGOING_EVENT;
@@ -492,7 +459,7 @@ public class AudioPlaybackService extends Service {
         mNotificationBuilder = new NotificationCompat.Builder(mContext);
         mNotificationBuilder.setOngoing(true);
         mNotificationBuilder.setAutoCancel(false);
-        mNotificationBuilder.setSmallIcon(R.drawable.ic_arrow_more);
+        mNotificationBuilder.setSmallIcon(R.mipmap.ic_launcher);
 
         //Open up the player screen when the user taps on the notification.
         Intent launchNowPlayingIntent = new Intent();
@@ -522,9 +489,9 @@ public class AudioPlaybackService extends Service {
 
         //Check if audio is playing and set the appropriate play/pause button.
         if (mApp.getService().isPlayingMusic()) {
-            notificationView.setImageViewResource(R.id.notification_base_play, R.drawable.btn_playback_pause_light);
+            notificationView.setImageViewResource(R.id.notification_base_play, R.drawable.n_stop);
         } else {
-            notificationView.setImageViewResource(R.id.notification_base_play, R.drawable.btn_playback_play_light);
+            notificationView.setImageViewResource(R.id.notification_base_play, R.drawable.n_play);
         }
 
         //Set the notification content.
@@ -535,35 +502,28 @@ public class AudioPlaybackService extends Service {
         if (mApp.getService().isOnlySongInQueue()) {
             //This is the only song in the queue, so disable the previous/next buttons.
             notificationView.setViewVisibility(R.id.notification_base_next, View.INVISIBLE);
-            notificationView.setViewVisibility(R.id.notification_base_previous, View.INVISIBLE);
             notificationView.setOnClickPendingIntent(R.id.notification_base_play, playPauseTrackPendingIntent);
 
         } else if (mApp.getService().isFirstSongInQueue()) {
             //This is the the first song in the queue, so disable the previous button.
-            notificationView.setViewVisibility(R.id.notification_base_previous, View.INVISIBLE);
             notificationView.setViewVisibility(R.id.notification_base_next, View.VISIBLE);
             notificationView.setOnClickPendingIntent(R.id.notification_base_play, playPauseTrackPendingIntent);
             notificationView.setOnClickPendingIntent(R.id.notification_base_next, nextTrackPendingIntent);
 
         } else if (mApp.getService().isLastSongInQueue()) {
             //This is the last song in the cursor, so disable the next button.
-            notificationView.setViewVisibility(R.id.notification_base_previous, View.VISIBLE);
             notificationView.setViewVisibility(R.id.notification_base_next, View.INVISIBLE);
             notificationView.setOnClickPendingIntent(R.id.notification_base_play, playPauseTrackPendingIntent);
             notificationView.setOnClickPendingIntent(R.id.notification_base_next, nextTrackPendingIntent);
 
         } else {
             //We're smack dab in the middle of the queue, so keep the previous and next buttons enabled.
-            notificationView.setViewVisibility(R.id.notification_base_previous, View.VISIBLE);
             notificationView.setViewVisibility(R.id.notification_base_next, View.VISIBLE);
             notificationView.setOnClickPendingIntent(R.id.notification_base_play, playPauseTrackPendingIntent);
             notificationView.setOnClickPendingIntent(R.id.notification_base_next, nextTrackPendingIntent);
-            notificationView.setOnClickPendingIntent(R.id.notification_base_previous, previousTrackPendingIntent);
 
         }
 
-        //Set the "Stop Service" pending intent.
-        notificationView.setOnClickPendingIntent(R.id.notification_base_collapse, stopServicePendingIntent);
 
         //Set the album art.
         //   notificationView.setImageViewBitmap(R.id.notification_base_image, songHelper.getAlbumArt());
@@ -757,7 +717,7 @@ public class AudioPlaybackService extends Service {
                 if (getMediaPlayerSongHelper().getSavedPosition() != -1) {
                     //Seek to the saved track position.
                     mMediaPlayer.seekTo((int) getMediaPlayerSongHelper().getSavedPosition());
-                    mApp.broadcastUpdateUICommand(new String[]{TestApplication.SHOW_AUDIOBOOK_TOAST},
+                    mApp.broadcastUpdateUICommand(new String[]{PlayApplication.SHOW_AUDIOBOOK_TOAST},
                             new String[]{"" + getMediaPlayerSongHelper().getSavedPosition()});
 
                 }
@@ -797,7 +757,7 @@ public class AudioPlaybackService extends Service {
                 if (getMediaPlayer2SongHelper().getSavedPosition() != -1) {
                     //Seek to the saved track position.
                     mMediaPlayer2.seekTo((int) getMediaPlayer2SongHelper().getSavedPosition());
-                    mApp.broadcastUpdateUICommand(new String[]{TestApplication.SHOW_AUDIOBOOK_TOAST},
+                    mApp.broadcastUpdateUICommand(new String[]{PlayApplication.SHOW_AUDIOBOOK_TOAST},
                             new String[]{"" + getMediaPlayer2SongHelper().getSavedPosition()});
 
                 }
@@ -836,7 +796,7 @@ public class AudioPlaybackService extends Service {
             getMediaPlayer2().setVolume(1.0f, 1.0f);
 
             try {
-                if (isAtEndOfQueue() && getRepeatMode() != TestApplication.REPEAT_PLAYLIST) {
+                if (isAtEndOfQueue() && getRepeatMode() != PlayApplication.REPEAT_PLAYLIST) {
                     stopSelf();
                 } else if (isMediaPlayer2Prepared()) {
                     startMediaPlayer2();
@@ -880,7 +840,7 @@ public class AudioPlaybackService extends Service {
             getMediaPlayer2().setVolume(1.0f, 1.0f);
 
             try {
-                if (isAtEndOfQueue() && getRepeatMode() != TestApplication.REPEAT_PLAYLIST) {
+                if (isAtEndOfQueue() && getRepeatMode() != PlayApplication.REPEAT_PLAYLIST) {
                     stopSelf();
                 } else if (isMediaPlayerPrepared()) {
                     startMediaPlayer();
@@ -911,7 +871,7 @@ public class AudioPlaybackService extends Service {
                 if (mp == getCurrentMediaPlayer()) {
                     float max = mp.getDuration() / 1000;
                     float maxDividedByHundred = max / 100;
-                    mApp.broadcastUpdateUICommand(new String[]{TestApplication.UPDATE_BUFFERING_PROGRESS},
+                    mApp.broadcastUpdateUICommand(new String[]{PlayApplication.UPDATE_BUFFERING_PROGRESS},
                             new String[]{"" + (int) (percent * maxDividedByHundred)});
                 }
 
@@ -1021,10 +981,10 @@ public class AudioPlaybackService extends Service {
             try {
 
                 //Do not crossfade if the current song is set to repeat itself.
-                if (getRepeatMode() != TestApplication.REPEAT_SONG) {
+                if (getRepeatMode() != PlayApplication.REPEAT_SONG) {
 
                     //Do not crossfade if this is the last track in the queue.
-                    if (getCursor().size() > (mCurrentSongIndex + 1)) {
+                    if (getData().size() > (mCurrentSongIndex + 1)) {
 
                         //Set the next mMediaPlayer's volume and raise it incrementally.
                         if (getCurrentMediaPlayer() == getMediaPlayer()) {
@@ -1043,7 +1003,7 @@ public class AudioPlaybackService extends Service {
                                         if (getMediaPlayer2SongHelper().getSavedPosition() != -1) {
                                             //Seek to the saved track position.
                                             getMediaPlayer2().seekTo((int) getMediaPlayer2SongHelper().getSavedPosition());
-                                            mApp.broadcastUpdateUICommand(new String[]{TestApplication.SHOW_AUDIOBOOK_TOAST},
+                                            mApp.broadcastUpdateUICommand(new String[]{PlayApplication.SHOW_AUDIOBOOK_TOAST},
                                                     new String[]{"" + getMediaPlayer2SongHelper().getSavedPosition()});
 
                                         }
@@ -1073,7 +1033,7 @@ public class AudioPlaybackService extends Service {
                                         if (getMediaPlayerSongHelper().getSavedPosition() != -1) {
                                             //Seek to the saved track position.
                                             getMediaPlayer().seekTo((int) getMediaPlayerSongHelper().getSavedPosition());
-                                            mApp.broadcastUpdateUICommand(new String[]{TestApplication.SHOW_AUDIOBOOK_TOAST},
+                                            mApp.broadcastUpdateUICommand(new String[]{PlayApplication.SHOW_AUDIOBOOK_TOAST},
                                                     new String[]{"" + getMediaPlayerSongHelper().getSavedPosition()});
 
                                         }
@@ -1124,7 +1084,7 @@ public class AudioPlaybackService extends Service {
             getMediaPlayer().reset();
 
             //Loop the player if the repeat mode is set to repeat the current song.
-            if (getRepeatMode() == TestApplication.REPEAT_SONG) {
+            if (getRepeatMode() == PlayApplication.REPEAT_SONG) {
                 getMediaPlayer().setLooping(true);
             }
 
@@ -1198,7 +1158,7 @@ public class AudioPlaybackService extends Service {
             getMediaPlayer2().reset();
 
             //Loop the player if the repeat mode is set to repeat the current song.
-            if (getRepeatMode() == TestApplication.REPEAT_SONG) {
+            if (getRepeatMode() == PlayApplication.REPEAT_SONG) {
                 getMediaPlayer2().setLooping(true);
             }
 
@@ -1424,7 +1384,7 @@ public class AudioPlaybackService extends Service {
         mHandler.removeCallbacks(checkABRepeatRange);
         mRepeatSongRangePointA = 0;
         mRepeatSongRangePointB = 0;
-        mApp.getSharedPreferences().edit().putInt(TestApplication.REPEAT_MODE, TestApplication.REPEAT_OFF);
+        mApp.getSharedPreferences().edit().putInt(PlayApplication.REPEAT_MODE, PlayApplication.REPEAT_OFF);
     }
 
     /**
@@ -1446,7 +1406,7 @@ public class AudioPlaybackService extends Service {
                 e.printStackTrace();
             }
 
-            if (mApp.getSharedPreferences().getInt(TestApplication.REPEAT_MODE, TestApplication.REPEAT_OFF) == TestApplication.A_B_REPEAT) {
+            if (mApp.getSharedPreferences().getInt(PlayApplication.REPEAT_MODE, PlayApplication.REPEAT_OFF) == PlayApplication.A_B_REPEAT) {
                 mHandler.postDelayed(checkABRepeatRange, 100);
             }
 
@@ -1529,7 +1489,7 @@ public class AudioPlaybackService extends Service {
      * Returns the new value of mCurrentSongIndex.
      */
     public int incrementCurrentSongIndex() {
-        if ((getCurrentSongIndex() + 1) < getCursor().size())
+        if ((getCurrentSongIndex() + 1) < getData().size())
             mCurrentSongIndex++;
 
         return mCurrentSongIndex;
@@ -1591,11 +1551,11 @@ public class AudioPlaybackService extends Service {
 
 
         //Update the UI.
-        String[] updateFlags = new String[]{TestApplication.UPDATE_PAGER_POSTIION,
-                TestApplication.UPDATE_PLAYBACK_CONTROLS,
-                TestApplication.HIDE_STREAMING_BAR,
-                TestApplication.UPDATE_SEEKBAR_DURATION,
-                TestApplication.UPDATE_EQ_FRAGMENT};
+        String[] updateFlags = new String[]{PlayApplication.UPDATE_PAGER_POSTIION,
+                PlayApplication.UPDATE_PLAYBACK_CONTROLS,
+                PlayApplication.HIDE_STREAMING_BAR,
+                PlayApplication.UPDATE_SEEKBAR_DURATION,
+                PlayApplication.UPDATE_EQ_FRAGMENT};
 
         String[] flagValues = new String[]{getCurrentSongIndex() + "",
                 "",
@@ -1631,11 +1591,11 @@ public class AudioPlaybackService extends Service {
         getFailedIndecesList().clear();
 
         //Update the UI.
-        String[] updateFlags = new String[]{TestApplication.UPDATE_PAGER_POSTIION,
-                TestApplication.UPDATE_PLAYBACK_CONTROLS,
-                TestApplication.HIDE_STREAMING_BAR,
-                TestApplication.UPDATE_SEEKBAR_DURATION,
-                TestApplication.UPDATE_EQ_FRAGMENT};
+        String[] updateFlags = new String[]{PlayApplication.UPDATE_PAGER_POSTIION,
+                PlayApplication.UPDATE_PLAYBACK_CONTROLS,
+                PlayApplication.HIDE_STREAMING_BAR,
+                PlayApplication.UPDATE_SEEKBAR_DURATION,
+                PlayApplication.UPDATE_EQ_FRAGMENT};
 
         String[] flagValues = new String[]{getCurrentSongIndex() + "",
                 "",
@@ -1662,7 +1622,7 @@ public class AudioPlaybackService extends Service {
                 getCurrentMediaPlayer().start();
 
                 //Update the UI and scrobbler.
-                String[] updateFlags = new String[]{TestApplication.UPDATE_PLAYBACK_CONTROLS};
+                String[] updateFlags = new String[]{PlayApplication.UPDATE_PLAYBACK_CONTROLS};
                 String[] flagValues = new String[]{""};
 
                 mApp.broadcastUpdateUICommand(updateFlags, flagValues);
@@ -1692,7 +1652,7 @@ public class AudioPlaybackService extends Service {
             getCurrentMediaPlayer().pause();
 
             //Update the UI and scrobbler.
-            String[] updateFlags = new String[]{TestApplication.UPDATE_PLAYBACK_CONTROLS};
+            String[] updateFlags = new String[]{PlayApplication.UPDATE_PLAYBACK_CONTROLS};
             String[] flagValues = new String[]{""};
 
             mApp.broadcastUpdateUICommand(updateFlags, flagValues);
@@ -1718,7 +1678,7 @@ public class AudioPlaybackService extends Service {
             getCurrentMediaPlayer().stop();
 
             //Update the UI and scrobbler.
-           /* String[] updateFlags = new String[]{TestApplication.UPDATE_PLAYBACK_CONTROLS};
+           /* String[] updateFlags = new String[]{PlayApplication.UPDATE_PLAYBACK_CONTROLS};
             String[] flagValues = new String[]{""};
 
             mApp.broadcastUpdateUICommand(updateFlags, flagValues);
@@ -1748,7 +1708,7 @@ public class AudioPlaybackService extends Service {
             clearCrossfadeCallbacks();
 
             //Loop the players if the repeat mode is set to repeat the current song.
-            if (getRepeatMode() == TestApplication.REPEAT_SONG) {
+            if (getRepeatMode() == PlayApplication.REPEAT_SONG) {
                 getMediaPlayer().setLooping(true);
                 getMediaPlayer2().setLooping(true);
             }
@@ -1762,7 +1722,7 @@ public class AudioPlaybackService extends Service {
             incrementCurrentSongIndex();
 
             //Update the UI.
-            String[] updateFlags = new String[]{TestApplication.UPDATE_PAGER_POSTIION};
+            String[] updateFlags = new String[]{PlayApplication.UPDATE_PAGER_POSTIION};
             String[] flagValues = new String[]{getCurrentSongIndex() + ""};
             mApp.broadcastUpdateUICommand(updateFlags, flagValues);
 
@@ -1808,7 +1768,7 @@ public class AudioPlaybackService extends Service {
             clearCrossfadeCallbacks();
 
             //Loop the players if the repeat mode is set to repeat the current song.
-            if (getRepeatMode() == TestApplication.REPEAT_SONG) {
+            if (getRepeatMode() == PlayApplication.REPEAT_SONG) {
                 getMediaPlayer().setLooping(true);
                 getMediaPlayer2().setLooping(true);
             }
@@ -1822,7 +1782,7 @@ public class AudioPlaybackService extends Service {
             decrementCurrentSongIndex();
 
             //Update the UI.
-            String[] updateFlags = new String[]{TestApplication.UPDATE_PAGER_POSTIION};
+            String[] updateFlags = new String[]{PlayApplication.UPDATE_PAGER_POSTIION};
             String[] flagValues = new String[]{getCurrentSongIndex() + ""};
             mApp.broadcastUpdateUICommand(updateFlags, flagValues);
 
@@ -1851,7 +1811,7 @@ public class AudioPlaybackService extends Service {
             clearCrossfadeCallbacks();
 
             //Loop the players if the repeat mode is set to repeat the current song.
-            if (getRepeatMode() == TestApplication.REPEAT_SONG) {
+            if (getRepeatMode() == PlayApplication.REPEAT_SONG) {
                 getMediaPlayer().setLooping(true);
                 getMediaPlayer2().setLooping(true);
             }
@@ -1865,7 +1825,7 @@ public class AudioPlaybackService extends Service {
             setCurrentSongIndex(trackIndex);
 
             //Update the UI.
-            String[] updateFlags = new String[]{TestApplication.UPDATE_PAGER_POSTIION};
+            String[] updateFlags = new String[]{PlayApplication.UPDATE_PAGER_POSTIION};
             String[] flagValues = new String[]{getCurrentSongIndex() + ""};
             mApp.broadcastUpdateUICommand(updateFlags, flagValues);
 
@@ -1901,9 +1861,9 @@ public class AudioPlaybackService extends Service {
      * the end of the queue.
      */
     private int determineNextSongIndex() {
-        if (isAtEndOfQueue() && getRepeatMode() == TestApplication.REPEAT_PLAYLIST)
+        if (isAtEndOfQueue() && getRepeatMode() == PlayApplication.REPEAT_PLAYLIST)
             return 0;
-        else if (!isAtEndOfQueue() && getRepeatMode() == TestApplication.REPEAT_SONG)
+        else if (!isAtEndOfQueue() && getRepeatMode() == PlayApplication.REPEAT_SONG)
             return getCurrentSongIndex();
         else if (isAtEndOfQueue())
             return -1;
@@ -1930,7 +1890,7 @@ public class AudioPlaybackService extends Service {
     public boolean toggleShuffleMode() {
         if (isShuffleOn()) {
             //Set shuffle off.
-            mApp.getSharedPreferences().edit().putBoolean(TestApplication.SHUFFLE_ON, false).commit();
+            mApp.getSharedPreferences().edit().putBoolean(PlayApplication.SHUFFLE_ON, false).commit();
 
             //Save the element at the current index.
             int currentElement = getPlaybackIndecesList().get(getCurrentSongIndex());
@@ -1944,7 +1904,7 @@ public class AudioPlaybackService extends Service {
 
         } else {
             //Set shuffle on.
-            mApp.getSharedPreferences().edit().putBoolean(TestApplication.SHUFFLE_ON, true).commit();
+            mApp.getSharedPreferences().edit().putBoolean(PlayApplication.SHUFFLE_ON, true).commit();
 
             //Build a new list that doesn't include the current song index.
             ArrayList<Integer> newList = new ArrayList<Integer>(getPlaybackIndecesList());
@@ -1968,7 +1928,7 @@ public class AudioPlaybackService extends Service {
         prepareAlternateMediaPlayer();
 
         //Update all UI elements with the new queue order.
-        mApp.broadcastUpdateUICommand(new String[]{TestApplication.NEW_QUEUE_ORDER}, new String[]{""});
+        mApp.broadcastUpdateUICommand(new String[]{PlayApplication.NEW_QUEUE_ORDER}, new String[]{""});
         return isShuffleOn();
     }
 
@@ -1976,21 +1936,21 @@ public class AudioPlaybackService extends Service {
      * Applies the specified repeat mode.
      */
     public void setRepeatMode(int repeatMode) {
-        if (repeatMode == TestApplication.REPEAT_OFF || repeatMode == TestApplication.REPEAT_PLAYLIST ||
-                repeatMode == TestApplication.REPEAT_SONG || repeatMode == TestApplication.A_B_REPEAT) {
+        if (repeatMode == PlayApplication.REPEAT_OFF || repeatMode == PlayApplication.REPEAT_PLAYLIST ||
+                repeatMode == PlayApplication.REPEAT_SONG || repeatMode == PlayApplication.A_B_REPEAT) {
             //Save the repeat mode.
-            mApp.getSharedPreferences().edit().putInt(TestApplication.REPEAT_MODE, repeatMode).commit();
+            mApp.getSharedPreferences().edit().putInt(PlayApplication.REPEAT_MODE, repeatMode).commit();
         } else {
             //Just in case a bogus value is passed in.
-            mApp.getSharedPreferences().edit().putInt(TestApplication.REPEAT_MODE, TestApplication.REPEAT_OFF).commit();
+            mApp.getSharedPreferences().edit().putInt(PlayApplication.REPEAT_MODE, PlayApplication.REPEAT_OFF).commit();
         }
 
     	/*
          * Set the both MediaPlayer objects to loop if the repeat mode
-    	 * is TestApplication.REPEAT_SONG.
+    	 * is PlayApplication.REPEAT_SONG.
     	 */
         try {
-            if (repeatMode == TestApplication.REPEAT_SONG) {
+            if (repeatMode == PlayApplication.REPEAT_SONG) {
                 getMediaPlayer().setLooping(true);
                 getMediaPlayer2().setLooping(true);
             } else {
@@ -2011,7 +1971,7 @@ public class AudioPlaybackService extends Service {
          */
         clearCrossfadeCallbacks();
 
-        if (repeatMode != TestApplication.A_B_REPEAT)
+        if (repeatMode != PlayApplication.A_B_REPEAT)
             if (mHandler != null && mApp.isCrossfadeEnabled())
                 mHandler.post(startCrossFadeRunnable);
 
@@ -2132,7 +2092,7 @@ public class AudioPlaybackService extends Service {
     /**
      * Returns the service's cursor object.
      */
-    public List<ProgramNode> getCursor() {
+    public List<ProgramNode> getData() {
         return programNodes;
     }
 
@@ -2222,14 +2182,14 @@ public class AudioPlaybackService extends Service {
      * SharedPreferences.
      */
     public int getRepeatMode() {
-        return mApp.getSharedPreferences().getInt(TestApplication.REPEAT_MODE, TestApplication.REPEAT_OFF);
+        return mApp.getSharedPreferences().getInt(PlayApplication.REPEAT_MODE, PlayApplication.REPEAT_OFF);
     }
 
     /**
      * Indicates if shuffle mode is turned on or off.
      */
     public boolean isShuffleOn() {
-        return mApp.getSharedPreferences().getBoolean(TestApplication.SHUFFLE_ON, false);
+        return mApp.getSharedPreferences().getBoolean(PlayApplication.SHUFFLE_ON, false);
     }
 
     /**
@@ -2276,6 +2236,7 @@ public class AudioPlaybackService extends Service {
      * Changes the value of mCurrentSongIndex.
      */
     public void setCurrentSongIndex(int currentSongIndex) {
+        Log.i("Sync", "setCurrentSongIndex:" + currentSongIndex);
         mCurrentSongIndex = currentSongIndex;
     }
 
@@ -2318,7 +2279,9 @@ public class AudioPlaybackService extends Service {
      * Replaces the current cursor object with the new one.
      */
     public void setList(List<ProgramNode> list) {
+        Log.i("Sync", "list.size():" + list.size());
         programNodes = list;
+        Log.i("Sync", "改变的地方2");
     }
 
 
@@ -2327,7 +2290,7 @@ public class AudioPlaybackService extends Service {
      * False, otherwise.
      */
     public boolean isOnlySongInQueue() {
-        if (getCurrentSongIndex() == 0 && getCursor().size() == 1)
+        if (getCurrentSongIndex() == 0 && getData().size() == 1)
             return true;
         else
             return false;
@@ -2340,7 +2303,7 @@ public class AudioPlaybackService extends Service {
      * queue. False, otherwise.
      */
     public boolean isFirstSongInQueue() {
-        if (getCurrentSongIndex() == 0 && getCursor().size() > 1)
+        if (getCurrentSongIndex() == 0 && getData().size() > 1)
             return true;
         else
             return false;
@@ -2352,7 +2315,7 @@ public class AudioPlaybackService extends Service {
      * song in the queue. False, otherwise.
      */
     public boolean isLastSongInQueue() {
-        if (getCurrentSongIndex() == (getCursor().size() - 1))
+        if (getCurrentSongIndex() == (getData().size() - 1))
             return true;
         else
             return false;
@@ -2412,7 +2375,7 @@ public class AudioPlaybackService extends Service {
     public void onDestroy() {
 
         //Notify the UI that the service is about to stop.
-        mApp.broadcastUpdateUICommand(new String[]{TestApplication.SERVICE_STOPPING},
+        mApp.broadcastUpdateUICommand(new String[]{PlayApplication.SERVICE_STOPPING},
                 new String[]{""});
 
         //Fire a broadcast message to the widget(s) to update them.
@@ -2434,8 +2397,8 @@ public class AudioPlaybackService extends Service {
         }
 
         //If the current song is repeating a specific range, reset the repeat option.
-        if (getRepeatMode() == TestApplication.REPEAT_SONG) {
-            setRepeatMode(TestApplication.REPEAT_OFF);
+        if (getRepeatMode() == PlayApplication.REPEAT_SONG) {
+            setRepeatMode(PlayApplication.REPEAT_OFF);
         }
 
         mFadeInVolume = 0.0f;
@@ -2479,8 +2442,8 @@ public class AudioPlaybackService extends Service {
          * next service instance from repeating the same section
          * over and over on the new track.
          */
-        if (getRepeatMode() == TestApplication.A_B_REPEAT)
-            setRepeatMode(TestApplication.REPEAT_OFF);
+        if (getRepeatMode() == PlayApplication.A_B_REPEAT)
+            setRepeatMode(PlayApplication.REPEAT_OFF);
 
         //Remove audio focus and unregister the audio buttons receiver.
         mAudioManagerHelper.setHasAudioFocus(false);
@@ -2521,7 +2484,7 @@ public class AudioPlaybackService extends Service {
             prepareMediaPlayer(currentSongIndex);
 
             //Notify NowPlayingActivity to initialize its ViewPager.
-            mApp.broadcastUpdateUICommand(new String[]{TestApplication.INIT_PAGER},
+            mApp.broadcastUpdateUICommand(new String[]{PlayApplication.INIT_PAGER},
                     new String[]{""});
 
         }
@@ -2537,10 +2500,8 @@ public class AudioPlaybackService extends Service {
 
         @Override
         public void onServiceCursorUpdated(List<ProgramNode> programNodes) {
-            //Make sure the new cursor and the old cursor are the same size.
-            if (getCursor().size() == programNodes.size()) {
-                setList(programNodes);
-            }
+            Log.i("Sync", "改变的地方1");
+            setList(programNodes);
 
         }
 

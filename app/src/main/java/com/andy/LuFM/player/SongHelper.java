@@ -16,24 +16,26 @@
 package com.andy.LuFM.player;
 
 import android.content.Context;
-import android.view.animation.Transformation;
+import android.util.Log;
 
-import com.andy.LuFM.TestApplication;
+import com.andy.LuFM.PlayApplication;
 import com.andy.LuFM.helper.ChannelHelper;
 import com.andy.LuFM.model.ChannelNode;
 import com.andy.LuFM.model.Node;
 import com.andy.LuFM.model.ProgramNode;
 
+import java.util.List;
+
 
 /**
- * Helper class for the current song.
+ * 当前播放音频的相关信息
  *
- * @author Saravan Pantham
+ * @author Andy.Wang
  */
 public class SongHelper {
 
     private SongHelper mSongHelper;
-    private TestApplication mApp;
+    private PlayApplication mApp;
     private int mIndex;
     private boolean mIsCurrentSong = false;
     private boolean mIsAlbumArtLoaded = false;
@@ -62,57 +64,24 @@ public class SongHelper {
         public void albumArtLoaded();
     }
 
-    /**
-     * Moves the specified cursor to the specified index and populates this
-     * helper object with new song data.
-     *
-     * @param context             Context used to get a new TestApplication object.
-     * @param index               The index of the song.
-     * @param albumArtTransformer The transformer to apply to the album art bitmap;
-     */
-    public void populateSongData(Context context, int index, Transformation albumArtTransformer) {
-
-		/*mSongHelper = this;
-        mApp = (TestApplication) context.getApplicationContext();
-		mIndex = index;
-		
-		if (mApp.isServiceRunning()) {
-			mApp.getService().getCursor().moveToPosition(mApp.getService().getPlaybackIndecesList().get(index));
-*/
-          /*  this.setId(mApp.getService().getCursor().getString(getIdColumnIndex()));
-            this.setTitle(mApp.getService().getCursor().getString(getTitleColumnIndex()));
-            this.setAlbum(mApp.getService().getCursor().getString(getAlbumColumnIndex()));
-            this.setArtist(mApp.getService().getCursor().getString(getArtistColumnIndex()));
-            this.setAlbumArtist(mApp.getService().getCursor().getString(getAlbumArtistColumnIndex()));
-            this.setGenre(determineGenreName(context));
-            this.setDuration(determineDuration());
-
-            this.setFilePath(mApp.getService().getCursor().getString(getFilePathColumnIndex()));
-            this.setAlbumArtPath(determineAlbumArtPath());
-            this.setSource(determineSongSource());
-            this.setLocalCopyPath(determineLocalCopyPath());
-            this.setSavedPosition(determineSavedPosition());*/
-
-
-        //}
-
-    }
 
     /**
      * Moves the specified cursor to the specified index and populates this
      * helper object with new song data.
      *
-     * @param context Context used to get a new TestApplication object.
+     * @param context Context used to get a new PlayApplication object.
      * @param index   The index of the song.
      */
     public void populateSongData(Context context, int index) {
 
         mSongHelper = this;
-        mApp = TestApplication.from();
+        mApp = PlayApplication.from();
         mIndex = index;
 
         if (mApp.isServiceRunning()) {
-            Node node = mApp.getService().getCursor().get(index);
+            List<ProgramNode> programNodes = mApp.getService().getData();
+            Log.i("Sync", "当前size:" + programNodes.size());
+            Node node = programNodes.get(index);
             if (node instanceof ProgramNode) {
                 ProgramNode programNode = (ProgramNode) node;
                 //this.setId(programNode.channelId);
@@ -127,22 +96,6 @@ public class SongHelper {
 
             }
         }
-
-           /* this.setId(mApp.getService().getCursor().getString(getIdColumnIndex()));
-            this.setTitle(mApp.getService().getCursor().getString(getTitleColumnIndex()));
-            this.setAlbum(mApp.getService().getCursor().getString(getAlbumColumnIndex()));
-            this.setArtist(mApp.getService().getCursor().getString(getArtistColumnIndex()));
-            this.setAlbumArtist(mApp.getService().getCursor().getString(getAlbumArtistColumnIndex()));
-            this.setGenre(determineGenreName(context));
-            this.setDuration(determineDuration());
-
-            this.setFilePath(mApp.getService().getCursor().getString(getFilePathColumnIndex()));
-            this.setAlbumArtPath(determineAlbumArtPath());
-            this.setSource(determineSongSource());
-            this.setLocalCopyPath(determineLocalCopyPath());
-            this.setSavedPosition(determineSavedPosition());*/
-
-        //   }
 
     }
 
