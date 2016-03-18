@@ -15,9 +15,9 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.andy.LuFM.AllInOneActivity;
+import com.andy.LuFM.app.AllInOneActivity;
 import com.andy.LuFM.R;
-import com.andy.LuFM.PlayApplication;
+import com.andy.LuFM.app.PlayApplication;
 import com.andy.LuFM.controller.BaseListController;
 import com.andy.LuFM.data.InfoManager;
 import com.andy.LuFM.event.PlayActionEvent;
@@ -252,7 +252,7 @@ public class ChannelDetailView extends LinearLayout implements ChannelHelper.IDa
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         programNodesProvider.setSelectedItem(position);
-        ((PlayApplication) PlayApplication.from()).getPlaybackKickstarter().initPlayback(context, programs, position, false, true);
+        ((PlayApplication) PlayApplication.from()).getPlaybackKickstarter().initPlayback(context, programs, position, true, true);
 
     }
 

@@ -18,7 +18,7 @@ package com.andy.LuFM.player;
 import android.content.Context;
 import android.util.Log;
 
-import com.andy.LuFM.PlayApplication;
+import com.andy.LuFM.app.PlayApplication;
 import com.andy.LuFM.helper.ChannelHelper;
 import com.andy.LuFM.model.ChannelNode;
 import com.andy.LuFM.model.Node;
@@ -44,7 +44,7 @@ public class SongHelper {
     private String mTitle;//标题
     private String mArtist;
     private String mAlbum;//专辑
-    private String mDuration;//持续时间
+    private double mDuration;//持续时间
     private String mThumb;//图像
     private int mId;//channel id
     private String mSource;//播放地址
@@ -91,6 +91,7 @@ public class SongHelper {
                     this.setId(cn.channelId);
                     this.setAlbum(cn.title);
                     this.setmThumb(cn.getApproximativeThumb(50, 50, true));
+                    this.setDuration(programNode.duration);
                 }
 
 
@@ -160,11 +161,11 @@ public class SongHelper {
     }
 
 
-    public String getDuration() {
+    public double getDuration() {
         return mDuration;
     }
 
-    public void setDuration(String duration) {
+    public void setDuration(double duration) {
         mDuration = duration;
     }
 

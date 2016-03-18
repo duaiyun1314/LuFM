@@ -1,6 +1,5 @@
 package com.andy.LuFM.fragments;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,7 +10,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.andy.LuFM.AllInOneActivity;
+import com.andy.LuFM.app.AllInOneActivity;
 import com.andy.LuFM.R;
 import com.andy.LuFM.Utils.Constants;
 import com.andy.LuFM.model.RecommendItemNode;
@@ -20,7 +19,6 @@ import com.andy.LuFM.view.ReCommendColumnView;
 import com.andy.LuFM.view.RecommendNovelView;
 import com.andy.LuFM.view.RecommendRadioView;
 import com.andy.LuFM.view.RecommendView;
-import com.andy.LuFM.view.topicview.SpecialTopicView;
 
 /**
  * Created by Andy.Wang on 2016/3/2.

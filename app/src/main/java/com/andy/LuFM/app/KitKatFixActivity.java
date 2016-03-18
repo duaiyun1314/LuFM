@@ -1,4 +1,4 @@
-package com.andy.LuFM.player;
+package com.andy.LuFM.app;
 
 import android.app.Activity;
 import android.os.Bundle;

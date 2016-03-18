@@ -5,7 +5,7 @@
     android:background="#ffffff"
     android:clickable="true"
     android:orientation="vertical"
-    tools:context=".AllInOneActivity">
+    tools:context=".app.AllInOneActivity">
 
     <TextView
         android:layout_width="wrap_content"

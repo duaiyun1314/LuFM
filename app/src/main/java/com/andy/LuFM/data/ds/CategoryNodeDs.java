@@ -2,11 +2,10 @@ package com.andy.LuFM.data.ds;
 
 import android.database.Cursor;
 
-import com.andy.LuFM.LuFmApplication;
+import com.andy.LuFM.app.LuFmApplication;
 import com.andy.LuFM.Utils.Constants;
 import com.andy.LuFM.data.DataCommand;
 import com.andy.LuFM.data.IDataOperation;
-import com.andy.LuFM.data.IDataRecvHandler;
 import com.andy.LuFM.data.IResultRecvHandler;
 import com.andy.LuFM.data.RequestType;
 import com.andy.LuFM.data.Result;

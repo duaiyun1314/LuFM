@@ -19,7 +19,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.andy.LuFM.PlayApplication;
+import com.andy.LuFM.app.PlayApplication;
 
 
 /**

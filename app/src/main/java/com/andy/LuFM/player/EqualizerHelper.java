@@ -20,7 +20,7 @@ import android.media.audiofx.BassBoost;
 import android.media.audiofx.Equalizer;
 import android.media.audiofx.PresetReverb;
 import android.media.audiofx.Virtualizer;
-import com.andy.LuFM.PlayApplication;
+import com.andy.LuFM.app.PlayApplication;
 
 
 /**

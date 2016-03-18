@@ -19,7 +19,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 
-import com.andy.LuFM.PlayApplication;
+import com.andy.LuFM.app.NowPlayingActivity;
+import com.andy.LuFM.app.PlayApplication;
+import com.andy.LuFM.fragments.NowPlayingFragment;
 import com.andy.LuFM.model.ProgramNode;
 
 import java.util.List;
@@ -31,7 +33,7 @@ import java.util.List;
  *
  * @author Saravan Pantham
  */
-public class PlaybackKickstarter implements AudioPlaybackService.PrepareServiceListener {
+public class PlaybackKickstarter implements AudioPlaybackService.PrepareServiceListener, NowPlayingFragment.NowPlayingActivityListener {
 
     private Context mContext;
     private PlayApplication mApp;
@@ -45,6 +47,20 @@ public class PlaybackKickstarter implements AudioPlaybackService.PrepareServiceL
     }
 
     private BuildCursorListener mBuildCursorListener;
+
+    @Override
+    public void onNowPlayingActivityReady() {
+        //Start the playback service if it isn't running.
+        if (!mApp.isServiceRunning()) {
+            startService();
+        } else {
+            //Call the callback method that will start building the new cursor.
+            mApp.getService()
+                    .getPrepareServiceListener()
+                    .onServiceRunning(mApp.getService());
+        }
+
+    }
 
     /**
      * Public interface that provides access to
@@ -98,7 +114,7 @@ public class PlaybackKickstarter implements AudioPlaybackService.PrepareServiceL
             //Launch NowPlayingActivity.
             Intent intent = new Intent(mContext, NowPlayingActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra(NowPlayingActivity.START_SERVICE, true);
+            intent.putExtra(NowPlayingFragment.START_SERVICE, true);
             mContext.startActivity(intent);
 
         } else {

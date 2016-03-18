@@ -4,7 +4,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import com.andy.LuFM.LuFmApplication;
+import com.andy.LuFM.app.LuFmApplication;
 
 /**
  * Created by wanglu on 15/11/16.

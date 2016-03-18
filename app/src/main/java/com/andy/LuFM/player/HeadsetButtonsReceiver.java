@@ -20,7 +20,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.KeyEvent;
 
-import com.andy.LuFM.PlayApplication;
+import com.andy.LuFM.app.PlayApplication;
 
 
 /**

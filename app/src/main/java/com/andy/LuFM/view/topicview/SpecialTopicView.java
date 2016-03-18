@@ -15,7 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.andy.LuFM.AllInOneActivity;
+import com.andy.LuFM.app.AllInOneActivity;
 import com.andy.LuFM.R;
 import com.andy.LuFM.controller.ChannelListController;
 import com.andy.LuFM.controller.ControllerManager;

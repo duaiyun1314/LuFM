@@ -13,4 +13,9 @@
     <color name="list_item_color">#fff4f5f9</color>
     <color name="list_divider_color">#ffb8b8ba</color>
 
+    <color name="music_player_sb_bg">#FFFFE4D9</color>
+    <color name="music_player_sb_progress_color">#FFE64626</color>
+    <color name="music_player_sb_secondary_progress_color">#FFE87F6A</color>
+    <color name="music_player_user_name_color">#FF1A7BE8</color>
+
 </resources>

@@ -4,9 +4,8 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
-import android.util.Log;
 
-import com.andy.LuFM.LuFmApplication;
+import com.andy.LuFM.app.LuFmApplication;
 import com.andy.LuFM.data.DataCommand;
 import com.andy.LuFM.data.IDataOperation;
 import com.andy.LuFM.data.IResultRecvHandler;

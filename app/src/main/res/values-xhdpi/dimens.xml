@@ -1,0 +1,5 @@
+<resources>
+
+    <dimen name="player_disc_size">260dp</dimen>
+    <dimen name="player_disc_container_marign">30dp</dimen>
+</resources>

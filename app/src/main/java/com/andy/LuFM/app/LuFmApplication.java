@@ -1,4 +1,4 @@
-package com.andy.LuFM;
+package com.andy.LuFM.app;
 
 import android.app.Application;
 

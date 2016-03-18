@@ -1,4 +1,4 @@
-package com.andy.LuFM;
+package com.andy.LuFM.app;
 
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
+import com.andy.LuFM.R;
 import com.andy.LuFM.Utils.Constants;
 import com.andy.LuFM.Utils.ImageLoaderUtil;
 import com.andy.LuFM.data.DataCommand;
@@ -31,7 +32,7 @@ import com.andy.LuFM.fragments.MineFragment;
 import com.andy.LuFM.fragments.SpecialTopicFragment;
 import com.andy.LuFM.model.CategoryNode;
 import com.andy.LuFM.player.AudioPlaybackService;
-import com.andy.LuFM.player.MiniPlayerFragment;
+import com.andy.LuFM.fragments.MiniPlayerFragment;
 
 import java.util.HashMap;
 import java.util.List;

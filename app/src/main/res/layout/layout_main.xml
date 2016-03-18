@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:background="#33ffffff"
     android:orientation="vertical"
-    tools:context=".AllInOneActivity">
+    tools:context=".app.AllInOneActivity">
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -112,15 +112,6 @@ public class ProgramNodesProvider extends ListDataProvider implements InfoManage
             notifyDataSetChanged();
         }
 
-        private String getDurationTime(int duration) {
-            String result = "" + (duration / 60) + ":";
-            int second = duration % 60;
-            if (second < 10) {
-                return new StringBuilder(String.valueOf(result)).append(0).append(second).toString();
-            }
-            return new StringBuilder(String.valueOf(result)).append(second).toString();
-        }
-
 
         private class ViewHolder {
             TextView title;
@@ -158,5 +149,14 @@ public class ProgramNodesProvider extends ListDataProvider implements InfoManage
     public void setSelectedItem(int pos) {
         mSelectedPos = pos;
         getAdapter().notifyDataSetChanged();
+    }
+
+    public static String getDurationTime(int duration) {
+        String result = "" + (duration / 60) + ":";
+        int second = duration % 60;
+        if (second < 10) {
+            return new StringBuilder(String.valueOf(result)).append(0).append(second).toString();
+        }
+        return new StringBuilder(String.valueOf(result)).append(second).toString();
     }
 }

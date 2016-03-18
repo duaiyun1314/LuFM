@@ -43,7 +43,8 @@ import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
-import com.andy.LuFM.PlayApplication;
+import com.andy.LuFM.app.KitKatFixActivity;
+import com.andy.LuFM.app.PlayApplication;
 import com.andy.LuFM.R;
 import com.andy.LuFM.data.InfoManager;
 import com.andy.LuFM.helper.ChannelHelper;
@@ -1116,6 +1117,7 @@ public class AudioPlaybackService extends Service {
             getMediaPlayer().setOnErrorListener(onErrorListener);
             getMediaPlayer().setOnBufferingUpdateListener(bufferingListener);
             getMediaPlayer().prepareAsync();
+            Log.i("Sync", "正在加载");
 
         } catch (Exception e) {
             Log.e("DEBUG", "MESSAGE", e);
@@ -1519,7 +1521,7 @@ public class AudioPlaybackService extends Service {
     /**
      * Starts playing mMediaPlayer and sends out the update UI broadcast,
      * and updates the notification and any open widgets.
-     * <p/>
+     * <p>
      * Do NOT call this method before mMediaPlayer has been prepared.
      */
     private void startMediaPlayer() throws IllegalStateException {
@@ -1573,7 +1575,7 @@ public class AudioPlaybackService extends Service {
     /**
      * Starts playing mMediaPlayer2, sends out the update UI broadcast,
      * and updates the notification and any open widgets.
-     * <p/>
+     * <p>
      * Do NOT call this method before mMediaPlayer2 has been prepared.
      */
     private void startMediaPlayer2() throws IllegalStateException {

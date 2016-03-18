@@ -9,7 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.andy.LuFM.AllInOneActivity;
+import com.andy.LuFM.app.AllInOneActivity;
 import com.andy.LuFM.R;
 import com.andy.LuFM.Utils.Constants;
 import com.andy.LuFM.model.CategoryNode;

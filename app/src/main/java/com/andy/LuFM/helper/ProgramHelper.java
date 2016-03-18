@@ -8,7 +8,6 @@ import com.andy.LuFM.data.DataManager;
 import com.andy.LuFM.data.InfoManager;
 import com.andy.LuFM.data.RequestType;
 import com.andy.LuFM.data.Result;
-import com.andy.LuFM.model.ChannelNode;
 import com.andy.LuFM.model.Node;
 import com.andy.LuFM.model.ProgramNode;
 import com.andy.LuFM.model.ProgramSchedule;

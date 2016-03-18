@@ -20,4 +20,6 @@
     <dimen name="notification_action_padding">8.0dip</dimen>
     <dimen name="notification_action_height">35.0dip</dimen>
     <dimen name="notification_action_width">35.0dip</dimen>
+    <dimen name="player_disc_size">153dp</dimen>
+    <dimen name="player_disc_container_marign">25dp</dimen>
 </resources>

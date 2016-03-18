@@ -4,16 +4,16 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
-        android:name=".PlayApplication"
+        android:name=".app.PlayApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".AllInOneActivity"
+            android:name=".app.AllInOneActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Basic">
@@ -30,8 +30,10 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".player.KitKatFixActivity" />
-        <activity android:name=".player.NowPlayingActivity" />
+        <activity android:name=".app.KitKatFixActivity" />
+        <activity
+            android:name=".app.NowPlayingActivity"
+            android:theme="@style/Theme.Basic" />
     </application>
 
 </manifest>

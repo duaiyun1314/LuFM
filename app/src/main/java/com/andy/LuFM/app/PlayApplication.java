@@ -1,4 +1,4 @@
-package com.andy.LuFM;
+package com.andy.LuFM.app;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,7 +12,6 @@ import android.webkit.WebView;
 
 import com.andy.LuFM.event.PlayActionEvent;
 import com.andy.LuFM.player.AudioPlaybackService;
-import com.andy.LuFM.player.NowPlayingActivity;
 import com.andy.LuFM.player.PlaybackKickstarter;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -209,7 +208,7 @@ public class PlayApplication extends LuFmApplication {
         mImageLoader.init(mImageLoaderConfiguration);
 
         //Init DisplayImageOptions.
-        //  initDisplayImageOptions();
+        initDisplayImageOptions();
 
         //Log the user into Google Play Music only if the account is currently set up and active.
         if (mSharedPreferences.getBoolean("GOOGLE_PLAY_MUSIC_ENABLED", false) == true) {
@@ -260,6 +259,10 @@ public class PlayApplication extends LuFmApplication {
                 .displayer(new FadeInBitmapDisplayer(200))
                 .build();
 
+    }
+
+    public DisplayImageOptions getDisplayImageOptions() {
+        return mDisplayImageOptions;
     }
 
     /**

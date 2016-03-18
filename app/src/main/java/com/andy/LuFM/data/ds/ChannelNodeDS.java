@@ -2,7 +2,7 @@ package com.andy.LuFM.data.ds;
 
 import android.database.Cursor;
 
-import com.andy.LuFM.LuFmApplication;
+import com.andy.LuFM.app.LuFmApplication;
 import com.andy.LuFM.Utils.Constants;
 import com.andy.LuFM.data.DataCommand;
 import com.andy.LuFM.data.IDataOperation;
@@ -11,7 +11,6 @@ import com.andy.LuFM.data.RequestType;
 import com.andy.LuFM.data.Result;
 import com.andy.LuFM.dbutil.DaoMaster;
 import com.andy.LuFM.model.ChannelNode;
-import com.andy.LuFM.model.Node;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;

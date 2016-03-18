@@ -1,4 +1,4 @@
-package com.andy.LuFM.player;
+package com.andy.LuFM.fragments;
 /*
  * Copyright (C) 2014 Saravan Pantham
  *
@@ -17,15 +17,12 @@ package com.andy.LuFM.player;
 
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -39,9 +36,10 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.andy.LuFM.PlayApplication;
+import com.andy.LuFM.app.PlayApplication;
 import com.andy.LuFM.R;
 import com.andy.LuFM.event.PlayActionEvent;
+import com.andy.LuFM.app.NowPlayingActivity;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
