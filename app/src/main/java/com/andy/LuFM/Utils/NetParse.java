@@ -140,9 +140,30 @@ public class NetParse {
                 result.setData(recommendPlayingItemNodes);
             }
             return result;
+        } else if (type.equalsIgnoreCase(RequestType.GET_ADVERTISEMENT_ADDRESS)) {
+            String url = parseAd(responseString);
+            if (url != null) {
+                result.setSuccess(true);
+                result.setData(url);
+            } else {
+                result.setSuccess(false);
+            }
         }
         return result;
 
+    }
+
+    private String parseAd(String json) {
+        try {
+            JSONObject obj = new JSONObject(json);
+            JSONObject dataObj = obj.getJSONObject("data");
+            String url = dataObj.getString("image");
+            return url;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private List<RecommendPlayingItemNode> parseRecommendPlayingPrograms(String json) {

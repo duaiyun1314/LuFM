@@ -32,4 +32,9 @@ public class Constants {
      * 是否开启随机模式
      */
     public static final String SHUFFLE_ON = "shuffle_on";
+
+    /**
+     * 广告地址
+     */
+    public static final String AD_ADDRESS = "http://ad.qingting.fm/api/ad/getad?zone=56&region=25&deviceid=SDF&devicetype=phone&status=silent&posquery=/0/1080/1598&pkg=fm.qingting.qtradio&phonetype=Android";
 }

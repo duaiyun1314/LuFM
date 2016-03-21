@@ -4,6 +4,7 @@ import com.squareup.okhttp.ResponseBody;
 
 import retrofit.http.GET;
 import retrofit.http.Path;
+import retrofit.http.Url;
 import rx.Observable;
 
 /**
@@ -38,4 +39,6 @@ public interface NormalGetAPI {
     @GET("recommends/nowplaying/day/{day}")
     Observable<retrofit.Response<ResponseBody>> getRecommendPlaying(@Path("day") String day);
 
+    @GET
+    Observable<retrofit.Response<ResponseBody>> getAddress(@Url String url);
 }

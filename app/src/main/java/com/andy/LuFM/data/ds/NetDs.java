@@ -2,6 +2,7 @@ package com.andy.LuFM.data.ds;
 
 import android.util.Log;
 
+import com.andy.LuFM.Utils.Constants;
 import com.andy.LuFM.network.NormalFactory;
 import com.andy.LuFM.network.NormalGetAPI;
 import com.andy.LuFM.Utils.NetParse;
@@ -76,6 +77,8 @@ public class NetDs implements IDataOperation {
             } else if (type.equalsIgnoreCase(RequestType.GET_RECOMMEND_PLAYING)) {
                 String day = param.get("day") + "";
                 observable = getAPI.getRecommendPlaying(day);
+            } else if (type.equalsIgnoreCase(RequestType.GET_ADVERTISEMENT_ADDRESS)) {
+                observable = getAPI.getAddress(Constants.AD_ADDRESS);
             }
             observable.subscribeOn(Schedulers.io())
                     .map(new Func1<Response<ResponseBody>, Result>() {

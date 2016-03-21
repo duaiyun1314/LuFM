@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.greenrobot.event.EventBus;
+
 /**
  * 存储必要信息
  */
@@ -126,6 +128,9 @@ public class InfoManager implements IResultRecvHandler {
                 root().mRecommendPlayingInfo.setRecommendList(lstNodes3);
                 dispatchSubscribeEvent(ISubscribeEventListener.RECV_RECOMMEND_PLAYING_PROGRAMS_INFO);
             }
+        } else if (type.equalsIgnoreCase(RequestType.GET_ADVERTISEMENT_ADDRESS)) {
+            String url = (String) result.getData();
+            EventBus.getDefault().post(url);
         }
 
     }
@@ -414,6 +419,7 @@ public class InfoManager implements IResultRecvHandler {
         public static final String RECV_WSQ_NEW = "WSQNEW";
         public static final String REFR_WECHAT_TOKEN = "REFR_WECHAT_TOKEN";
         public static final String SUBSCRIBE_ALL_EVENTS = "SAE";
+        public static final String GET_AD = "GET_AD";
 
         void onNotification(String str);
 
@@ -507,6 +513,10 @@ public class InfoManager implements IResultRecvHandler {
             requestParam.put("id", String.valueOf(node.getApiId()));
             DataManager.getInstance().getData(RequestType.NET_REQUEST, this, new DataCommand(RequestType.GET_SPECIAL_TOPIC_CHANNELS, requestParam));
         }
+    }
+
+    public void loadAdvertisement() {
+        DataManager.getInstance().getData(RequestType.NET_REQUEST, this, new DataCommand(RequestType.GET_ADVERTISEMENT_ADDRESS, null));
     }
 
 

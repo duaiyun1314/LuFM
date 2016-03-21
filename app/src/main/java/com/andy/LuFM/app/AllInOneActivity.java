@@ -5,6 +5,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
+import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
@@ -33,6 +35,7 @@ import com.andy.LuFM.fragments.SpecialTopicFragment;
 import com.andy.LuFM.model.CategoryNode;
 import com.andy.LuFM.player.AudioPlaybackService;
 import com.andy.LuFM.fragments.MiniPlayerFragment;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.HashMap;
 import java.util.List;
@@ -54,6 +57,7 @@ public class AllInOneActivity extends BaseActivity implements IEventHandler, Rad
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initUtils();
+        setWindowFullScreen(true);
         setContentView(R.layout.layout_splash);
         initDataOperation();
         initFragments();
@@ -110,11 +114,12 @@ public class AllInOneActivity extends BaseActivity implements IEventHandler, Rad
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                setWindowFullScreen(false);
                 setContentView(R.layout.layout_main);
                 initView();
                 setMainPane();
             }
-        }, 3000);
+        }, 4000);
     }
 
 
@@ -155,7 +160,8 @@ public class AllInOneActivity extends BaseActivity implements IEventHandler, Rad
         }
 
         if (categoryNodes != null && categoryNodes.size() > 0) {
-            showMainView();
+            //showADAndMainView();
+            InfoManager.getInstance().loadAdvertisement();
         }
     }
 
@@ -213,6 +219,15 @@ public class AllInOneActivity extends BaseActivity implements IEventHandler, Rad
         }
     }
 
+    public void onEventMainThread(String url) {
+        if (url != null) {
+            setContentView(R.layout.layout_ad);
+            ImageView ad_img = (ImageView) findViewById(R.id.ad_img);
+            ImageLoader.getInstance().displayImage(url, ad_img, ((PlayApplication) getApplication()).getDisplayImageOptions());
+        }
+        showMainView();
+    }
+
     /**
      * fragment 切换
      *
@@ -260,6 +275,20 @@ public class AllInOneActivity extends BaseActivity implements IEventHandler, Rad
         AudioPlaybackService service = PlayApplication.from().getService();
         if (service != null && !service.isPlayingMusic()) {
             service.stopPlayback();
+        }
+    }
+
+    public void setWindowFullScreen(boolean isFullScreen) {
+        if (isFullScreen) {
+            WindowManager.LayoutParams params = getWindow().getAttributes();
+            params.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
+            getWindow().setAttributes(params);
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        } else {
+            WindowManager.LayoutParams params = getWindow().getAttributes();
+            params.flags &= (~WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            getWindow().setAttributes(params);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         }
     }
 
