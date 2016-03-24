@@ -1,10 +1,13 @@
 package com.andy.LuFM.app;
 
+import android.graphics.Bitmap;
+import android.media.Image;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RadioButton;
@@ -13,6 +16,7 @@ import android.widget.RadioGroup;
 import com.andy.LuFM.R;
 import com.andy.LuFM.Utils.Constants;
 import com.andy.LuFM.Utils.ImageLoaderUtil;
+import com.andy.LuFM.Utils.PrefKit;
 import com.andy.LuFM.data.DataCommand;
 import com.andy.LuFM.data.DataManager;
 import com.andy.LuFM.data.DataOfflineManager;
@@ -36,6 +40,8 @@ import com.andy.LuFM.model.CategoryNode;
 import com.andy.LuFM.player.AudioPlaybackService;
 import com.andy.LuFM.fragments.MiniPlayerFragment;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import java.util.HashMap;
 import java.util.List;
@@ -224,6 +230,27 @@ public class AllInOneActivity extends BaseActivity implements IEventHandler, Rad
             setContentView(R.layout.layout_ad);
             ImageView ad_img = (ImageView) findViewById(R.id.ad_img);
             ImageLoader.getInstance().displayImage(url, ad_img, ((PlayApplication) getApplication()).getDisplayImageOptions());
+            ImageLoader.getInstance().loadImage(url, new ImageLoadingListener() {
+                @Override
+                public void onLoadingStarted(String imageUri, View view) {
+
+                }
+
+                @Override
+                public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+
+                }
+
+                @Override
+                public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                    PrefKit.writeString(PlayApplication.from(), Constants.PREF_AD_ADDRESS, imageUri);
+                }
+
+                @Override
+                public void onLoadingCancelled(String imageUri, View view) {
+
+                }
+            });
         }
         showMainView();
     }

@@ -37,4 +37,13 @@ public class Constants {
      * 广告地址
      */
     public static final String AD_ADDRESS = "http://ad.qingting.fm/api/ad/getad?zone=56&region=25&deviceid=SDF&devicetype=phone&status=silent&posquery=/0/1080/1598&pkg=fm.qingting.qtradio&phonetype=Android";
+
+    /**
+     * pref-->广告地址
+     */
+    public static final String PREF_AD_ADDRESS = "AD_ADDRESS";
+    /**
+     * pref default -->广告地址
+     */
+    public static final String PREF_AD_ADDRESS_DEFAULT = "http://7pulxu.com2.z0.glb.qiniucdn.com/junrongdai0324.jpg";
 }

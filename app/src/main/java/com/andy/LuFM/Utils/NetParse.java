@@ -1,10 +1,13 @@
 package com.andy.LuFM.Utils;
 
 import android.os.AsyncTask;
+import android.text.TextUtils;
 
+import com.andy.LuFM.app.PlayApplication;
 import com.andy.LuFM.data.IResultRecvHandler;
 import com.andy.LuFM.data.RequestType;
 import com.andy.LuFM.data.Result;
+import com.andy.LuFM.event.PlayActionEvent;
 import com.andy.LuFM.model.ActivityNode;
 import com.andy.LuFM.model.ChannelNode;
 import com.andy.LuFM.model.Node;
@@ -158,6 +161,10 @@ public class NetParse {
             JSONObject obj = new JSONObject(json);
             JSONObject dataObj = obj.getJSONObject("data");
             String url = dataObj.getString("image");
+            String id = dataObj.getString("id");
+            if (TextUtils.isEmpty(id)) {
+                url = PrefKit.getString(PlayApplication.from(), Constants.PREF_AD_ADDRESS, Constants.PREF_AD_ADDRESS_DEFAULT);
+            }
             return url;
 
         } catch (Exception e) {
