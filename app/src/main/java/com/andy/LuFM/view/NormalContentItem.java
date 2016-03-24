@@ -38,7 +38,7 @@ public class NormalContentItem extends LinearLayout implements View.OnClickListe
         inflate(context, R.layout.layout_content_item, this);
         content_iv = (ImageView) findViewById(R.id.content_iv);
         content_name = (TextView) findViewById(R.id.content_name);
-        setOnClickListener(this);
+        findViewById(R.id.ripple).setOnClickListener(this);
     }
 
     public void update(RecommendItemNode node, DisplayImageOptions options, LayoutParams layoutParams) {

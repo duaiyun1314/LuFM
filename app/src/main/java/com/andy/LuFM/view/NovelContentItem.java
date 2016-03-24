@@ -49,7 +49,7 @@ public class NovelContentItem extends LinearLayout implements View.OnClickListen
         subtitle = (TextView) findViewById(R.id.subtitle);
         time = (TextView) findViewById(R.id.time);
         ratingBar = (RatingBar) findViewById(R.id.rating);
-        setOnClickListener(this);
+        findViewById(R.id.ripple).setOnClickListener(this);
     }
 
     public void update(RecommendItemNode node, DisplayImageOptions options, LayoutParams layoutParams) {
