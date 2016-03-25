@@ -47,6 +47,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.vov.vitamio.LibsChecker;
+
 public class AllInOneActivity extends BaseActivity implements IEventHandler, RadioGroup.OnCheckedChangeListener {
     private int mViewType = 1;
     public List<CategoryNode> categoryNodes;

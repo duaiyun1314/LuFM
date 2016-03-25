@@ -8,6 +8,7 @@ import com.andy.LuFM.data.DataManager;
 import com.andy.LuFM.data.InfoManager;
 import com.andy.LuFM.data.RequestType;
 import com.andy.LuFM.data.Result;
+import com.andy.LuFM.model.ChannelNode;
 import com.andy.LuFM.model.Node;
 import com.andy.LuFM.model.ProgramNode;
 import com.andy.LuFM.model.ProgramSchedule;
@@ -21,7 +22,7 @@ import java.util.Map;
  * Created by wanglu on 15/11/24.
  */
 public class ProgramHelper extends Node {
-    static final String TAG = "ProgramHelper";
+    static final String TAG = "Sync";
     private static ProgramHelper _instance = null;
     private Map<Integer, ProgramScheduleList[]> mapProgramNodes;
     public Map<Integer, Boolean> mapUpdatePrograms;
@@ -114,7 +115,7 @@ public class ProgramHelper extends Node {
         if (node != null) {
             int order;
             if (type.equalsIgnoreCase(InfoManager.INodeEventListener.ADD_VIRTUAL_PROGRAMS_SCHEDULE)) {
-                Log.d(TAG, "sym:\u52a0\u8f7d\u66f4\u591a\u4e13\u8f91\u8282\u76ee\u5355\u6210\u529f");
+                Log.d(TAG, "sym:加载更多专辑节目单成功");
                 boolean ret = addProgramSchedule((ProgramScheduleList) node, map);
                 if (node != null && ret) {
                     order = 0;
@@ -124,7 +125,7 @@ public class ProgramHelper extends Node {
                     udpateToDB(((ProgramScheduleList) node).channelId, order);
                 }
             } else if (type.equalsIgnoreCase(InfoManager.INodeEventListener.ADD_LIVE_PROGRAMS_SCHEDULE)) {
-                Log.d(TAG, "sym:\u83b7\u53d6\u5230\u7535\u53f0\u8282\u76ee\u5355\u6210\u529f");
+                Log.d(TAG, "sym:获取到电台节目单成功");
                 int channelId = 0;
                 if (map != null) {
                     channelId = Integer.valueOf((String) map.get("id")).intValue();

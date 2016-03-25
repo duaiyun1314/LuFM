@@ -5,10 +5,12 @@ import android.text.TextUtils;
 
 import com.andy.LuFM.app.PlayApplication;
 import com.andy.LuFM.data.IResultRecvHandler;
+import com.andy.LuFM.data.InfoManager;
 import com.andy.LuFM.data.RequestType;
 import com.andy.LuFM.data.Result;
 import com.andy.LuFM.event.PlayActionEvent;
 import com.andy.LuFM.model.ActivityNode;
+import com.andy.LuFM.model.BroadcasterNode;
 import com.andy.LuFM.model.ChannelNode;
 import com.andy.LuFM.model.Node;
 import com.andy.LuFM.model.ProgramNode;
@@ -151,10 +153,19 @@ public class NetParse {
             } else {
                 result.setSuccess(false);
             }
+        } else if (type.equalsIgnoreCase(RequestType.GET_LIVE_PROGRAM_SCHEDULE)) {
+            ProgramScheduleList programScheduleList = parseLiveProgramSchedule(responseString);
+            if (programScheduleList != null) {
+                result.setSuccess(true);
+                result.setData(programScheduleList);
+
+            }
+            return result;
         }
         return result;
 
     }
+
 
     private String parseAd(String json) {
         try {
@@ -615,12 +626,8 @@ public class NetParse {
                 } else {
                     node.channelType = 1;
                 }
-                if (json.getInt("auto_play") == 0) {
-                    node.autoPlay = false;
-                } else {
-                    node.autoPlay = true;
-                }
-                if (json.getInt("record_enabled") == 0) {
+                node.autoPlay = false;
+                if (json.has("record_enabled") && json.getInt("record_enabled") == 0) {
                     node.recordEnable = false;
                 } else {
                     node.recordEnable = true;
@@ -634,10 +641,16 @@ public class NetParse {
                 } else {
                     node.latest_program = json.getString("latest_program");
                 }
-                JSONObject detailObject = json.getJSONObject("detail");
-                if (detailObject == null) {
+                JSONObject detailObject;
+                if (json.has("detail")) {
+                    detailObject = json.getJSONObject("detail");
+                    if (detailObject == null) {
+                        return node;
+                    }
+                } else {
                     return node;
                 }
+
                 int i;
                 node.programCnt = detailObject.getInt("program_count");
                /* BroadcasterNode broadcasterNode;
@@ -815,6 +828,98 @@ public class NetParse {
         }
         return null;
     }
+
+    private ProgramScheduleList parseLiveProgramSchedule(String json) {
+        if (!(json == null || json.equalsIgnoreCase(""))) {
+            try {
+                JSONObject obj = new JSONObject(json);
+                JSONObject dataObj = obj.getJSONObject("data");
+                ProgramScheduleList pslist = new ProgramScheduleList(0);
+                Node prev = null;
+                for (int i = 1; i <= 7; i++) {
+                    if (!dataObj.has(String.valueOf(i))) continue;
+                    JSONArray dataArray = dataObj.getJSONArray(String.valueOf(i));
+                    if (dataArray != null) {
+                        int dayofweek = i;
+                        if (dataArray.length() > 0) {
+                            ProgramSchedule programSchedule = new ProgramSchedule();
+                            programSchedule.dayOfWeek = dayofweek;
+                            programSchedule.mLstProgramNodes = new ArrayList();
+                            for (int j = 0; j < dataArray.length(); j++) {
+                                ProgramNode program = _parseLiveProgramNode(dataArray.getJSONObject(j), dayofweek);
+                                if (program != null) {
+                                    if (prev != null) {
+                                        prev.nextSibling = program;
+                                        program.prevSibling = prev;
+                                    }
+                                    programSchedule.mLstProgramNodes.add(program);
+                                    prev = program;
+                                }
+                            }
+                            pslist.mLstProgramsScheduleNodes.add(programSchedule);
+                        }
+                    }
+                }
+                if (pslist.mLstProgramsScheduleNodes.size() > 0) {
+                    return pslist;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    private ProgramNode _parseLiveProgramNode(JSONObject obj, int dayofweek) throws Exception {
+        if (obj == null) {
+            return null;
+        }
+        ProgramNode node = new ProgramNode();
+        node.id = obj.getInt("id");
+        node.startTime = obj.getString("start_time");
+        node.endTime = obj.getString("end_time");
+        if (node.endTime != null && node.endTime.equalsIgnoreCase("00:00:00")) {
+            node.endTime = "23:59:00";
+        }
+        node.title = obj.getString("title");
+        node.channelId = obj.getInt("channel_id");
+        node.uniqueId = obj.getInt("program_id");
+        node.groupId = obj.getInt("chatgroup_id");
+        node.dayOfWeek = dayofweek;
+        node.channelType = 0;
+        JSONObject media = obj.getJSONObject("mediainfo");
+        if (media != null) {
+            node.resId = media.getInt("id");
+        }
+       /* ProgramABTestBean bean = InfoManager.getInstance().getProgramABTest(node.channelId, node.uniqueId);
+        if (bean != null) {
+            node.resId = bean.resId;
+            node.title = bean.title;
+        }*/
+        JSONObject detail = obj.getJSONObject("detail");
+        if (detail == null) {
+            return node;
+        }
+        JSONArray bArray = detail.getJSONArray("broadcasters");
+        if (bArray == null) {
+            return node;
+        }
+        node.lstBroadcaster = new ArrayList();
+        for (int i = 0; i < bArray.length(); i++) {
+            BroadcasterNode bNode = new BroadcasterNode();
+            JSONObject bObj = bArray.getJSONObject(i);
+            bNode.id = bObj.getInt("id");
+            bNode.nick = bObj.getString("username");
+            bNode.avatar = bObj.getString("thumb");
+            bNode.weiboId = bObj.getString("weibo_id");
+            bNode.weiboName = bObj.getString("weibo_name");
+            bNode.qqId = bObj.getString("qq_id");
+            bNode.qqName = bObj.getString("qq_name");
+            node.lstBroadcaster.add(bNode);
+        }
+        return node;
+    }
+
 
     public SpecialTopicNode parseSpecialTopicChannels(String json) {
         if (!(json == null || json.equalsIgnoreCase(""))) {

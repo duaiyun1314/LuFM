@@ -79,6 +79,13 @@ public class NetDs implements IDataOperation {
                 observable = getAPI.getRecommendPlaying(day);
             } else if (type.equalsIgnoreCase(RequestType.GET_ADVERTISEMENT_ADDRESS)) {
                 observable = getAPI.getAddress(Constants.AD_ADDRESS);
+            } else if (type.equalsIgnoreCase(RequestType.GET_LIVE_CHANNEL_INFO)) {
+                String id = param.get("id") + "";
+                observable = getAPI.getSingleLiveChannel(id);
+            } else if (type.equalsIgnoreCase(RequestType.GET_LIVE_PROGRAM_SCHEDULE)) {
+                String id = param.get("id") + "";
+                String day = param.get("day") + "";
+                observable = getAPI.getLiveChannelPrograms(id, day);
             }
             observable.subscribeOn(Schedulers.io())
                     .map(new Func1<Response<ResponseBody>, Result>() {
@@ -89,7 +96,7 @@ public class NetDs implements IDataOperation {
                                 responseString = responseBodyResponse.body().string();
                                 Result result = NetParse.getInstance().parseMethod(responseString, type);
                                 return result;
-                            } catch (IOException e) {
+                            } catch (Exception e) {
                                 e.printStackTrace();
                                 Result result = new Result();
                                 result.setSuccess(false);
@@ -107,7 +114,7 @@ public class NetDs implements IDataOperation {
                     }, new Action1<Throwable>() {
                         @Override
                         public void call(Throwable throwable) {
-                            Log.i("Sync", "加载失败");
+                            Log.i("Sync", "加载失败" + throwable.getMessage());
                         }
                     });
         } catch (Exception e) {

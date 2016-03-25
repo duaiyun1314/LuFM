@@ -248,6 +248,46 @@ public class ChannelNode extends Node {
         }
     }
 
+    /**
+     * 获取某天的直播列表
+     *
+     * @param dayofweek
+     * @return
+     */
+    public List<ProgramNode> getLstProgramNode(int dayofweek) {
+        if (this.mProgramScheduleList == null && !isDownloadChannel()) {
+            this.mProgramScheduleList = ProgramHelper.getInstance().getProgramSchedule(this.channelId, this.channelType, false);
+            if (this.mProgramScheduleList == null) {
+                InfoManager.getInstance().loadProgramsScheduleNode(this, null);
+            }
+        }
+        if (this.mProgramScheduleList != null) {
+            return this.mProgramScheduleList.getLstProgramNode(dayofweek);
+        }
+        return null;
+    }
+
+    public int getSongIndexByTime(List<ProgramNode> programNodes, long time) {
+        time = time / 1000;
+        if (programNodes == null) {
+            return 0;
+        }
+        int i = 0;
+        while (i < programNodes.size()) {
+            if (((ProgramNode) programNodes.get(i)).getAbsoluteStartTime() < time && time < ((ProgramNode) programNodes.get(i)).getAbsoluteEndTime()) {
+                return i;
+            }
+            i++;
+        }
+        return 0;
+
+    }
+
+    /**
+     * 获取所有virtual列表
+     *
+     * @return
+     */
     public List<ProgramNode> getAllLstProgramNode() {
         if (isLiveChannel()) {
             return null;

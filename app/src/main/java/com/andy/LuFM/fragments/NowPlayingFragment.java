@@ -24,6 +24,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -37,6 +38,12 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.andy.LuFM.R;
+import com.andy.LuFM.controller.ControllerManager;
+import com.andy.LuFM.data.InfoManager;
+import com.andy.LuFM.helper.ChannelHelper;
+import com.andy.LuFM.helper.ProgramHelper;
+import com.andy.LuFM.model.ChannelNode;
+import com.andy.LuFM.model.ProgramNode;
 import com.andy.LuFM.providers.ProgramNodesProvider;
 import com.github.obsessive.library.blur.ImageBlurManager;
 import com.andy.LuFM.app.NowPlayingActivity;
@@ -48,10 +55,13 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
+import java.util.Calendar;
+import java.util.List;
+
 import de.greenrobot.event.EventBus;
 
 
-public class NowPlayingFragment extends Fragment {
+public class NowPlayingFragment extends Fragment implements InfoManager.ISubscribeEventListener, ChannelHelper.IDataChangeObserver {
 
     private Context mContext;
     private PlayApplication mApp;
@@ -76,6 +86,10 @@ public class NowPlayingFragment extends Fragment {
     private boolean mDrawerOpen = false;
     private DisplayImageOptions options;
     private static final int BLUR_RADIUS = 100;
+
+    private String mode;//进入界面时的mode
+    private ChannelNode channelNode;
+    private int channelId;
     /**
      * Create a new Runnable to update the seekbar and time every 100ms.
      */
@@ -144,6 +158,28 @@ public class NowPlayingFragment extends Fragment {
         mContext = getActivity();
         mApp = PlayApplication.from();
         setNowPlayingActivityListener(mApp.getPlaybackKickstarter());
+        Bundle bundle = getArguments();
+        if (bundle != null && bundle.containsKey(NowPlayingActivity.CHANNEL_MODE)) {
+            mode = NowPlayingActivity.CHANNEL_MODE;
+            channelNode = (ChannelNode) bundle.getSerializable(NowPlayingActivity.CHANNEL_MODE);
+            channelId = bundle.getInt("channelId");
+        } else {
+            mode = NowPlayingActivity.PROGRAM_MODE;
+        }
+
+        if (mode == NowPlayingActivity.CHANNEL_MODE) {
+            if (channelNode == null) {
+                Log.i("NowPlayingFragment", " null load live programsschedule async");
+                channelNode = new ChannelNode();
+                channelNode.channelId = channelId;
+                channelNode.channelType = 0;
+                ChannelHelper.getInstance().addObserver(channelId, this);
+                InfoManager.getInstance().loadLiveProgramSchedule(ProgramHelper.getInstance(), channelNode.channelId, Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + "", this);
+            } else {
+                Log.i("NowPlayingFragment", "not null load directly");
+                onNotification(InfoManager.ISubscribeEventListener.RECV_PROGRAMS_SCHEDULE);
+            }
+        }
     }
 
     @Override
@@ -184,17 +220,6 @@ public class NowPlayingFragment extends Fragment {
         mPlayPauseButton.setOnClickListener(playPauseClickListener);
         mNextButton.setOnClickListener(mOnClickNextListener);
         mPrevButton.setOnClickListener(mOnClickPreviousListener);
-
-        //Restrict all touch events to this fragment.
-        rootView.setOnTouchListener(new View.OnTouchListener() {
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                return true;
-            }
-
-        });
-
         return rootView;
     }
 
@@ -399,7 +424,6 @@ public class NowPlayingFragment extends Fragment {
         try {
             setSeekbarDuration(mApp.getService().getCurrentMediaPlayer().getDuration() / 1000);
         } catch (Exception e) {
-            e.printStackTrace();
         }
 
 
@@ -423,9 +447,9 @@ public class NowPlayingFragment extends Fragment {
      * Sets the seekbar's duration. Also updates the
      * elapsed/remaining duration text.
      */
-    private void setSeekbarDuration(int duration) {
-        mSeekBar.setMax(duration);
-        int progress = mApp.getService().getCurrentMediaPlayer().getCurrentPosition() / 1000;
+    private void setSeekbarDuration(long duration) {
+        mSeekBar.setMax((int) duration);
+        long progress = mApp.getService().getCurrentMediaPlayer().getCurrentPosition() / 1000;
         mHandler.postDelayed(seekbarUpdateRunnable, 100);
         mHandler.postDelayed(currentUpdateRunnable, 100);
     }
@@ -450,6 +474,20 @@ public class NowPlayingFragment extends Fragment {
 
     public void setNowPlayingActivityListener(NowPlayingActivityListener listener) {
         mNowPlayingActivityListener = listener;
+    }
+
+    @Override
+    public void onNotification(String type) {
+        if (type.equalsIgnoreCase(InfoManager.ISubscribeEventListener.RECV_PROGRAMS_SCHEDULE)) {
+            List<ProgramNode> currentLiveLists = channelNode.getLstProgramNode(Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
+            PlayApplication.from().getPlaybackKickstarter().initPlayback(getActivity(), currentLiveLists, channelNode.getSongIndexByTime(currentLiveLists, System.currentTimeMillis()), false, true);
+        }
+
+    }
+
+    @Override
+    public void onChannelNodeInfoUpdate(ChannelNode channelNode) {
+
     }
 
     /**

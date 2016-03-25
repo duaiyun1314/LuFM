@@ -111,7 +111,7 @@ public class PlayerAgent {
                 } else {
                     url = temp2.getSourceUrl();
                 }*/
-                url = temp2.getLowBitrateSource();
+                url = temp2.getBitrateSource();
                 /*if (!(url == null || url.equalsIgnoreCase(""))) {
                     if (this.currPlayState == 1 && (this.source == null || this.source.equalsIgnoreCase(url))) {
                         _resume();

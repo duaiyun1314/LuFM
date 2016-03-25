@@ -1,8 +1,11 @@
 package com.andy.LuFM.controller;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 
+import com.andy.LuFM.app.NowPlayingActivity;
 import com.andy.LuFM.event.SwitchContentEvent;
 import com.andy.LuFM.helper.ChannelHelper;
 import com.andy.LuFM.model.ChannelNode;
@@ -10,6 +13,7 @@ import com.andy.LuFM.model.Node;
 import com.andy.LuFM.model.ProgramNode;
 import com.andy.LuFM.model.RecommendCategoryNode;
 import com.andy.LuFM.model.RecommendItemNode;
+import com.andy.LuFM.model.RecommendPlayingItemNode;
 import com.andy.LuFM.model.SpecialTopicNode;
 
 import de.greenrobot.event.EventBus;
@@ -57,29 +61,7 @@ public class ControllerManager {
                         redirectToPlayViewByNode(p.mNode, true);
                     }*/
                 } else if (p.mNode.nodeName.equalsIgnoreCase("program")) {
-                    Node parent = p.parent;
-                    boolean isFrontPage = false;
-                    if (parent != null && parent.nodeName.equalsIgnoreCase("recommendcategory")) {
-                        isFrontPage = ((RecommendCategoryNode) parent).isFrontpage();
-                    }
-                    if (isFrontPage) {
-                        if (p.categoryPos == 0) {
-                            PlayerAgent.getInstance().addPlaySource(21);
-                        } else {
-                            PlayerAgent.getInstance().addPlaySource(22);
-                        }
-                    } else if (p.categoryPos == 0) {
-                        PlayerAgent.getInstance().addPlaySource(25);
-                    } else {
-                        PlayerAgent.getInstance().addPlaySource(36);
-                    }
-                    ((ProgramNode) p.mNode).setCategoryId(p.mCategoryId);
-                    setChannelSource(1);
-                    if (PlayerAgent.getInstance().isPlaying()) {
-                        openChannelDetailController((ProgramNode) p.mNode, false, true);
-                    } else {
-                        openChannelDetailController((ProgramNode) p.mNode, true, true);
-                    }
+                    openChannelDetailController((ProgramNode) p.mNode, true);
                 } else if (p.mNode.nodeName.equalsIgnoreCase("activity")) {
                     /*MobclickAgent.onEvent(getContext(), "openActivityFromRecommend", p.name);
                     if (p.isAds && p.mAdNode != null) {
@@ -94,6 +76,22 @@ public class ControllerManager {
 
     }
 
+    /**
+     * 打开直播的playing Activity
+     *
+     * @param playingItemNode
+     */
+    public void openPlayController(RecommendPlayingItemNode playingItemNode) {
+        ChannelNode channelNode = null;
+        channelNode = ChannelHelper.getInstance().getChannel(playingItemNode.channelId, 0);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(NowPlayingActivity.CHANNEL_MODE, channelNode);
+        bundle.putInt("channelId", playingItemNode.channelId);
+        Intent intent = new Intent(context, NowPlayingActivity.class);
+        intent.putExtras(bundle);
+        context.startActivity(intent);
+    }
+
     private void openSpecialTopicController(SpecialTopicNode mNode) {
         if (mNode != null) {
             String name = "specialtopic";
@@ -102,15 +100,7 @@ public class ControllerManager {
 
     }
 
-    public void setChannelSource(int source) {
-        this.mChannelSource = source;
-    }
-
-    public int getChannelSource() {
-        return this.mChannelSource;
-    }
-
-    public void openChannelDetailController(Node node, boolean play, boolean openDamaku) {
+    public void openChannelDetailController(Node node, boolean openDamaku) {
         if (node != null) {
             String name = "channeldetail";
             String url;
@@ -118,37 +108,18 @@ public class ControllerManager {
                 ChannelNode cNode = null;
                 if (((ProgramNode) node).mLiveInVirtual) {
                     cNode = ChannelHelper.getInstance().getChannel(((ProgramNode) node).channelId, 1);
-                    if (cNode == null) {
-                        cNode = ChannelHelper.getInstance().getFakeVirtualChannel(((ProgramNode) node).channelId, ((ProgramNode) node).getCategoryId(), ((ProgramNode) node).title);
-                    }
                 } else {
                     cNode = ChannelHelper.getInstance().getChannel(((ProgramNode) node).channelId, ((ProgramNode) node).channelType);
-                    if (cNode == null) {
-                        cNode = ChannelHelper.getInstance().getFakeChannel(((ProgramNode) node).channelId, ((ProgramNode) node).getCategoryId(), ((ProgramNode) node).title, ((ProgramNode) node).channelType);
-                    }
                 }
-                if (cNode.ratingStar == -1) {
+                if (cNode != null && cNode.ratingStar == -1) {
                     cNode.ratingStar = ((ProgramNode) node).channelRatingStar;
                 }
-                redirect2View(name, cNode);
-                /*if (openDamaku && InfoManager.getInstance().enableBarrage(((ProgramNode) node).channelId)) {
-                    openDamakuPlayController();
-                } else {
-                    url = InfoManager.getInstance().h5Channel(cNode.channelId);
-                    if (url == null || url.equalsIgnoreCase(bi.b)) {
-
-                    } else {
-                        redirectToActiviyByUrl(url, cNode.title, false);
-                    }
+                if (cNode == null) {
+                    cNode = new ChannelNode();
+                    cNode.channelId = ((ProgramNode) node).channelId;
+                    cNode.channelType = ((ProgramNode) node).channelType;
                 }
-                if (play) {
-                    if (!((ProgramNode) node).mLiveInVirtual) {
-                        PlayerAgent.getInstance().play(node);
-                    } else if (((ProgramNode) node).getCurrPlayStatus() != 2) {
-                        PlayerAgent.getInstance().play(node);
-                    }
-                }*/
-                // DoubleClick.getInstance().visitChannel(((ProgramNode) node).channelId, ((ProgramNode) node).getChannelName());
+                redirect2View(name, cNode);
             } else if (node.nodeName.equalsIgnoreCase("channel")) {
                 redirect2View(name, node);
 
@@ -157,13 +128,10 @@ public class ControllerManager {
     }
 
     public void redirect2View(String name, Object param) {
-           /* ViewController controller = getController(name);
-            controller.config(name, param);*/
         SwitchContentEvent event = new SwitchContentEvent();
         event.type = name;
         event.params = param;
         EventBus.getDefault().post(event);
-        // pushControllerByProperAnimation(controller);
     }
 
     /**

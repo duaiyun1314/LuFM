@@ -99,9 +99,9 @@ public class ChannelDetailView extends LinearLayout implements ChannelHelper.IDa
             public void onLoadSuccess(Object object) {
                 super.onLoadSuccess(object);
                 String type = (String) object;
-                if (type.equalsIgnoreCase(InfoManager.ISubscribeEventListener.RECV_PROGRAMS_SCHEDULE)) {
+                if (type.equalsIgnoreCase(InfoManager.ISubscribeEventListener.RECV_PROGRAMS_SCHEDULE)) {//分页获取
                     setData(channelNode.getAllLstProgramNode());
-                } else if (type.equalsIgnoreCase(InfoManager.ISubscribeEventListener.RECV_RELOAD_PROGRAMS_SCHEDULE)) {
+                } else if (type.equalsIgnoreCase(InfoManager.ISubscribeEventListener.RECV_RELOAD_PROGRAMS_SCHEDULE)) {//刷新
                     setData(channelNode.reloadAllLstProgramNode());
                 }
                 super.onLoadFinish(30);

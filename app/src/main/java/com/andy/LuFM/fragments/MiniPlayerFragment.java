@@ -32,9 +32,11 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.andy.LuFM.app.PlayApplication;
 import com.andy.LuFM.R;
@@ -53,6 +55,7 @@ public class MiniPlayerFragment extends Fragment {
 
     private ImageView mMiniPlayerAlbumArt;
     private RelativeLayout mPlayPauseBackground;
+    private LinearLayout mDescriptionContainer;
     private ImageButton mPlayPauseButton;
     private ImageButton mNextButton;
     private TextView mTitleText;
@@ -127,6 +130,7 @@ public class MiniPlayerFragment extends Fragment {
         mTitleText = (TextView) rootView.findViewById(R.id.songName);
         mSubText = (TextView) rootView.findViewById(R.id.artistAlbumName);
         mSeekBar = (ProgressBar) rootView.findViewById(R.id.nowPlayingSeekBar);
+        mDescriptionContainer = (LinearLayout) rootView.findViewById(R.id.description_container);
 
         // mPlayPauseBackground.setBackgroundResource(UIElementsHelper.getShadowedCircle(mContext));
         mPlayPauseButton.setTag("pause_light");
@@ -138,6 +142,8 @@ public class MiniPlayerFragment extends Fragment {
         mPlayPauseBackground.setOnClickListener(playPauseClickListener);
         mPlayPauseButton.setOnClickListener(playPauseClickListener);
         mNextButton.setOnClickListener(mOnClickNextListener);
+        mDescriptionContainer.setOnClickListener(mOnClickMiniPlayer);
+        mMiniPlayerAlbumArt.setOnClickListener(mOnClickMiniPlayer);
 
         //Restrict all touch events to this fragment.
         rootView.setOnTouchListener(new View.OnTouchListener() {
@@ -223,19 +229,6 @@ public class MiniPlayerFragment extends Fragment {
 
     }
 
-
-    /**
-     * Animates the pause button to a play button.
-     */
-    private void animatePauseToPlay() {
-
-        //Check to make sure the current icon is the pause icon.
-        if (mPlayPauseButton.getTag() != "pause_light")
-            return;
-
-
-    }
-
     /**
      * Click listener for the play/pause button.
      */
@@ -246,6 +239,12 @@ public class MiniPlayerFragment extends Fragment {
 
             //BZZZT! Give the user a brief haptic feedback touch response.
             view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY);
+
+            //判断是否有播放列表
+            if (mApp.getService() == null || mApp.getService().getPlaybackIndecesList().size() <= 0) {
+                Toast.makeText(getActivity(), "当前播放列表为空", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
             //Update the playback UI elements.
             if (mApp.getService().isPlayingMusic())
@@ -273,25 +272,17 @@ public class MiniPlayerFragment extends Fragment {
     };
 
     /**
-     * Click listener for the previous button.
-     */
-    private View.OnClickListener mOnClickPreviousListener = new View.OnClickListener() {
-
-        @Override
-        public void onClick(View arg0) {
-            mApp.getService().skipToPreviousTrack();
-
-        }
-
-    };
-
-    /**
      * Click listener for the next button.
      */
     private View.OnClickListener mOnClickNextListener = new View.OnClickListener() {
 
         @Override
         public void onClick(View arg0) {
+            //判断是否有播放列表
+            if (mApp.getService() == null || mApp.getService().getPlaybackIndecesList().size() <= 0) {
+                Toast.makeText(getActivity(), "当前播放列表为空", Toast.LENGTH_SHORT).show();
+                return;
+            }
             mApp.getService().skipToNextTrack();
 
         }
@@ -306,22 +297,13 @@ public class MiniPlayerFragment extends Fragment {
 
         @Override
         public void onClick(View v) {
+            //判断是否有播放列表
+            if (mApp.getService() == null || mApp.getService().getPlaybackIndecesList().size() <= 0) {
+                Toast.makeText(getActivity(), "当前播放列表为空", Toast.LENGTH_SHORT).show();
+                return;
+            }
             Intent intent = new Intent(mContext, NowPlayingActivity.class);
             startActivity(intent);
-        }
-
-    };
-
-    /**
-     * Click listener for the ListView.
-     */
-    private AdapterView.OnItemClickListener onClick = new AdapterView.OnItemClickListener() {
-
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            if (mApp.isServiceRunning())
-                mApp.getService().skipToTrack(position);
-
         }
 
     };
@@ -338,7 +320,6 @@ public class MiniPlayerFragment extends Fragment {
         try {
             setSeekbarDuration(mApp.getService().getCurrentMediaPlayer().getDuration() / 1000);
         } catch (Exception e) {
-            e.printStackTrace();
         }
 
     }
@@ -347,9 +328,9 @@ public class MiniPlayerFragment extends Fragment {
      * Sets the seekbar's duration. Also updates the
      * elapsed/remaining duration text.
      */
-    private void setSeekbarDuration(int duration) {
-        mSeekBar.setMax(duration);
-        int progress = mApp.getService().getCurrentMediaPlayer().getCurrentPosition() / 1000;
+    private void setSeekbarDuration(long duration) {
+        mSeekBar.setMax((int) duration);
+        long progress = mApp.getService().getCurrentMediaPlayer().getCurrentPosition() / 1000;
         mHandler.postDelayed(seekbarUpdateRunnable, 100);
     }
 

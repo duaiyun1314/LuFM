@@ -24,17 +24,17 @@
             android:layout_width="match_parent"
             android:layout_height="0dip"
             android:layout_weight="1"
-            android:gravity="left|top"
             android:ellipsize="marquee"
-            android:singleLine="true"
+            android:gravity="left|top"
+            android:maxLines="2"
             android:textColor="#ff272930"
             android:textSize="18dip" />
 
         <TextView
             android:id="@+id/time"
             android:layout_width="match_parent"
-            android:layout_height="0dip"
-            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dip"
             android:gravity="left|bottom"
             android:textColor="#ff606060" />
     </LinearLayout>

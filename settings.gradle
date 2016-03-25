@@ -1,1 +1,1 @@
-include ':app', ':daogenerator', ':materialish-progress'
+include ':app', ':daogenerator', ':materialish-progress', ':vitamio'

@@ -60,6 +60,7 @@ dependencies {
     compile 'com.loopj.android:android-async-http:1.4.9'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.+'
     compile project(':materialish-progress')
+    compile project(':vitamio')
     compile 'com.android.support:recyclerview-v7:23.1.0'
     compile 'com.squareup.retrofit:adapter-rxjava:2.0.0-beta2'
     compile 'io.reactivex:rxandroid:1.0.1'

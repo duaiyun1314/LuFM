@@ -24,4 +24,5 @@ public class RequestType {
     public static final String GET_SPECIAL_TOPIC_CHANNELS = "GET_SPECIAL_TOPIC_CHANNELS";
     public static final String GET_RECOMMEND_PLAYING = "GET_RECOMMEND_PLAYING";
     public static final String GET_ADVERTISEMENT_ADDRESS = "GET_ADVERTISEMENT_ADDRESS";
+    public static final String GET_LIVE_PROGRAM_SCHEDULE = "GET_LIVE_PROGRAM_SCHEDULE";
 }

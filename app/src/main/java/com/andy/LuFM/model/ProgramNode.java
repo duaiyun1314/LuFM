@@ -18,6 +18,7 @@ public class ProgramNode extends Node {
     public static final int RESERVE_PROGRAM = 2;
     private long _createTime;
     private long _updateTime;
+    public List<BroadcasterNode> lstBroadcaster;//主播
     private long absoluteEndTime;
     private long absoluteStartTime;
     public boolean available;
@@ -241,11 +242,11 @@ public class ProgramNode extends Node {
     }
 
 
-    public String getLowBitrateSource() {
+    public String getBitrateSource() {
         if (this.mLowBitrateSource != null && !this.mLowBitrateSource.equalsIgnoreCase("")) {
             return this.mLowBitrateSource;
         }
-        int bit = 24;
+        int bit = 60;
         if (this.lstBitrate != null && this.lstBitrate.size() > 0) {
             bit = ((Integer) this.lstBitrate.get(0)).intValue();
         }

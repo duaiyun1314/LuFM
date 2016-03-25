@@ -92,57 +92,6 @@ public class ChannelHelper extends Node {
         return null;
     }
 
-    public ChannelNode getFakeChannel(int channelId, int catid, String name, int type) {
-        //Log.i("Sync", "getFakeChannel");
-        if (type == 0) {
-            return getFakeLiveChannel(channelId, catid, name);
-        }
-        return getFakeVirtualChannel(channelId, catid, name);
-    }
-
-    public ChannelNode getFakeLiveChannel(int channelId, int catid, String name) {
-        //  Log.i("Sync", "getFakeLiveChannel");
-        if (this.mapLiveChannels.get(channelId) != null) {
-            return (ChannelNode) this.mapLiveChannels.get(channelId);
-        }
-        ChannelNode node = new ChannelNode();
-        node.channelId = channelId;
-        node.title = name;
-        node.channelType = 0;
-        if (node.title == null) {
-            node.title = "\\u7535\\u53f0";
-        }
-        node.categoryId = catid;
-        this.mapLiveChannels.put(channelId, node);
-        InfoManager.getInstance()._loadLiveChannelNode(channelId, this);
-        return node;
-    }
-
-    public ChannelNode getFakeVirtualChannel(int channelId, int catid, String name) {
-        //Log.i("Sync", "getFakeVirtualChannle");
-        if (this.mapVirtualChannels.get(channelId) != null) {
-            return (ChannelNode) this.mapVirtualChannels.get(channelId);
-        }
-      /*  if (catid == DownLoadInfoNode.mDownloadId) {
-            ChannelNode temp = InfoManager.getInstance().root().mDownLoadInfoNode.getChannelNode(channelId);
-            if (temp != null) {
-                this.mapVirtualChannels.put(channelId, temp);
-                return temp;
-            }
-        }*/
-        ChannelNode node = new ChannelNode();
-        node.channelId = channelId;
-        node.title = name;
-        node.channelType = 1;
-        if (node.title == null) {
-            node.title = "\u873b\u8713fm";
-        }
-        node.categoryId = catid;
-        this.mapVirtualChannels.put(channelId, node);
-        InfoManager.getInstance().loadVirtualChannelNode(channelId, this);
-        return node;
-    }
-
     public ChannelNode getChannel(ProgramNode node) {
         if (node == null) {
             return null;
@@ -182,19 +131,16 @@ public class ChannelHelper extends Node {
         if (type == 0) {
             node = (ChannelNode) this.mapLiveChannels.get(channelId);
             if (node != null) {
-                //        Log.i("Sync", "内存中有：");
                 return node;
             }
         } else if (type == 1) {
             node = (ChannelNode) this.mapVirtualChannels.get(channelId);
             if (node != null) {
-                //     Log.i("Sync", "内存中有：");
                 return node;
             }
         }
         node = getChannelFromDB(channelId, type);
         if (node != null) {
-            //    Log.i("Sync", "数据库有：");
             if (type == 1) {
                 this.mapVirtualChannels.put(channelId, node);
             } else if (type == 0) {
@@ -203,7 +149,7 @@ public class ChannelHelper extends Node {
         }
         //  Log.i("Sync:", "type：" + type);
         if (type == 0) {
-            InfoManager.getInstance()._loadLiveChannelNode(channelId, this);
+            InfoManager.getInstance().loadLiveChannelNode(channelId, this);
         }
         if (type == 1) {
             //会调到onNodeUpdated（）
@@ -236,7 +182,7 @@ public class ChannelHelper extends Node {
                     }*/
                 }
             } else if (type.equalsIgnoreCase(InfoManager.INodeEventListener.ADD_LIVE_CHANNEL_INFO)) {
-                /*node = (Node) obj;
+                node = (Node) obj;
                 if (node != null && node.nodeName.equalsIgnoreCase("channel")) {
                     temp = (ChannelNode) this.mapLiveChannels.get(((ChannelNode) node).channelId);
                     if (temp != null) {
@@ -245,8 +191,7 @@ public class ChannelHelper extends Node {
                         this.mapLiveChannels.put(((ChannelNode) node).channelId, (ChannelNode) node);
                     }
                     dispatch2Observer((ChannelNode) node);
-                    updateChannel((ChannelNode) node);
-                }*/
+                }
             }
         }
     }

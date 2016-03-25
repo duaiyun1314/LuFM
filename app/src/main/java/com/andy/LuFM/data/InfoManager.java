@@ -57,15 +57,27 @@ public class InfoManager implements IResultRecvHandler {
         DataManager.getInstance().getData(RequestType.NET_REQUEST, this, new DataCommand(RequestType.GET_RECOMMEND_PLAYING, param));
     }
 
-    public void _loadLiveChannelNode(int channelId, Node node) {
-        if (node != null) {
+    /**
+     * 获取单个直播频道的详细信息
+     *
+     * @param channelId
+     * @param listener
+     */
+    public void loadLiveChannelNode(int channelId, INodeEventListener listener) {
+        if (listener != null) {
             Map<String, Object> param = new HashMap();
             param.put("id", String.valueOf(channelId));
             DataManager.getInstance().getData(RequestType.NET_REQUEST, this, new DataCommand(RequestType.GET_LIVE_CHANNEL_INFO, param));
-            registerNodeEventListener(node, INodeEventListener.ADD_LIVE_CHANNEL_INFO);
+            registerNodeEventListener(listener, INodeEventListener.ADD_LIVE_CHANNEL_INFO);
         }
     }
 
+    /**
+     * 获取单个非直播频道的详细信息
+     *
+     * @param channelId
+     * @param node
+     */
     public void loadVirtualChannelNode(int channelId, Node node) {
         if (node != null) {
             registerNodeEventListener(node, INodeEventListener.ADD_VIRTUAL_CHANNEL_INFO);
@@ -85,6 +97,11 @@ public class InfoManager implements IResultRecvHandler {
             if (channelNode != null) {
                 dispatchNodeEvent(channelNode, INodeEventListener.ADD_VIRTUAL_CHANNEL_INFO);
             }
+        } else if (type.equalsIgnoreCase(RequestType.GET_LIVE_CHANNEL_INFO)) {
+            ChannelNode node = (ChannelNode) result.getData();
+            if (node != null) {
+                dispatchNodeEvent(node, INodeEventListener.ADD_LIVE_CHANNEL_INFO);
+            }
         } else if (type.equalsIgnoreCase(RequestType.GET_PODCASTER_BASEINFO)) {
             UserInfo user = (UserInfo) result.getData();
             if (user != null) {
@@ -102,6 +119,12 @@ public class InfoManager implements IResultRecvHandler {
             ProgramScheduleList psl = (ProgramScheduleList) result.getData();
             if (psl != null) {
                 dispatchNodeEvent(psl, (Map) param, INodeEventListener.ADD_VIRTUAL_PROGRAMS_SCHEDULE);
+                dispatchSubscribeEvent(ISubscribeEventListener.RECV_PROGRAMS_SCHEDULE);
+            }
+        } else if (type.equalsIgnoreCase(RequestType.GET_LIVE_PROGRAM_SCHEDULE)) {
+            ProgramScheduleList psl = (ProgramScheduleList) result.getData();
+            if (psl != null) {
+                dispatchNodeEvent(psl, (Map) param, INodeEventListener.ADD_LIVE_PROGRAMS_SCHEDULE);
                 dispatchSubscribeEvent(ISubscribeEventListener.RECV_PROGRAMS_SCHEDULE);
             }
         } else if (type.equalsIgnoreCase(RequestType.GET_LIST_MEDIACENTER)) {
@@ -160,9 +183,6 @@ public class InfoManager implements IResultRecvHandler {
         }
     }
 
-    /*public void dispatchSubscribeEvent(String type) {
-        dispatchSubscribeEvent(type, DataExceptionStatus.OK);
-    }*/
 
     /**
      * 只是通知最初请求的类加载完成
@@ -215,68 +235,21 @@ public class InfoManager implements IResultRecvHandler {
     }
 
     public interface INodeEventListener {
-        public static final String ADD_ACTIVITY_LIST = "AACTL";
-        public static final String ADD_ADVERTISEMENT_INFO = "ADD_ADVERTISEMENT_INFO";
-        public static final String ADD_ALBUM_LIST = "AAL";
-        public static final String ADD_BILLBOARD_CHANNELS = "ABCS";
-        public static final String ADD_BILLBOARD_PROGRAMS = "ABPS";
-        public static final String ADD_CATEGORY = "ACA";
-        public static final String ADD_CATEGORY_ALL_CHANNELS = "ADD_CATEGORY_ALL_CHANNELS";
-        public static final String ADD_CATEGORY_ATTR = "ADD_CATEGORY_ATTR";
-        public static final String ADD_CATEGORY_LIST = "ACAL";
-        public static final String ADD_CHANNEL_LIST = "ACL";
-        public static final String ADD_CHECK_IN_STATUS = "ACIS";
-        public static final String ADD_CURRENT_PLAYING_PROGRAMS = "ACPP";
-        public static final String ADD_CURRENT_PROGRAM_TOPICS = "ACPT";
-        public static final String ADD_FREQ_CHANNELS = "AFC";
-        public static final String ADD_GUIDE_CATEGORY = "AGC";
-        public static final String ADD_LINK_INFO = "ALI";
-        public static final String ADD_LIVE_CHANNELS_BYATTR = "ADD_LIVE_CHANNELS_BYATTR";
-        public static final String ADD_LIVE_CHANNEL_INFO = "ADD_LIVE_CHANNEL_INFO";
-        public static final String ADD_LIVE_PROGRAMS_SCHEDULE = "ADD_LIVE_PROGRAMS_SCHEDULE";
-        public static final String ADD_MORE_VIRTUAL_CHANNEL_LIST = "AMVCL";
-        public static final String ADD_MY_PODCASTER_LIST = "ADD_MY_PODCASTER_LIST";
-        public static final String ADD_ONDEMAND_CHANNEL = "AOC";
-        public static final String ADD_ONDEMAND_PROGRAMS_LIST = "ADPL";
-        public static final String ADD_PODCASTER_BASE = "ADD_PODCASTER_BASE";
-        public static final String ADD_PODCASTER_CHANNELS = "ADD_PODCASTER_CHANNELS";
-        public static final String ADD_PODCASTER_DETAIL = "ADD_PODCASTER_DETAIL";
-        public static final String ADD_PODCASTER_LATEST = "ADD_PODCASTER_LATEST";
-        public static final String ADD_RADIO_CHANNEL_PROGRAMS_SCHEDULE = "ARCPS";
-        public static final String ADD_RADIO_INFO = "ARADIO";
-        public static final String ADD_RECOMMEND_AMUSEMENT_LIST = "ARAL";
-        public static final String ADD_RECOMMEND_BROADCASTER_LIST = "ARBL";
-        public static final String ADD_RECOMMEND_BUSINESS_LIST = "ARBUL";
-        public static final String ADD_RECOMMEND_CATEGORY_V2 = "ARCV2";
-        public static final String ADD_RECOMMEND_CATEGORY_V2_BANNER = "ARCV2B";
-        public static final String ADD_RECOMMEND_CHANNEL_LIST = "ARCL";
-        public static final String ADD_RECOMMEND_EDUCATION_LIST = "AREL";
-        public static final String ADD_RECOMMEND_FEEL_LIST = "ARFL";
-        public static final String ADD_RECOMMEND_LIFE_LIST = "ARLL";
-        public static final String ADD_RECOMMEND_MUSIC_LIST = "ARML";
-        public static final String ADD_RECOMMEND_NEWS_LIST = "ARNEL";
-        public static final String ADD_RECOMMEND_NOVEL_LIST = "ARNL";
-        public static final String ADD_RECOMMEND_OTHER_LIST = "AROL";
-        public static final String ADD_RECOMMEND_PODCAST_LIST = "ARPL";
-        public static final String ADD_RECOMMEND_TECHNOLOGY_LIST = "ARTL";
-        public static final String ADD_RELOAD_VIRTUAL_PROGRAMS_SCHEDULE = "ADD_RELOAD_VIRTUAL_PROGRAMS_SCHEDULE";
-        public static final String ADD_RINGTONE_LIST = "ARTNL";
-        public static final String ADD_SHARE_INFO_NODE = "ASIN";
-        public static final String ADD_SPECIAL_TOPIC = "ADD_SPECIAL_TOPIC";
-        public static final String ADD_SPECIAL_TOPIC_CHANNELS = "ADD_SPECIAL_TOPIC_CHANNELS";
-        public static final String ADD_SUB_CATEGORY = "ASC";
-        public static final String ADD_SUB_CATEGORY_LIST = "ASCL";
-        public static final String ADD_VIRTUAL_CATEGORY_LIST = "AVCAL";
-        public static final String ADD_VIRTUAL_CHANNELS_BYATTR = "ADD_VIRTUAL_CHANNELS_BYATTR";
-        public static final String ADD_VIRTUAL_CHANNEL_INFO = "ADD_VIRTUAL_CHANNEL_INFO";
-        public static final String ADD_VIRTUAL_CHANNEL_LIST = "AVCL";
-        public static final String ADD_VIRTUAL_DIMENTION_LIST = "AVDIL";
-        public static final String ADD_VIRTUAL_PROGRAMS_SCHEDULE = "ADD_VIRTUAL_PROGRAMS_SCHEDULE";
-        public static final String ADD_VIRTUAL_PROGRAM_INFO = "AVPI";
-        public static final String Add_recommend_for_category = "Add_recommend_for_category";
-        public static final String WECHAT_TOKEN_INFO = "WTI";
-        public static final String WECHAT_TOKEN_REFRESH = "WTR";
-        public static final String WECHAT_USER_INFO = "WUI";
+        String ADD_CATEGORY_ALL_CHANNELS = "ADD_CATEGORY_ALL_CHANNELS";
+        String ADD_LIVE_CHANNELS_BYATTR = "ADD_LIVE_CHANNELS_BYATTR";
+        String ADD_LIVE_CHANNEL_INFO = "ADD_LIVE_CHANNEL_INFO";
+        String ADD_LIVE_PROGRAMS_SCHEDULE = "ADD_LIVE_PROGRAMS_SCHEDULE";
+        String ADD_MY_PODCASTER_LIST = "ADD_MY_PODCASTER_LIST";
+        String ADD_PODCASTER_BASE = "ADD_PODCASTER_BASE";
+        String ADD_PODCASTER_CHANNELS = "ADD_PODCASTER_CHANNELS";
+        String ADD_PODCASTER_DETAIL = "ADD_PODCASTER_DETAIL";
+        String ADD_PODCASTER_LATEST = "ADD_PODCASTER_LATEST";
+        String ADD_RELOAD_VIRTUAL_PROGRAMS_SCHEDULE = "ADD_RELOAD_VIRTUAL_PROGRAMS_SCHEDULE";
+        String ADD_SPECIAL_TOPIC = "ADD_SPECIAL_TOPIC";
+        String ADD_SPECIAL_TOPIC_CHANNELS = "ADD_SPECIAL_TOPIC_CHANNELS";
+        String ADD_VIRTUAL_CHANNELS_BYATTR = "ADD_VIRTUAL_CHANNELS_BYATTR";
+        String ADD_VIRTUAL_CHANNEL_INFO = "ADD_VIRTUAL_CHANNEL_INFO";
+        String ADD_VIRTUAL_PROGRAMS_SCHEDULE = "ADD_VIRTUAL_PROGRAMS_SCHEDULE";
 
         void onNodeUpdated(Object obj, String str);
 
@@ -363,6 +336,9 @@ public class InfoManager implements IResultRecvHandler {
         return false;
     }
 
+    /**
+     * 简单的消息通知，只是携带消息类型
+     */
     public interface ISubscribeEventListener {
         public static final String RECV_ACTIVITY_LIST = "RACTL";
         public static final String RECV_ADVERTISEMENTS_INFO = "RADI";
@@ -427,9 +403,9 @@ public class InfoManager implements IResultRecvHandler {
     }
 
     public void loadProgramsScheduleNode(ChannelNode node, ISubscribeEventListener listener) {
-        if (node != null && !node.isDownloadChannel()) {
+        if (node != null) {
             if (node.channelType == 0) {
-                // loadLiveProgramSchedule(ProgramHelper.getInstance(), node.channelId, null, listener);
+                loadLiveProgramSchedule(ProgramHelper.getInstance(), node.channelId, null, listener);
                 return;
             }
             int page;
@@ -446,6 +422,23 @@ public class InfoManager implements IResultRecvHandler {
     public int getProgramPageSize() {
         return 30;
     }
+
+    public void loadLiveProgramSchedule(Node node, int channelid, String days, ISubscribeEventListener listener) {
+        if (node != null) {
+            if (listener != null) {
+                registerSubscribeEventListener(listener, ISubscribeEventListener.RECV_PROGRAMS_SCHEDULE);
+            }
+            String requestType = RequestType.GET_LIVE_PROGRAM_SCHEDULE;
+            Map<String, Object> param = new HashMap();
+            param.put("id", String.valueOf(channelid));
+            param.put("day", days);
+            DataManager.getInstance().getData(RequestType.NET_REQUEST, this, new DataCommand(requestType, param));
+            if (node != null) {
+                registerNodeEventListener(node, INodeEventListener.ADD_LIVE_PROGRAMS_SCHEDULE);
+            }
+        }
+    }
+
 
     public void loadVirtualProgramsScheduleNode(Node node, int channelid, boolean isnovel, int page, int curSize, ISubscribeEventListener listener) {
         int page_size = 30;

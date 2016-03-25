@@ -2,6 +2,7 @@ package com.andy.LuFM.network;
 
 import com.squareup.okhttp.ResponseBody;
 
+import retrofit.Call;
 import retrofit.http.GET;
 import retrofit.http.Path;
 import retrofit.http.Url;
@@ -41,4 +42,20 @@ public interface NormalGetAPI {
 
     @GET
     Observable<retrofit.Response<ResponseBody>> getAddress(@Url String url);
+
+    @GET("channellives/{id}")
+    Observable<retrofit.Response<ResponseBody>> getSingleLiveChannel(@Path("id") String id);
+
+    @GET("channellives/{id}/programs/day/{day}")
+    Observable<retrofit.Response<ResponseBody>> getLiveChannelPrograms(@Path("id") String id, @Path("day") String day);
+
+    /**
+     * 文件下载
+     *
+     * @param url
+     * @return
+     */
+    @GET
+    Call<ResponseBody> downLoadFile(@Url String url);
+
 }

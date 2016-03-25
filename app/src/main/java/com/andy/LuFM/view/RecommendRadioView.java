@@ -9,6 +9,7 @@ import android.widget.ListView;
 
 import com.andy.LuFM.Utils.ViewFactory;
 import com.andy.LuFM.adapter.SectionAdapter;
+import com.andy.LuFM.controller.ControllerManager;
 import com.andy.LuFM.controller.RecommendListController;
 import com.andy.LuFM.controller.RecommendRadioController;
 import com.andy.LuFM.data.InfoManager;
@@ -70,6 +71,7 @@ public class RecommendRadioView extends BaseRecommendView<RecommendRadioControll
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+        RecommendPlayingItemNode playingItemNode = ((RecommendRadioProvider.MYAdapter) controller.getAdatper()).getData().get(position - 1);
+        ControllerManager.getInstance(getContext()).openPlayController(playingItemNode);
     }
 }

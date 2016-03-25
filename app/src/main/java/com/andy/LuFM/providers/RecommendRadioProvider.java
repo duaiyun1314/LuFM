@@ -83,7 +83,7 @@ public class RecommendRadioProvider extends ListDataProvider implements InfoMana
                 holder = (ViewHolder) convertView.getTag();
             }
             RecommendPlayingItemNode recommendPlayingItemNode = list.get(position);
-            holder.title.setText(recommendPlayingItemNode.channelName);
+            holder.title.setText(recommendPlayingItemNode.channelName + " " + recommendPlayingItemNode.programName);
             holder.updatetime.setText(recommendPlayingItemNode.getUpdateTime());
             ImageLoader.getInstance().displayImage(recommendPlayingItemNode.thumb, holder.thumb_iv, options);
             return convertView;
@@ -92,6 +92,10 @@ public class RecommendRadioProvider extends ListDataProvider implements InfoMana
         public void setData(List<RecommendPlayingItemNode> list) {
             this.list = list;
             notifyDataSetChanged();
+        }
+
+        public List<RecommendPlayingItemNode> getData() {
+            return list;
         }
 
         private class ViewHolder {

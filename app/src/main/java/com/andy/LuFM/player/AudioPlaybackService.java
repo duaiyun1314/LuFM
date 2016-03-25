@@ -27,11 +27,13 @@ import android.content.IntentFilter;
 import android.database.MergeCursor;
 import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
-import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnBufferingUpdateListener;
-import android.media.MediaPlayer.OnCompletionListener;
-import android.media.MediaPlayer.OnErrorListener;
-import android.media.MediaPlayer.OnPreparedListener;
+
+import io.vov.vitamio.LibsChecker;
+import io.vov.vitamio.MediaPlayer;
+import io.vov.vitamio.MediaPlayer.OnBufferingUpdateListener;
+import io.vov.vitamio.MediaPlayer.OnCompletionListener;
+import io.vov.vitamio.MediaPlayer.OnErrorListener;
+import io.vov.vitamio.MediaPlayer.OnPreparedListener;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
@@ -51,12 +53,27 @@ import com.andy.LuFM.helper.ChannelHelper;
 import com.andy.LuFM.model.ChannelNode;
 import com.andy.LuFM.model.Node;
 import com.andy.LuFM.model.ProgramNode;
+import com.andy.LuFM.network.NormalFactory;
+import com.andy.LuFM.network.NormalGetAPI;
+import com.squareup.okhttp.ResponseBody;
 
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+
+import retrofit.Response;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * The meat and potatoes of the entire app. Manages
@@ -267,8 +284,8 @@ public class AudioPlaybackService extends Service {
             mMediaPlayer2 = null;
         }
 
-        mMediaPlayer = new MediaPlayer();
-        mMediaPlayer2 = new MediaPlayer();
+        mMediaPlayer = new MediaPlayer(this);
+        mMediaPlayer2 = new MediaPlayer(this);
         setCurrentMediaPlayer(1);
 
         getMediaPlayer().reset();
@@ -284,14 +301,10 @@ public class AudioPlaybackService extends Service {
             mMediaPlayer.setWakeMode(mContext, PowerManager.PARTIAL_WAKE_LOCK);
             getMediaPlayer2().setWakeMode(mContext, PowerManager.PARTIAL_WAKE_LOCK);
         } catch (Exception e) {
-            mMediaPlayer = new MediaPlayer();
-            mMediaPlayer2 = new MediaPlayer();
+            mMediaPlayer = new MediaPlayer(this);
+            mMediaPlayer2 = new MediaPlayer(this);
             setCurrentMediaPlayer(1);
         }
-
-        //Set the mediaPlayers' stream sources.
-        mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        getMediaPlayer2().setAudioStreamType(AudioManager.STREAM_MUSIC);
 
     }
 
@@ -950,8 +963,8 @@ public class AudioPlaybackService extends Service {
             try {
                 if (getCurrentMediaPlayer().isPlaying()) {
 
-                    int currentTrackDuration = getCurrentMediaPlayer().getDuration();
-                    int currentTrackFadePosition = currentTrackDuration - (mCrossfadeDuration * 1000);
+                    long currentTrackDuration = getCurrentMediaPlayer().getDuration();
+                    long currentTrackFadePosition = currentTrackDuration - (mCrossfadeDuration * 1000);
                     if (getCurrentMediaPlayer().getCurrentPosition() >= currentTrackFadePosition) {
                         //Launch the next runnable that will handle the cross fade effect.
                         mHandler.postDelayed(crossFadeRunnable, 100);
@@ -1112,12 +1125,26 @@ public class AudioPlaybackService extends Service {
              * Set the data source for mMediaPlayer and start preparing it
     		 * asynchronously.
     		 */
-            getMediaPlayer().setDataSource(mContext, getSongDataSource(mCurrentSongIndex));
+            //  getMediaPlayer().setDataSource(mContext, getSongDataSource(mCurrentSongIndex));
             getMediaPlayer().setOnPreparedListener(mediaPlayerPrepared);
             getMediaPlayer().setOnErrorListener(onErrorListener);
             getMediaPlayer().setOnBufferingUpdateListener(bufferingListener);
-            getMediaPlayer().prepareAsync();
-            Log.i("Sync", "正在加载");
+            getSongDataSource(songIndex).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Action1<Uri>() {
+                        @Override
+                        public void call(Uri uri) {
+                            if (uri != null) {
+                                try {
+                                    getMediaPlayer().setDataSource(mContext, uri);
+                                    getMediaPlayer().prepareAsync();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+                        }
+                    });
+
 
         } catch (Exception e) {
             Log.e("DEBUG", "MESSAGE", e);
@@ -1173,11 +1200,24 @@ public class AudioPlaybackService extends Service {
              * Set the data source for mMediaPlayer and start preparing it
     		 * asynchronously.
     		 */
-            getMediaPlayer2().setDataSource(mContext, getSongDataSource(songIndex));
             getMediaPlayer2().setOnPreparedListener(mediaPlayer2Prepared);
             getMediaPlayer2().setOnErrorListener(onErrorListener);
             getMediaPlayer2().setOnBufferingUpdateListener(bufferingListener);
-            getMediaPlayer2().prepareAsync();
+            getSongDataSource(songIndex).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Action1<Uri>() {
+                        @Override
+                        public void call(Uri uri) {
+                            if (uri != null) {
+                                try {
+                                    getMediaPlayer2().setDataSource(mContext, uri);
+                                    getMediaPlayer2().prepareAsync();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+                        }
+                    });
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -1209,130 +1249,84 @@ public class AudioPlaybackService extends Service {
      * from Google's servers and a temporary placeholder
      * (URI_BEING_LOADED) is returned.
      */
-    private Uri getSongDataSource(int songIndex) {
-        Node node = programNodes.get(songIndex);
-        if (node != null) {
-            // requestAudioFocus();
-            // stopFM();
-            // setLoadedAndPlayId(0, 0);
-            String url;
-           /* if (node.nodeName.equalsIgnoreCase(BaseConstants.X_COMMAND_CHANNEL)) {
-                ChannelNode temp = (ChannelNode) node;
-                if (temp.channelType == 1) {
-                    List<ProgramNode> lstNodes = temp.getAllLstProgramNode();
-                    if (lstNodes != null && lstNodes.size() > 0) {
-                        play((Node) lstNodes.get(0));
-                        return;
-                    }
-                    return;
-                }
-                InfoManager.getInstance().root().setPlayingChannelNode(node);
-                url = temp.getSourceUrl();
-                ProgramNode program;
-                if (url == null || url.equalsIgnoreCase(bi.b)) {
-                    if (this.hasRecoveredFromCrash) {
-                        this.hasRecoveredFromCrash = false;
-                    }
-                    program = temp.getProgramNodeByTime(System.currentTimeMillis());
-                    if (program != null) {
-                        if (program.getCurrPlayStatus() == 3) {
-                            url = program.getSourceUrl();
-                        } else {
-                            url = program.getSourceUrl();
-                        }
-                        if (!(url == null || url.equalsIgnoreCase(bi.b))) {
-                            if (!playFrontAudioAdv(program)) {
-                                InfoManager.getInstance().root().setPlayMode();
-                                if (_play(url) && program.getCurrPlayStatus() == 3) {
-                                    autoSeek(program.id);
+    private Observable<Uri> getSongDataSource(int songIndex) {
+        Observable<Uri> observable = Observable.just(songIndex)
+                .map(new Func1<Integer, String>() {
+                    @Override
+                    public String call(Integer index) {
+                        Node node = programNodes.get(index);
+                        if (node != null) {
+                            String url;
+                            if (node.nodeName.equalsIgnoreCase("program")) {
+                                ProgramNode temp2 = (ProgramNode) node;
+                                ChannelNode cn = ChannelHelper.getInstance().getChannel(temp2);
+                                if (cn != null) {
+                                    InfoManager.getInstance().root().setPlayingChannelNode(cn);
                                 }
+                                url = temp2.getBitrateSource();
+                                Log.i("Sync", "aurl:" + url);
+                                return url;
+                            } else if (node.nodeName.equalsIgnoreCase("ringtone")) {
                             }
-                            if (program.getCurrPlayStatus() == 3) {
-                                this.liveStream = false;
-                            } else {
-                                this.liveStream = true;
-                            }
-                            InfoManager.getInstance().root().setPlayingNode(program);
-                            RemoteControl.getInstance().updateProgramInfo(this._context, temp, program);
-                        }
-                    }
-                } else {
-                    program = temp.getProgramNodeByTime(System.currentTimeMillis());
-                    if (program != null && program.getCurrPlayStatus() == 1) {
-                        url = program.getSourceUrl();
-                    }
-                    if (!playFrontAudioAdv(program)) {
-                        InfoManager.getInstance().root().setPlayMode();
-                        _play(url);
-                    }
-                    this.liveStream = true;
-                    if (program != null) {
-                        InfoManager.getInstance().root().setPlayingNode(program);
-                        RemoteControl.getInstance().updateProgramInfo(this._context, temp, program);
-                    } else {
-                        InfoManager.getInstance().root().setPlayingNode(temp);
-                    }
-                }
-            } else*/
-            if (node.nodeName.equalsIgnoreCase("program")) {
-                ProgramNode temp2 = (ProgramNode) node;
-                ChannelNode cn = ChannelHelper.getInstance().getChannel(temp2);
-                if (cn != null) {
-                    InfoManager.getInstance().root().setPlayingChannelNode(cn);
-                }
-                url = "";
-            /*    if (temp2.getCurrPlayStatus() == 3) {
-                    *//*if (!temp2.isDownloadProgram()) {
-                        url = InfoManager.getInstance().root().getLocalProgramSource(temp2);
-                    }*//*
-                    if (url == null || url.equalsIgnoreCase("")) {
-                        String cache = PlayCacheAgent.getInstance().getCache(temp2);
-                        if (cache != null) {
-                            url = cache;
+
+                            return null;
                         } else {
-                            PlayCacheAgent.getInstance().cacheNode(temp2);
-                            url = temp2.getSourceUrl();
+                            return null;
                         }
-                    }
-                } else {
-                    url = temp2.getSourceUrl();
-                }*/
-                url = temp2.getLowBitrateSource();
-                /*if (!(url == null || url.equalsIgnoreCase(""))) {
-                    if (this.currPlayState == 1 && (this.source == null || this.source.equalsIgnoreCase(url))) {
-                        _resume();
-                    } else if (!playFrontAudioAdv(temp2)) {
-                        InfoManager.getInstance().root().setPlayMode();
-                        if (_play(url) && temp2.getCurrPlayStatus() == 3) {
-                           // autoSeek(temp2.id);
-                        }
-                    }
-                    if (temp2.getCurrPlayStatus() == 3) {
-                        this.liveStream = false;
-                    } else {
-                        this.liveStream = true;
-                    }
-                    InfoManager.getInstance().root().setPlayingNode(temp2);
-                    RemoteControl.getInstance().updateProgramInfo(this._context, cn, temp2);
-                }*/
-                Log.i("Sync", "aurl:" + url);
-                return Uri.parse(url);
-            } else if (node.nodeName.equalsIgnoreCase("ringtone")) {
-                // playRingTone(node);
-                // InfoManager.getInstance().root().setPlayMode(PlayMode.ALARM_PLAY_ONLINE);
-            }
-            // this.currPlayState = EducationType.TOP;
-            //   InfoManager.getInstance().runSellApps();
-            // DoubleClick.getInstance().visitButton("\u64ad\u653e\u524d");
 
-        }
-        return null;
+                    }
+                })
+                .map(new Func1<String, Uri>() {
+                         @Override
+                         public Uri call(String url) {
+                             try {
+                                 if (url.contains("m3u8")) {
+                                     NormalGetAPI normalApi = NormalFactory.getNbaplus();
+                                     Response<ResponseBody> response = normalApi.downLoadFile(url).execute();
+                                     byte[] resultByte = response.body().bytes();
+                                     InputStream inputStream = new ByteArrayInputStream(resultByte);
+                                     // 借助一个BufferedReader可以逐行得遍历该文件
+                                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                                     String line;
+                                     String filePath = "";
+                                     while ((line = bufferedReader.readLine()) != null) {
+                                         if (line.startsWith("#")) {
+                                             // 元数据，可以做更多的处理，但现在忽略它
+                                         } else if (line.length() > 0) {
+                                             // 如果它的长度大于0，那么就假设它是一个播放列表条目
 
+                                             if (line.startsWith("http://")) {
+                                                 // 如果行以“http://”开头那么就把它作为流的完整URL
+                                                 filePath = line;
+                                             } else {
+                                                 // 否则把它作为一个相对的URL，
+                                                 // 同时把针对该M3U文件的原始请求的URL附加上去
+                                                 filePath = URI.create(url).resolve(line).toString();
+
+                                             }
+                                         }
+                                     }
+                                     Log.i("Sync", "filePath:" + filePath);
+                                     return Uri.parse(filePath);
+                                 } else {
+
+                                     return Uri.parse(url);
+                                 }
+                             } catch (Exception exception) {
+                                 exception.printStackTrace();
+                                 return null;
+                             }
+                         }
+                     }
+
+                );
+        return observable;
     }
 
     /**
      * Updates all open homescreen/lockscreen widgets.
      */
+
     public void updateWidgets() {
         try {
           /*  //Fire a broadcast message to the widget(s) to update them.

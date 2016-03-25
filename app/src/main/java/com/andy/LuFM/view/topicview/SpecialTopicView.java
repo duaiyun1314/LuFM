@@ -112,7 +112,7 @@ public class SpecialTopicView extends LinearLayout implements AdapterView.OnItem
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Log.i("Sync", "onItemClick" + position);
-        ControllerManager.getInstance(getContext()).openChannelDetailController(channelNodes.get(position - 1), true, true);
+        ControllerManager.getInstance(getContext()).openChannelDetailController(channelNodes.get(position - 1), true);
     }
 
     public void setData(List<ChannelNode> list) {
