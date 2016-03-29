@@ -94,7 +94,6 @@ public class PageLoader extends DataSetObserver implements AbsListView.OnScrollL
             if (mOnLoadListener == null) {
                 setEnable(false);
             } else {
-                Log.i("Sync", "footview 要显示了");
                 setEnable(true);
             }
         }

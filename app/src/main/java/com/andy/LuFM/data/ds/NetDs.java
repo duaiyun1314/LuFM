@@ -79,13 +79,11 @@ public class NetDs implements IDataOperation {
                 observable = getAPI.getRecommendPlaying(day);
             } else if (type.equalsIgnoreCase(RequestType.GET_ADVERTISEMENT_ADDRESS)) {
                 observable = getAPI.getAddress(Constants.AD_ADDRESS);
-            } else if (type.equalsIgnoreCase(RequestType.GET_LIVE_CHANNEL_INFO)) {
-                String id = param.get("id") + "";
-                observable = getAPI.getSingleLiveChannel(id);
-            } else if (type.equalsIgnoreCase(RequestType.GET_LIVE_PROGRAM_SCHEDULE)) {
+            }  else if (type.equalsIgnoreCase(RequestType.GET_LIVE_PROGRAM_SCHEDULE)) {
                 String id = param.get("id") + "";
                 String day = param.get("day") + "";
                 observable = getAPI.getLiveChannelPrograms(id, day);
+                Log.i("ss","GET_LIVE_PROGRAM_SCHEDULE:"+id);
             }
             observable.subscribeOn(Schedulers.io())
                     .map(new Func1<Response<ResponseBody>, Result>() {

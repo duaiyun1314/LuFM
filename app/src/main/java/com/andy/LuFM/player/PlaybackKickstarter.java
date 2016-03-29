@@ -17,11 +17,11 @@ package com.andy.LuFM.player;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.andy.LuFM.app.NowPlayingActivity;
 import com.andy.LuFM.app.PlayApplication;
-import com.andy.LuFM.fragments.NowPlayingFragment;
 import com.andy.LuFM.model.ProgramNode;
 
 import java.util.List;
@@ -33,7 +33,7 @@ import java.util.List;
  *
  * @author Saravan Pantham
  */
-public class PlaybackKickstarter implements AudioPlaybackService.PrepareServiceListener, NowPlayingFragment.NowPlayingActivityListener {
+public class PlaybackKickstarter implements AudioPlaybackService.PrepareServiceListener, NowPlayingActivity.NowPlayingActivityListener {
 
     private Context mContext;
     private PlayApplication mApp;
@@ -114,7 +114,7 @@ public class PlaybackKickstarter implements AudioPlaybackService.PrepareServiceL
             //Launch NowPlayingActivity.
             Intent intent = new Intent(mContext, NowPlayingActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra(NowPlayingFragment.START_SERVICE, true);
+            intent.putExtra(NowPlayingActivity.START_SERVICE, true);
             mContext.startActivity(intent);
 
         } else {
@@ -151,6 +151,7 @@ public class PlaybackKickstarter implements AudioPlaybackService.PrepareServiceL
         mApp.setService(service);
         mApp.getService().setPrepareServiceListener(this);
         mApp.getService().setCurrentSongIndex(mCurrentSongIndex);
+        Log.i("Sync", "setCurrentSongIndex   6" );
         mBuildCursorListener.onServiceCursorReady(programNodes, mCurrentSongIndex, mPlayAll);
 
     }

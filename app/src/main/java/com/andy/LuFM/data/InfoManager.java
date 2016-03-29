@@ -124,8 +124,10 @@ public class InfoManager implements IResultRecvHandler {
         } else if (type.equalsIgnoreCase(RequestType.GET_LIVE_PROGRAM_SCHEDULE)) {
             ProgramScheduleList psl = (ProgramScheduleList) result.getData();
             if (psl != null) {
+                Log.i("Sync", "请求成功:" + ((Map) param).get("id"));
                 dispatchNodeEvent(psl, (Map) param, INodeEventListener.ADD_LIVE_PROGRAMS_SCHEDULE);
                 dispatchSubscribeEvent(ISubscribeEventListener.RECV_PROGRAMS_SCHEDULE);
+
             }
         } else if (type.equalsIgnoreCase(RequestType.GET_LIST_MEDIACENTER)) {
             MediaCenter center = (MediaCenter) result.getData();

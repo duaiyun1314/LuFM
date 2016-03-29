@@ -258,7 +258,6 @@ public class AudioPlaybackService extends Service {
      * Initializes the MediaPlayer objects for this service session.
      */
     private void initMediaPlayers() {
-        Log.i("Sync1", "initMediaPlayers");
 
 		/*
          * Release the MediaPlayer objects if they are still valid.
@@ -986,6 +985,7 @@ public class AudioPlaybackService extends Service {
      * @return True if the method completed with no exceptions. False, otherwise.
      */
     public boolean prepareMediaPlayer(int songIndex) {
+        Log.e("Sync", "prepareMediaPlayer");
 
         try {
 
@@ -1037,7 +1037,6 @@ public class AudioPlaybackService extends Service {
                             if (uri != null) {
                                 try {
                                     //   uri = "http://hls.cdn.qingting.fm/live/1168.m3u8?bitrate=60&deviceid=unknown&cid=1168&phonetype=Android&region=CN;;http://42.96.249.166/live/1168.m3u8?bitrate=60&deviceid=unknown&cid=1168&phonetype=Android&region=CN;;http://203.195.143.168/live/1168.m3u8?bitrate=60&deviceid=unknown&cid=1168&phonetype=Android&region=CN;;http://180.150.191.233/live/1168.m3u8?bitrate=60&deviceid=unknown&cid=1168&phonetype=Android&region=CN;;http://42.120.60.95/live/1168.m3u8?bitrate=60&deviceid=unknown&cid=1168&phonetype=Android&region=CN;;";
-                                    Log.i("Sync", "dataSource:开始准备  " + "  " + uri.toString());
                                     mMediaPlayer.setDataSource(uri);
                                     mMediaPlayer.setOnPreparedListener(mediaPlayerPrepared);
                                     mMediaPlayer.setOnErrorListener(onErrorListener);
@@ -1141,7 +1140,6 @@ public class AudioPlaybackService extends Service {
                                      if (url.contains("cache")) {
                                          filePath = filePath.replaceAll("cache", "live");
                                      }
-                                     Log.i("Sync", "filePath:" + filePath);
                                      return filePath;
                                  } else {
 
@@ -1395,7 +1393,6 @@ public class AudioPlaybackService extends Service {
                 getDuration() / 1000 + "",
                 ""};
 
-        Log.i("Sync", "发送duration" + getDuration() / 1000);
         mApp.broadcastUpdateUICommand(updateFlags, flagValues);
         setCurrentSong(getCurrentSong());
 
@@ -1871,10 +1868,17 @@ public class AudioPlaybackService extends Service {
 
     public long getCurrentPosition() {
         if (mMediaPlayer != null && mMediaPlayerPrepared) {
-            return mMediaPlayer.getCurrentPosition();
-        } else {
-            return 0;
+            if (currentMode == 1) {
+                return mMediaPlayer.getCurrentPosition();
+            } else {
+                return getCurrentSong().getCurrentPositionForLive();
+            }
         }
+        return 0;
+    }
+
+    public int getCurrentMode() {
+        return currentMode;
     }
 
     /**
@@ -2031,9 +2035,7 @@ public class AudioPlaybackService extends Service {
      * Replaces the current cursor object with the new one.
      */
     public void setList(List<ProgramNode> list) {
-        Log.i("Sync", "list.size():" + list.size());
         programNodes = list;
-        Log.i("Sync", "改变的地方2");
     }
 
 
@@ -2243,7 +2245,6 @@ public class AudioPlaybackService extends Service {
 
         @Override
         public void onServiceCursorUpdated(List<ProgramNode> programNodes) {
-            Log.i("Sync", "改变的地方1");
             setList(programNodes);
 
         }

@@ -43,8 +43,6 @@ public interface NormalGetAPI {
     @GET
     Observable<retrofit.Response<ResponseBody>> getAddress(@Url String url);
 
-    @GET("channellives/{id}")
-    Observable<retrofit.Response<ResponseBody>> getSingleLiveChannel(@Path("id") String id);
 
     @GET("channellives/{id}/programs/day/{day}")
     Observable<retrofit.Response<ResponseBody>> getLiveChannelPrograms(@Path("id") String id, @Path("day") String day);

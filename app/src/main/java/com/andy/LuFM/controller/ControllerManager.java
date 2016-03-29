@@ -82,11 +82,8 @@ public class ControllerManager {
      * @param playingItemNode
      */
     public void openPlayController(RecommendPlayingItemNode playingItemNode) {
-        ChannelNode channelNode = null;
-        channelNode = ChannelHelper.getInstance().getChannel(playingItemNode.channelId, 0);
         Bundle bundle = new Bundle();
-        bundle.putSerializable(NowPlayingActivity.CHANNEL_MODE, channelNode);
-        bundle.putInt("channelId", playingItemNode.channelId);
+        bundle.putSerializable(NowPlayingActivity.CHANNEL_MODE, playingItemNode);
         Intent intent = new Intent(context, NowPlayingActivity.class);
         intent.putExtras(bundle);
         context.startActivity(intent);

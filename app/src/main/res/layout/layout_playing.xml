@@ -93,6 +93,7 @@
             android:thumb="@drawable/thumb"
             android:thumbOffset="0dp" />
 
+
         <TextView
             android:id="@+id/musics_player_total_time"
             android:layout_width="wrap_content"

@@ -36,7 +36,8 @@
         <activity android:name=".app.KitKatFixActivity" />
         <activity
             android:name=".app.NowPlayingActivity"
-            android:theme="@style/Theme.Basic" />
+            android:theme="@style/Theme.Basic"
+            android:launchMode="singleTask"/>
     </application>
 
 </manifest>

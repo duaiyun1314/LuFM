@@ -18,12 +18,15 @@ package com.andy.LuFM.player;
 import android.content.Context;
 import android.util.Log;
 
+import com.andy.LuFM.Utils.TimeKit;
 import com.andy.LuFM.app.PlayApplication;
 import com.andy.LuFM.helper.ChannelHelper;
 import com.andy.LuFM.model.ChannelNode;
 import com.andy.LuFM.model.Node;
 import com.andy.LuFM.model.ProgramNode;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 
@@ -40,6 +43,8 @@ public class SongHelper {
     private boolean mIsCurrentSong = false;
     private boolean mIsAlbumArtLoaded = false;
 
+    SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+
     //Song parameters.
     private String mTitle;//标题
     private String mArtist;
@@ -47,6 +52,9 @@ public class SongHelper {
     private double mDuration;//持续时间
     private String mThumb;//图像
     private int mId;//channel id
+    private String mEndTime;
+    private String mStartTime;
+    private int mChannelType;
     private String mSource;//播放地址
     private long mSavedPosition;
 
@@ -80,21 +88,23 @@ public class SongHelper {
 
         if (mApp.isServiceRunning()) {
             List<ProgramNode> programNodes = mApp.getService().getData();
-            Log.i("Sync", "当前size:" + programNodes.size());
             Node node = programNodes.get(index);
             if (node instanceof ProgramNode) {
                 ProgramNode programNode = (ProgramNode) node;
                 //this.setId(programNode.channelId);
                 this.setTitle(programNode.title);
+                this.setmStartTime(programNode.startTime);
+                this.setmEndTime(programNode.endTime);
                 ChannelNode cn = ChannelHelper.getInstance().getChannel(programNode);
                 if (cn != null) {
                     this.setId(cn.channelId);
+                    this.setmChannelType(cn.channelType);
                     this.setAlbum(cn.title);
                     this.setmThumb(cn.getApproximativeThumb(50, 50, true));
                     if (cn.channelType == 1) {
                         this.setDuration(programNode.duration * 1000);
                     } else if (cn.channelType == 0) {
-                        this.setDuration(getDurationByStartEnd(programNode.endTime, programNode.startTime));
+                        this.setDuration(getDurationByStartEnd(programNode.startTime, programNode.endTime));
                     }
                 }
 
@@ -164,6 +174,29 @@ public class SongHelper {
         mAlbum = album;
     }
 
+    public String getmEndTime() {
+        return mEndTime;
+    }
+
+    public void setmEndTime(String mEndTime) {
+        this.mEndTime = mEndTime;
+    }
+
+    public String getmStartTime() {
+        return mStartTime;
+    }
+
+    public void setmStartTime(String mStartTime) {
+        this.mStartTime = mStartTime;
+    }
+
+    public int getmChannelType() {
+        return mChannelType;
+    }
+
+    public void setmChannelType(int mChannelType) {
+        this.mChannelType = mChannelType;
+    }
 
     public double getDuration() {
         return mDuration;
@@ -199,9 +232,28 @@ public class SongHelper {
         String[] strats = start.split(":");
         String[] ends = end.split(":");
         double duration = (Double.valueOf(ends[0]) - Double.valueOf(strats[0])) * 60 * 60 + (Double.valueOf(ends[1]) - Double.valueOf(strats[1])) * 60 + (Double.valueOf(ends[2]) - Double.valueOf(strats[2]));
-        Log.i("Sync", "duration:" + duration + "s");
         return duration * 1000;
 
     }
+
+    public int getCurrentPositionForLive() {
+
+
+        return (int) (getDurationByStartEnd(getmStartTime(), dateFormat.format(new Date())));
+    }
+
+    /**
+     * 根据channel得到seekbar后面所显示label
+     *
+     * @return
+     */
+    public String getSeekbarEndLabel() {
+        if (getmChannelType() == 0) {
+            return getmEndTime();
+        } else {
+            return TimeKit.convertTime((int) getDuration());
+        }
+    }
+
 
 }
