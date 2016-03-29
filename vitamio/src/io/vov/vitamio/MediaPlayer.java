@@ -38,6 +38,7 @@ import android.util.SparseArray;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 
+import io.vov.vitamio.utils.ContextUtils;
 import io.vov.vitamio.utils.FileUtils;
 import io.vov.vitamio.utils.Log;
 
@@ -51,6 +52,7 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+
 
 /**
  * MediaPlayer class can be used to control playback of audio/video files and
@@ -96,6 +98,11 @@ public class MediaPlayer {
    * MediaPlayer is resuming playback after filling buffers.
    */
   public static final int MEDIA_INFO_BUFFERING_END = 702;
+  
+  public static final int MEDIA_INFO_FILE_OPEN_OK = 704;
+  public static final int MEDIA_INFO_UNKNOW_TYPE = 1001;
+  public static final int MEDIA_INFO_GET_CODEC_INFO_ERROR = 1002;
+  
   /**
    * The media cannot be seeked (e.g live stream)
    *
@@ -192,6 +199,8 @@ public class MediaPlayer {
     this(ctx, false);
   }
 
+  private static String path;
+  
   /**
    * Default constructor. The same as Android's MediaPlayer().
    * <p>
@@ -206,16 +215,18 @@ public class MediaPlayer {
     mContext = ctx;
 
     String LIB_ROOT = Vitamio.getLibraryPath();
+
     if (preferHWDecoder) {
       if (!NATIVE_OMX_LOADED.get()) {
         if (Build.VERSION.SDK_INT > 17)
-          loadOMX_native(LIB_ROOT + "libOMX.18.so");
+          loadOMX_native( LIB_ROOT + "libOMX.18.so");
+        
         else if (Build.VERSION.SDK_INT > 13)
-          loadOMX_native(LIB_ROOT + "libOMX.14.so");
+          loadOMX_native( LIB_ROOT +  "libOMX.14.so");
         else if (Build.VERSION.SDK_INT > 10)
-          loadOMX_native(LIB_ROOT + "libOMX.11.so");
+          loadOMX_native( LIB_ROOT + "libOMX.11.so");
         else
-          loadOMX_native(LIB_ROOT + "libOMX.9.so");
+          loadOMX_native( LIB_ROOT +  "libOMX.9.so");
         NATIVE_OMX_LOADED.set(true);
       }
     } else {
@@ -239,24 +250,25 @@ public class MediaPlayer {
   }
 
   static {
-    String LIB_ROOT = Vitamio.getLibraryPath();
+	String LIB_ROOT = Vitamio.getLibraryPath();
     try {
-      Log.i("LIB ROOT: %s", LIB_ROOT);
-      System.load(LIB_ROOT + "libstlport_shared.so");
-      System.load(LIB_ROOT + "libvplayer.so");
-      loadFFmpeg_native(LIB_ROOT + "libffmpeg.so");
+    
+  
+      System.load(  LIB_ROOT +  "libstlport_shared.so");
+      System.load(  LIB_ROOT +  "libvplayer.so");
+      loadFFmpeg_native( LIB_ROOT + "libffmpeg.so");
       boolean vvo_loaded = false;
       if (Build.VERSION.SDK_INT > 8)
-        vvo_loaded = loadVVO_native(LIB_ROOT + "libvvo.9.so");
+        vvo_loaded = loadVVO_native( LIB_ROOT +  "libvvo.9.so");
       else if (Build.VERSION.SDK_INT > 7)
-        vvo_loaded = loadVVO_native(LIB_ROOT + "libvvo.8.so");
+        vvo_loaded = loadVVO_native(  LIB_ROOT + "libvvo.8.so");
       else
-        vvo_loaded = loadVVO_native(LIB_ROOT + "libvvo.7.so");
+        vvo_loaded = loadVVO_native(  LIB_ROOT + "libvvo.7.so");
       if (!vvo_loaded) {
-        vvo_loaded = loadVVO_native(LIB_ROOT + "libvvo.j.so");
+        vvo_loaded = loadVVO_native(  LIB_ROOT +  "libvvo.j.so");
         Log.d("FALLBACK TO VVO JNI " + vvo_loaded);
       }
-      loadVAO_native(LIB_ROOT + "libvao.0.so");
+      loadVAO_native( LIB_ROOT +  "libvao.0.so");
     } catch (java.lang.UnsatisfiedLinkError e) {
       Log.e("Error loading libs", e);
     }
@@ -267,9 +279,14 @@ public class MediaPlayer {
     if (mp == null)
       return;
 
-    if (mp.mEventHandler != null) {
-      Message m = mp.mEventHandler.obtainMessage(what, arg1, arg2, obj);
-      mp.mEventHandler.sendMessage(m);
+    try {
+        //synchronized (mp.mEventHandler) {
+        if (mp.mEventHandler != null) {
+          Message m = mp.mEventHandler.obtainMessage(what, arg1, arg2, obj);
+          mp.mEventHandler.sendMessage(m);
+        }
+    } catch (Exception e) {
+        Log.e("exception: " + e);
     }
   }
 
@@ -499,7 +516,13 @@ public class MediaPlayer {
    */
   public void start() throws IllegalStateException {
     stayAwake(true);
-    _start();
+    if (mInBuffering) {
+        //Log.i("MiuiVideo: now is in buffering, and will start after buffering");
+        mNeedResume = true;
+    } else {
+        //Log.i("MiuiVideo: start player");
+        _start();
+    }
   }
 
   private native void _start() throws IllegalStateException;
@@ -512,6 +535,8 @@ public class MediaPlayer {
   public void stop() throws IllegalStateException {
     stayAwake(false);
     _stop();
+    mInBuffering = false;
+    mNeedResume = false;
   }
 
   private native void _stop() throws IllegalStateException;
@@ -523,6 +548,8 @@ public class MediaPlayer {
    */
   public void pause() throws IllegalStateException {
     stayAwake(false);
+    mNeedResume = false;
+    //Log.i("MiuiVideo: pause player");
     _pause();
   }
 
@@ -718,8 +745,13 @@ public class MediaPlayer {
     mOnVideoSizeChangedListener = null;
     mOnCachingUpdateListener = null;
     mOnHWRenderFailedListener = null;
+    if (mEventHandler != null)
+        mEventHandler.release();
+    //mEventHandler = null;
     _release();
     closeFD();
+    mInBuffering = false;
+    mNeedResume = false;
   }
 
   private native void _release();
@@ -732,8 +764,11 @@ public class MediaPlayer {
   public void reset() {
     stayAwake(false);
     _reset();
-    mEventHandler.removeCallbacksAndMessages(null);
+    if (mEventHandler != null)
+        mEventHandler.removeCallbacksAndMessages(null);
     closeFD();
+    mInBuffering = false;
+    mNeedResume = false;
   }
 
   private native void _reset();
@@ -1119,6 +1154,8 @@ public class MediaPlayer {
    */
   public native void setBufferSize(long bufSize);
 
+  public native void audioInitedOk(long bufSize);
+  
   /**
    * Set video and audio playback speed
    *
@@ -1203,19 +1240,29 @@ public class MediaPlayer {
    */
   public native int getTimedTextTrack();
 
-  private int audioTrackInit(int sampleRateInHz, int channels) {
-    audioTrackRelease();
-    int channelConfig = channels >= 2 ? AudioFormat.CHANNEL_OUT_STEREO : AudioFormat.CHANNEL_OUT_MONO;
-    try {
-      mAudioTrackBufferSize = AudioTrack.getMinBufferSize(sampleRateInHz, channelConfig, AudioFormat.ENCODING_PCM_16BIT);
-      mAudioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, sampleRateInHz, channelConfig, AudioFormat.ENCODING_PCM_16BIT, mAudioTrackBufferSize, AudioTrack.MODE_STREAM);
-    } catch (Exception e) {
-      mAudioTrackBufferSize = 0;
-      Log.e("audioTrackInit", e);
-    }
-    return mAudioTrackBufferSize;
+  int sampleRateInHz;
+  int channels;
+  @SuppressLint("NewApi")
+  
+private int audioTrackInit(int sampleRateInHz, int channels) {
+   this.sampleRateInHz=sampleRateInHz;
+   this.channels=channels;
+    return 0;
   }
-
+  public int audioTrackInit() {
+//	  Log.e("  ffff mediaplayer audiotrackinit start .  sampleRateInHz:=" + sampleRateInHz + " channels:=" + channels );
+	    audioTrackRelease();
+	    int channelConfig = channels >= 2 ? AudioFormat.CHANNEL_OUT_STEREO : AudioFormat.CHANNEL_OUT_MONO;
+	    try {
+	      mAudioTrackBufferSize = AudioTrack.getMinBufferSize(sampleRateInHz, channelConfig, AudioFormat.ENCODING_PCM_16BIT);
+	      mAudioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, sampleRateInHz, channelConfig, AudioFormat.ENCODING_PCM_16BIT, mAudioTrackBufferSize, AudioTrack.MODE_STREAM);
+	    } catch (Exception e) {
+	      mAudioTrackBufferSize = 0;
+	      Log.e("audioTrackInit", e);
+	    }
+	    return mAudioTrackBufferSize;
+	  }
+  
   private void audioTrackSetVolume(float leftVolume, float rightVolume) {
     if (mAudioTrack != null)
       mAudioTrack.setStereoVolume(leftVolume, rightVolume);
@@ -1493,6 +1540,8 @@ public class MediaPlayer {
     }
   }
 
+  private boolean mNeedResume = false;
+  private boolean mInBuffering = false;
   @SuppressLint("HandlerLeak")
   private class EventHandler extends Handler {
     private MediaPlayer mMediaPlayer;
@@ -1503,8 +1552,67 @@ public class MediaPlayer {
       mMediaPlayer = mp;
     }
 
+    public void release() {
+      mMediaPlayer = null;
+    }
+
+    private void onInfo(Message msg) {
+        switch (msg.arg1) {
+            case MediaPlayer.MEDIA_INFO_BUFFERING_START:
+                {
+                    //Log.i("MiuiVideo: receive buffer start, isplaying " + isPlaying());
+                    mInBuffering = true;
+                    if (isPlaying()) {
+                        //Log.i("MiuiVideo: pause player for buffer start");
+                        _pause();
+                        mNeedResume = true;
+                    }
+                    break;
+                }
+            case MediaPlayer.MEDIA_INFO_BUFFERING_END:
+                {
+                    //Log.i("MiuiVideo: receive buffer end, needResume = " + mNeedResume);
+                    mInBuffering = false;
+                    if (mNeedResume) {
+                        //Log.i("MiuiVideo: start player after buffer");
+                        _start();
+                        mNeedResume = false;
+                    }
+                    break;
+                }
+            default:
+                break;
+        }
+        if (mOnInfoListener != null) {
+            mOnInfoListener.onInfo(mMediaPlayer, msg.arg1, msg.arg2);
+        }
+    }
+
+    private void onBufferingUpdate(Message msg) {
+        int percent = msg.arg1;
+        if (mOnBufferingUpdateListener != null)
+            mOnBufferingUpdateListener.onBufferingUpdate(mMediaPlayer, msg.arg1);
+        if (percent >= 100 && mInBuffering) {
+            //Log.i("MiuiVideo: receive buffer 100, needResume = " + mNeedResume);
+            mInBuffering = false;
+            if (mNeedResume) {
+                //Log.i("MiuiVideo: start player after buffer 100");
+                _start();
+                mNeedResume = false;
+            }
+            if (mOnInfoListener != null) {
+                //Log.i("MiuiVideo: add one buffer end event");
+                mOnInfoListener.onInfo(mMediaPlayer, MediaPlayer.MEDIA_INFO_BUFFERING_END, percent);
+            }
+        }
+    }
+
     @Override
     public void handleMessage(Message msg) {
+      if (mMediaPlayer == null) {
+//        //Log.i("MiuiVideo: get message after player released, msg type: " + msg.what);
+        return;
+      }
       switch (msg.what) {
         case MEDIA_PREPARED:
           if (mOnPreparedListener != null)
@@ -1516,8 +1624,7 @@ public class MediaPlayer {
           stayAwake(false);
           return;
         case MEDIA_BUFFERING_UPDATE:
-          if (mOnBufferingUpdateListener != null)
-            mOnBufferingUpdateListener.onBufferingUpdate(mMediaPlayer, msg.arg1);
+          onBufferingUpdate(msg);
           return;
         case MEDIA_SEEK_COMPLETE:
           if (isPlaying())

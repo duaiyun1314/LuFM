@@ -21,6 +21,7 @@ public class LuFmApplication extends Application {
         super.onCreate();
         mInstance = this;
         initDb();
+        CrashHandler.getInstance().init(this);
 
     }
 

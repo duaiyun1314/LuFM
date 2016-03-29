@@ -98,7 +98,7 @@ public class NowPlayingFragment extends Fragment implements InfoManager.ISubscri
         public void run() {
 
             try {
-                long currentPosition = mApp.getService().getCurrentMediaPlayer().getCurrentPosition();
+                long currentPosition = 10000;
                 int currentPositionInSecs = (int) currentPosition / 1000;
                 smoothScrollSeekbar(currentPositionInSecs);
 
@@ -120,7 +120,7 @@ public class NowPlayingFragment extends Fragment implements InfoManager.ISubscri
         public void run() {
 
             try {
-                long currentPosition = mApp.getService().getCurrentMediaPlayer().getCurrentPosition();
+                long currentPosition = 10000;
                 final int currentPositionInSecs = (int) currentPosition / 1000;
                 mCurrentTimeTv.post(new Runnable() {
                     @Override
@@ -422,7 +422,7 @@ public class NowPlayingFragment extends Fragment implements InfoManager.ISubscri
 
         //Update the seekbar.
         try {
-            setSeekbarDuration(mApp.getService().getCurrentMediaPlayer().getDuration() / 1000);
+            setSeekbarDuration(mApp.getService().getDuration() / 1000);
         } catch (Exception e) {
         }
 
@@ -449,7 +449,6 @@ public class NowPlayingFragment extends Fragment implements InfoManager.ISubscri
      */
     private void setSeekbarDuration(long duration) {
         mSeekBar.setMax((int) duration);
-        long progress = mApp.getService().getCurrentMediaPlayer().getCurrentPosition() / 1000;
         mHandler.postDelayed(seekbarUpdateRunnable, 100);
         mHandler.postDelayed(currentUpdateRunnable, 100);
     }

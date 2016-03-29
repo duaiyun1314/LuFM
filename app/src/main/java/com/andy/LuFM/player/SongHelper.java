@@ -91,7 +91,11 @@ public class SongHelper {
                     this.setId(cn.channelId);
                     this.setAlbum(cn.title);
                     this.setmThumb(cn.getApproximativeThumb(50, 50, true));
-                    this.setDuration(programNode.duration);
+                    if (cn.channelType == 1) {
+                        this.setDuration(programNode.duration * 1000);
+                    } else if (cn.channelType == 0) {
+                        this.setDuration(getDurationByStartEnd(programNode.endTime, programNode.startTime));
+                    }
                 }
 
 
@@ -189,6 +193,15 @@ public class SongHelper {
 
     public long getSavedPosition() {
         return mSavedPosition;
+    }
+
+    public double getDurationByStartEnd(String start, String end) {
+        String[] strats = start.split(":");
+        String[] ends = end.split(":");
+        double duration = (Double.valueOf(ends[0]) - Double.valueOf(strats[0])) * 60 * 60 + (Double.valueOf(ends[1]) - Double.valueOf(strats[1])) * 60 + (Double.valueOf(ends[2]) - Double.valueOf(strats[2]));
+        Log.i("Sync", "duration:" + duration + "s");
+        return duration * 1000;
+
     }
 
 }

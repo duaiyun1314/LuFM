@@ -7,11 +7,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import com.andy.LuFM.R;
 import com.andy.LuFM.Utils.Constants;
@@ -47,7 +49,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.vov.vitamio.LibsChecker;
+import io.vov.vitamio.MediaPlayer;
+import io.vov.vitamio.Vitamio;
 
 public class AllInOneActivity extends BaseActivity implements IEventHandler, RadioGroup.OnCheckedChangeListener {
     private int mViewType = 1;
@@ -64,6 +67,7 @@ public class AllInOneActivity extends BaseActivity implements IEventHandler, Rad
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Vitamio.isInitialized(getApplicationContext());
         initUtils();
         setWindowFullScreen(true);
         setContentView(R.layout.layout_splash);
@@ -320,5 +324,4 @@ public class AllInOneActivity extends BaseActivity implements IEventHandler, Rad
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         }
     }
-
 }

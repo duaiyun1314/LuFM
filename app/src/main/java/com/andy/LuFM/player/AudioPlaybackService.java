@@ -28,12 +28,12 @@ import android.database.MergeCursor;
 import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
 
-import io.vov.vitamio.LibsChecker;
 import io.vov.vitamio.MediaPlayer;
 import io.vov.vitamio.MediaPlayer.OnBufferingUpdateListener;
 import io.vov.vitamio.MediaPlayer.OnCompletionListener;
 import io.vov.vitamio.MediaPlayer.OnErrorListener;
 import io.vov.vitamio.MediaPlayer.OnPreparedListener;
+
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
@@ -53,22 +53,12 @@ import com.andy.LuFM.helper.ChannelHelper;
 import com.andy.LuFM.model.ChannelNode;
 import com.andy.LuFM.model.Node;
 import com.andy.LuFM.model.ProgramNode;
-import com.andy.LuFM.network.NormalFactory;
-import com.andy.LuFM.network.NormalGetAPI;
-import com.squareup.okhttp.ResponseBody;
 
-
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import retrofit.Response;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -87,6 +77,7 @@ public class AudioPlaybackService extends Service {
     //Context and Intent.
     private Context mContext;
     private Service mService;
+    private int currentMode = 1;//当前播放模式（点播 1 or 直播 2）
 
     //Global Objects Provider.
     private PlayApplication mApp;
@@ -96,7 +87,6 @@ public class AudioPlaybackService extends Service {
 
     //MediaPlayer objects and flags.
     private MediaPlayer mMediaPlayer;
-    private MediaPlayer mMediaPlayer2;
     private int mCurrentMediaPlayer = 1;
     private boolean mFirstRun = true;
 
@@ -106,7 +96,6 @@ public class AudioPlaybackService extends Service {
 
     //Flags that indicate whether the mediaPlayers have been initialized.
     private boolean mMediaPlayerPrepared = false;
-    private boolean mMediaPlayer2Prepared = false;
 
     //Cursor object(s) that will guide the rest of this queue.
     private List<ProgramNode> programNodes;
@@ -120,7 +109,6 @@ public class AudioPlaybackService extends Service {
 
     //Song data helpers for each MediaPlayer object.
     private SongHelper mMediaPlayerSongHelper;
-    private SongHelper mMediaPlayer2SongHelper;
 
     //Pointer variable.
     private int mCurrentSongIndex;
@@ -239,7 +227,7 @@ public class AudioPlaybackService extends Service {
         setPrepareServiceListener(mApp.getPlaybackKickstarter());
         getPrepareServiceListener().onServiceRunning(this);
 
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     /**
@@ -270,6 +258,7 @@ public class AudioPlaybackService extends Service {
      * Initializes the MediaPlayer objects for this service session.
      */
     private void initMediaPlayers() {
+        Log.i("Sync1", "initMediaPlayers");
 
 		/*
          * Release the MediaPlayer objects if they are still valid.
@@ -279,30 +268,22 @@ public class AudioPlaybackService extends Service {
             mMediaPlayer = null;
         }
 
-        if (mMediaPlayer2 != null) {
-            getMediaPlayer2().release();
-            mMediaPlayer2 = null;
-        }
 
         mMediaPlayer = new MediaPlayer(this);
-        mMediaPlayer2 = new MediaPlayer(this);
         setCurrentMediaPlayer(1);
 
-        getMediaPlayer().reset();
-        getMediaPlayer2().reset();
+        //  getMediaPlayer().reset();
+        //getMediaPlayer2().reset();
 
         //Loop the players if the repeat mode is set to repeat the current song.
         if (getRepeatMode() == PlayApplication.REPEAT_SONG) {
             getMediaPlayer().setLooping(true);
-            getMediaPlayer2().setLooping(true);
         }
 
         try {
             mMediaPlayer.setWakeMode(mContext, PowerManager.PARTIAL_WAKE_LOCK);
-            getMediaPlayer2().setWakeMode(mContext, PowerManager.PARTIAL_WAKE_LOCK);
         } catch (Exception e) {
             mMediaPlayer = new MediaPlayer(this);
-            mMediaPlayer2 = new MediaPlayer(this);
             setCurrentMediaPlayer(1);
         }
 
@@ -728,7 +709,7 @@ public class AudioPlaybackService extends Service {
             if (checkAndRequestAudioFocus() == true) {
 
                 //Check if the the user saved the track's last playback position.
-                if (getMediaPlayerSongHelper().getSavedPosition() != -1) {
+                if (getMediaPlayerSongHelper().getSavedPosition() != -1 && currentMode == 1) {
                     //Seek to the saved track position.
                     mMediaPlayer.seekTo((int) getMediaPlayerSongHelper().getSavedPosition());
                     mApp.broadcastUpdateUICommand(new String[]{PlayApplication.SHOW_AUDIOBOOK_TOAST},
@@ -750,39 +731,6 @@ public class AudioPlaybackService extends Service {
 
     };
 
-    /**
-     * Called once mMediaPlayer2 is prepared.
-     */
-    public OnPreparedListener mediaPlayer2Prepared = new OnPreparedListener() {
-
-        @Override
-        public void onPrepared(MediaPlayer mediaPlayer) {
-
-            //Update the prepared flag.
-            setIsMediaPlayer2Prepared(true);
-
-            //Set the completion listener for mMediaPlayer2.
-            getMediaPlayer2().setOnCompletionListener(onMediaPlayer2Completed);
-
-            //Check to make sure we have AudioFocus.
-            if (checkAndRequestAudioFocus() == true) {
-
-                //Check if the the user saved the track's last playback position.
-                if (getMediaPlayer2SongHelper().getSavedPosition() != -1) {
-                    //Seek to the saved track position.
-                    mMediaPlayer2.seekTo((int) getMediaPlayer2SongHelper().getSavedPosition());
-                    mApp.broadcastUpdateUICommand(new String[]{PlayApplication.SHOW_AUDIOBOOK_TOAST},
-                            new String[]{"" + getMediaPlayer2SongHelper().getSavedPosition()});
-
-                }
-
-            } else {
-                return;
-            }
-
-        }
-
-    };
 
     /**
      * Completion listener for mMediaPlayer.
@@ -807,21 +755,16 @@ public class AudioPlaybackService extends Service {
 
             //Reset the volumes for both mediaPlayers.
             getMediaPlayer().setVolume(1.0f, 1.0f);
-            getMediaPlayer2().setVolume(1.0f, 1.0f);
 
             try {
                 if (isAtEndOfQueue() && getRepeatMode() != PlayApplication.REPEAT_PLAYLIST) {
                     stopSelf();
-                } else if (isMediaPlayer2Prepared()) {
-                    startMediaPlayer2();
                 } else {
-                    //Check every 100ms if mMediaPlayer2 is prepared.
-                    mHandler.post(startMediaPlayer2IfPrepared);
+                    skipToNextTrack();
                 }
 
             } catch (IllegalStateException e) {
                 //mMediaPlayer2 isn't prepared yet.
-                mHandler.post(startMediaPlayer2IfPrepared);
             }
 
         }
@@ -851,7 +794,6 @@ public class AudioPlaybackService extends Service {
 
             //Reset the volumes for both mediaPlayers.
             getMediaPlayer().setVolume(1.0f, 1.0f);
-            getMediaPlayer2().setVolume(1.0f, 1.0f);
 
             try {
                 if (isAtEndOfQueue() && getRepeatMode() != PlayApplication.REPEAT_PLAYLIST) {
@@ -933,23 +875,6 @@ public class AudioPlaybackService extends Service {
 
     };
 
-    /**
-     * Starts mMediaPlayer if it is prepared and ready for playback.
-     * Otherwise, continues checking every 100ms if mMediaPlayer2 is prepared.
-     */
-    private Runnable startMediaPlayer2IfPrepared = new Runnable() {
-
-        @Override
-        public void run() {
-            if (isMediaPlayer2Prepared())
-                startMediaPlayer2();
-            else
-                mHandler.postDelayed(this, 100);
-
-
-        }
-
-    };
 
     /**
      * First runnable that handles the cross fade operation between two tracks.
@@ -1003,38 +928,12 @@ public class AudioPlaybackService extends Service {
                         //Set the next mMediaPlayer's volume and raise it incrementally.
                         if (getCurrentMediaPlayer() == getMediaPlayer()) {
 
-                            getMediaPlayer2().setVolume(mFadeInVolume, mFadeInVolume);
                             getMediaPlayer().setVolume(mFadeOutVolume, mFadeOutVolume);
 
-                            //If the mMediaPlayer is already playing or it hasn't been prepared yet, we can't use crossfade.
-                            if (!getMediaPlayer2().isPlaying()) {
-
-                                if (mMediaPlayer2Prepared == true) {
-
-                                    if (checkAndRequestAudioFocus() == true) {
-
-                                        //Check if the the user requested to save the track's last playback position.
-                                        if (getMediaPlayer2SongHelper().getSavedPosition() != -1) {
-                                            //Seek to the saved track position.
-                                            getMediaPlayer2().seekTo((int) getMediaPlayer2SongHelper().getSavedPosition());
-                                            mApp.broadcastUpdateUICommand(new String[]{PlayApplication.SHOW_AUDIOBOOK_TOAST},
-                                                    new String[]{"" + getMediaPlayer2SongHelper().getSavedPosition()});
-
-                                        }
-
-                                        getMediaPlayer2().start();
-                                    } else {
-                                        return;
-                                    }
-
-                                }
-
-                            }
 
                         } else {
 
                             getMediaPlayer().setVolume(mFadeInVolume, mFadeInVolume);
-                            getMediaPlayer2().setVolume(mFadeOutVolume, mFadeOutVolume);
 
                             //If the mMediaPlayer is already playing or it hasn't been prepared yet, we can't use crossfade.
                             if (!getMediaPlayer().isPlaying()) {
@@ -1096,6 +995,7 @@ public class AudioPlaybackService extends Service {
 
             //Reset mMediaPlayer to it's uninitialized state.
             getMediaPlayer().reset();
+            setIsMediaPlayerPrepared(false);
 
             //Loop the player if the repeat mode is set to repeat the current song.
             if (getRepeatMode() == PlayApplication.REPEAT_SONG) {
@@ -1121,30 +1021,56 @@ public class AudioPlaybackService extends Service {
                 setMediaPlayerSongHelper(songHelper);
             }
 
-    		/*
+            /**
              * Set the data source for mMediaPlayer and start preparing it
-    		 * asynchronously.
-    		 */
-            //  getMediaPlayer().setDataSource(mContext, getSongDataSource(mCurrentSongIndex));
-            getMediaPlayer().setOnPreparedListener(mediaPlayerPrepared);
-            getMediaPlayer().setOnErrorListener(onErrorListener);
-            getMediaPlayer().setOnBufferingUpdateListener(bufferingListener);
+             * asynchronously.
+             */
+
+            //final String path = "http://wsod.qingting.fm/m4a/56f56d9e7b28aa5826242d45_4929906_64.m4a?deviceid=unknown;;http://upod.qingting.fm/m4a/56f56d9e7b28aa5826242d45_4929906_64.m4a?deviceid=unknown;;http://jsod.qingting.fm/m4a/56f56d9e7b28aa5826242d45_4929906_64.m4a?deviceid=unknown;;";
+            //final String path = "http://wsod.qingting.fm/m4a/56f56d9e7b28aa5826242d45_4929906_64.m4a?deviceid=unknown";
+
+            //  MediaPlayer mediaPlayer = new MediaPlayer(this);
             getSongDataSource(songIndex).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Action1<Uri>() {
+                    .subscribe(new Action1<String>() {
                         @Override
-                        public void call(Uri uri) {
+                        public void call(String uri) {
                             if (uri != null) {
                                 try {
-                                    getMediaPlayer().setDataSource(mContext, uri);
-                                    getMediaPlayer().prepareAsync();
+                                    //   uri = "http://hls.cdn.qingting.fm/live/1168.m3u8?bitrate=60&deviceid=unknown&cid=1168&phonetype=Android&region=CN;;http://42.96.249.166/live/1168.m3u8?bitrate=60&deviceid=unknown&cid=1168&phonetype=Android&region=CN;;http://203.195.143.168/live/1168.m3u8?bitrate=60&deviceid=unknown&cid=1168&phonetype=Android&region=CN;;http://180.150.191.233/live/1168.m3u8?bitrate=60&deviceid=unknown&cid=1168&phonetype=Android&region=CN;;http://42.120.60.95/live/1168.m3u8?bitrate=60&deviceid=unknown&cid=1168&phonetype=Android&region=CN;;";
+                                    Log.i("Sync", "dataSource:开始准备  " + "  " + uri.toString());
+                                    mMediaPlayer.setDataSource(uri);
+                                    mMediaPlayer.setOnPreparedListener(mediaPlayerPrepared);
+                                    mMediaPlayer.setOnErrorListener(onErrorListener);
+                                    mMediaPlayer.setOnBufferingUpdateListener(bufferingListener);
+                                    mMediaPlayer.setOnInfoListener(new MediaPlayer.OnInfoListener() {
+                                        @Override
+                                        public boolean onInfo(MediaPlayer mp, int what, int extra) {
+                                            switch (what) {
+                                                case MediaPlayer.MEDIA_INFO_FILE_OPEN_OK: // line added 1
+                                                    long buffersize = mMediaPlayer.audioTrackInit(); // line added 2
+                                                    mMediaPlayer.audioInitedOk(buffersize); // line added 3
+                                                    break; // line added 4
+
+                                            }
+                                            return true;
+                                        }
+                                    });
+                                    mMediaPlayer.prepareAsync();
+
+
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
 
                             }
                         }
+                    }, new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            currentMode = 1;
+                            Log.i("Sync", "throwable:" + throwable.getMessage());
+                        }
                     });
-
 
         } catch (Exception e) {
             Log.e("DEBUG", "MESSAGE", e);
@@ -1157,9 +1083,9 @@ public class AudioPlaybackService extends Service {
             getFailedIndecesList().add(songIndex);
 
             //Start preparing the next song.
-            if (!isAtEndOfQueue() || mFirstRun)
-                prepareMediaPlayer(songIndex + 1);
-            else
+            if (!isAtEndOfQueue() || mFirstRun) {
+                // prepareMediaPlayer(songIndex + 1);
+            } else
                 return false;
 
             return false;
@@ -1168,77 +1094,6 @@ public class AudioPlaybackService extends Service {
         return true;
     }
 
-    /**
-     * Grabs the song parameters at the specified index, retrieves its
-     * data source, and beings to asynchronously prepare mMediaPlayer2.
-     * Once mMediaPlayer2 is prepared, mediaPlayer2Prepared is called.
-     *
-     * @return True if the method completed with no exceptions. False, otherwise.
-     */
-    public boolean prepareMediaPlayer2(int songIndex) {
-
-        try {
-
-            //Stop here if we're at the end of the queue.
-            if (songIndex == -1)
-                return true;
-
-            //Reset mMediaPlayer2 to its uninitialized state.
-            getMediaPlayer2().reset();
-
-            //Loop the player if the repeat mode is set to repeat the current song.
-            if (getRepeatMode() == PlayApplication.REPEAT_SONG) {
-                getMediaPlayer2().setLooping(true);
-            }
-
-            //Set mMediaPlayer2's song data.
-            SongHelper songHelper = new SongHelper();
-            songHelper.populateSongData(mContext, songIndex);
-            setMediaPlayer2SongHelper(songHelper);
-
-    		/*
-             * Set the data source for mMediaPlayer and start preparing it
-    		 * asynchronously.
-    		 */
-            getMediaPlayer2().setOnPreparedListener(mediaPlayer2Prepared);
-            getMediaPlayer2().setOnErrorListener(onErrorListener);
-            getMediaPlayer2().setOnBufferingUpdateListener(bufferingListener);
-            getSongDataSource(songIndex).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Action1<Uri>() {
-                        @Override
-                        public void call(Uri uri) {
-                            if (uri != null) {
-                                try {
-                                    getMediaPlayer2().setDataSource(mContext, uri);
-                                    getMediaPlayer2().prepareAsync();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-
-                            }
-                        }
-                    });
-
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            //Display an error toast to the user.
-            showErrorToast();
-
-            //Add the current song index to the list of failed indeces.
-            getFailedIndecesList().add(songIndex);
-
-            //Start preparing the next song.
-            if (!isAtEndOfQueue())
-                prepareMediaPlayer2(songIndex + 1);
-            else
-                return false;
-
-            return false;
-        }
-
-        return true;
-    }
 
     /**
      * Returns the Uri of a song's data source.
@@ -1249,8 +1104,8 @@ public class AudioPlaybackService extends Service {
      * from Google's servers and a temporary placeholder
      * (URI_BEING_LOADED) is returned.
      */
-    private Observable<Uri> getSongDataSource(int songIndex) {
-        Observable<Uri> observable = Observable.just(songIndex)
+    private Observable<String> getSongDataSource(int songIndex) {
+        Observable<String> observable = Observable.just(songIndex)
                 .map(new Func1<Integer, String>() {
                     @Override
                     public String call(Integer index) {
@@ -1276,41 +1131,21 @@ public class AudioPlaybackService extends Service {
 
                     }
                 })
-                .map(new Func1<String, Uri>() {
+                .map(new Func1<String, String>() {
                          @Override
-                         public Uri call(String url) {
+                         public String call(String url) {
                              try {
                                  if (url.contains("m3u8")) {
-                                     NormalGetAPI normalApi = NormalFactory.getNbaplus();
-                                     Response<ResponseBody> response = normalApi.downLoadFile(url).execute();
-                                     byte[] resultByte = response.body().bytes();
-                                     InputStream inputStream = new ByteArrayInputStream(resultByte);
-                                     // 借助一个BufferedReader可以逐行得遍历该文件
-                                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                                     String line;
-                                     String filePath = "";
-                                     while ((line = bufferedReader.readLine()) != null) {
-                                         if (line.startsWith("#")) {
-                                             // 元数据，可以做更多的处理，但现在忽略它
-                                         } else if (line.length() > 0) {
-                                             // 如果它的长度大于0，那么就假设它是一个播放列表条目
-
-                                             if (line.startsWith("http://")) {
-                                                 // 如果行以“http://”开头那么就把它作为流的完整URL
-                                                 filePath = line;
-                                             } else {
-                                                 // 否则把它作为一个相对的URL，
-                                                 // 同时把针对该M3U文件的原始请求的URL附加上去
-                                                 filePath = URI.create(url).resolve(line).toString();
-
-                                             }
-                                         }
+                                     String filePath = url;
+                                     currentMode = 2;
+                                     if (url.contains("cache")) {
+                                         filePath = filePath.replaceAll("cache", "live");
                                      }
                                      Log.i("Sync", "filePath:" + filePath);
-                                     return Uri.parse(filePath);
+                                     return filePath;
                                  } else {
 
-                                     return Uri.parse(url);
+                                     return url;
                                  }
                              } catch (Exception exception) {
                                  exception.printStackTrace();
@@ -1515,10 +1350,11 @@ public class AudioPlaybackService extends Service {
     /**
      * Starts playing mMediaPlayer and sends out the update UI broadcast,
      * and updates the notification and any open widgets.
-     * <p>
+     * <p/>
      * Do NOT call this method before mMediaPlayer has been prepared.
      */
     private void startMediaPlayer() throws IllegalStateException {
+        Log.i("Sync", "media start()");
 
 
         //Aaaaand let the show begin!
@@ -1556,55 +1392,15 @@ public class AudioPlaybackService extends Service {
         String[] flagValues = new String[]{getCurrentSongIndex() + "",
                 "",
                 "",
-                getMediaPlayer().getDuration() / 1000 + "",
+                getDuration() / 1000 + "",
                 ""};
 
+        Log.i("Sync", "发送duration" + getDuration() / 1000);
         mApp.broadcastUpdateUICommand(updateFlags, flagValues);
         setCurrentSong(getCurrentSong());
 
-        //Start preparing the next song.
-        prepareMediaPlayer2(determineNextSongIndex());
     }
 
-    /**
-     * Starts playing mMediaPlayer2, sends out the update UI broadcast,
-     * and updates the notification and any open widgets.
-     * <p>
-     * Do NOT call this method before mMediaPlayer2 has been prepared.
-     */
-    private void startMediaPlayer2() throws IllegalStateException {
-
-
-        //Aaaaaand let the show begin!
-        setCurrentMediaPlayer(2);
-        getMediaPlayer2().start();
-
-        //Set the new value for mCurrentSongIndex.
-        do {
-            setCurrentSongIndex(determineNextSongIndex());
-        } while (getFailedIndecesList().contains(getCurrentSongIndex()));
-
-        getFailedIndecesList().clear();
-
-        //Update the UI.
-        String[] updateFlags = new String[]{PlayApplication.UPDATE_PAGER_POSTIION,
-                PlayApplication.UPDATE_PLAYBACK_CONTROLS,
-                PlayApplication.HIDE_STREAMING_BAR,
-                PlayApplication.UPDATE_SEEKBAR_DURATION,
-                PlayApplication.UPDATE_EQ_FRAGMENT};
-
-        String[] flagValues = new String[]{getCurrentSongIndex() + "",
-                "",
-                "",
-                getMediaPlayer2().getDuration() / 1000 + "",
-                ""};
-
-        mApp.broadcastUpdateUICommand(updateFlags, flagValues);
-        setCurrentSong(getCurrentSong());
-
-        //Start preparing the next song.
-        prepareMediaPlayer(determineNextSongIndex());
-    }
 
     /**
      * Starts/resumes the current media player. Returns true if
@@ -1699,20 +1495,17 @@ public class AudioPlaybackService extends Service {
     public boolean skipToNextTrack() {
         try {
             //Reset both MediaPlayer objects.
-            getMediaPlayer().reset();
-            getMediaPlayer2().reset();
+            mMediaPlayer.reset();
             clearCrossfadeCallbacks();
 
             //Loop the players if the repeat mode is set to repeat the current song.
             if (getRepeatMode() == PlayApplication.REPEAT_SONG) {
                 getMediaPlayer().setLooping(true);
-                getMediaPlayer2().setLooping(true);
             }
 
             //Remove crossfade runnables and reset all volume levels.
             getHandler().removeCallbacks(crossFadeRunnable);
             getMediaPlayer().setVolume(1.0f, 1.0f);
-            getMediaPlayer2().setVolume(1.0f, 1.0f);
 
             //Increment the song index.
             incrementCurrentSongIndex();
@@ -1760,19 +1553,16 @@ public class AudioPlaybackService extends Service {
         try {
             //Reset both MediaPlayer objects.
             getMediaPlayer().reset();
-            getMediaPlayer2().reset();
             clearCrossfadeCallbacks();
 
             //Loop the players if the repeat mode is set to repeat the current song.
             if (getRepeatMode() == PlayApplication.REPEAT_SONG) {
                 getMediaPlayer().setLooping(true);
-                getMediaPlayer2().setLooping(true);
             }
 
             //Remove crossfade runnables and reset all volume levels.
             getHandler().removeCallbacks(crossFadeRunnable);
             getMediaPlayer().setVolume(1.0f, 1.0f);
-            getMediaPlayer2().setVolume(1.0f, 1.0f);
 
             //Decrement the song index.
             decrementCurrentSongIndex();
@@ -1803,19 +1593,16 @@ public class AudioPlaybackService extends Service {
         try {
             //Reset both MediaPlayer objects.
             getMediaPlayer().reset();
-            getMediaPlayer2().reset();
             clearCrossfadeCallbacks();
 
             //Loop the players if the repeat mode is set to repeat the current song.
             if (getRepeatMode() == PlayApplication.REPEAT_SONG) {
                 getMediaPlayer().setLooping(true);
-                getMediaPlayer2().setLooping(true);
             }
 
             //Remove crossfade runnables and reset all volume levels.
             getHandler().removeCallbacks(crossFadeRunnable);
             getMediaPlayer().setVolume(1.0f, 1.0f);
-            getMediaPlayer2().setVolume(1.0f, 1.0f);
 
             //Update the song index.
             setCurrentSongIndex(trackIndex);
@@ -1873,9 +1660,9 @@ public class AudioPlaybackService extends Service {
      * starts preparing the other one.
      */
     public void prepareAlternateMediaPlayer() {
-        if (mCurrentMediaPlayer == 1)
-            prepareMediaPlayer2(determineNextSongIndex());
-        else
+        if (mCurrentMediaPlayer == 1) {
+            // prepareMediaPlayer2(determineNextSongIndex());
+        } else
             prepareMediaPlayer(determineNextSongIndex());
 
     }
@@ -1921,7 +1708,7 @@ public class AudioPlaybackService extends Service {
     	/* Since the queue changed, we're gonna have to update the
          * next MediaPlayer object with the new song info.
     	 */
-        prepareAlternateMediaPlayer();
+        // prepareAlternateMediaPlayer();
 
         //Update all UI elements with the new queue order.
         mApp.broadcastUpdateUICommand(new String[]{PlayApplication.NEW_QUEUE_ORDER}, new String[]{""});
@@ -1948,14 +1735,12 @@ public class AudioPlaybackService extends Service {
         try {
             if (repeatMode == PlayApplication.REPEAT_SONG) {
                 getMediaPlayer().setLooping(true);
-                getMediaPlayer2().setLooping(true);
             } else {
                 getMediaPlayer().setLooping(false);
-                getMediaPlayer2().setLooping(false);
             }
 
             //Prepare the appropriate next song.
-            prepareAlternateMediaPlayer();
+            //prepareAlternateMediaPlayer();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -1977,10 +1762,7 @@ public class AudioPlaybackService extends Service {
      * Returns the current active MediaPlayer object.
      */
     public MediaPlayer getCurrentMediaPlayer() {
-        if (mCurrentMediaPlayer == 1)
-            return mMediaPlayer;
-        else
-            return mMediaPlayer2;
+        return mMediaPlayer;
     }
 
     /**
@@ -1994,16 +1776,6 @@ public class AudioPlaybackService extends Service {
     }
 
     /**
-     * Returns the secondary MediaPlayer object. Don't
-     * use this method directly unless you have a good
-     * reason to explicitly call mMediaPlayer2. Use
-     * getCurrentMediaPlayer() whenever possible.
-     */
-    public MediaPlayer getMediaPlayer2() {
-        return mMediaPlayer2;
-    }
-
-    /**
      * Indicates if mMediaPlayer is prepared and
      * ready for playback.
      */
@@ -2011,13 +1783,6 @@ public class AudioPlaybackService extends Service {
         return mMediaPlayerPrepared;
     }
 
-    /**
-     * Indicates if mMediaPlayer2 is prepared and
-     * ready for playback.
-     */
-    public boolean isMediaPlayer2Prepared() {
-        return mMediaPlayer2Prepared;
-    }
 
     /**
      * Indicates if music is currently playing.
@@ -2042,11 +1807,7 @@ public class AudioPlaybackService extends Service {
      * the current song.
      */
     public SongHelper getCurrentSong() {
-        if (getCurrentMediaPlayer() == mMediaPlayer) {
-            return mMediaPlayerSongHelper;
-        } else {
-            return mMediaPlayer2SongHelper;
-        }
+        return mMediaPlayerSongHelper;
 
     }
 
@@ -2064,7 +1825,6 @@ public class AudioPlaybackService extends Service {
 
         try {
             getMediaPlayer().setVolume(1.0f, 1.0f);
-            getMediaPlayer2().setVolume(1.0f, 1.0f);
         } catch (IllegalStateException e) {
             e.printStackTrace();
         }
@@ -2078,12 +1838,6 @@ public class AudioPlaybackService extends Service {
         return mMediaPlayerSongHelper;
     }
 
-    /**
-     * Returns mMediaPlayer2's SongHelper instance.
-     */
-    public SongHelper getMediaPlayer2SongHelper() {
-        return mMediaPlayer2SongHelper;
-    }
 
     /**
      * Returns the service's cursor object.
@@ -2113,6 +1867,14 @@ public class AudioPlaybackService extends Service {
      */
     public int getCurrentSongIndex() {
         return mCurrentSongIndex;
+    }
+
+    public long getCurrentPosition() {
+        if (mMediaPlayer != null && mMediaPlayerPrepared) {
+            return mMediaPlayer.getCurrentPosition();
+        } else {
+            return 0;
+        }
     }
 
     /**
@@ -2221,12 +1983,6 @@ public class AudioPlaybackService extends Service {
         mMediaPlayerPrepared = prepared;
     }
 
-    /**
-     * Sets the prepared flag for mMediaPlayer2.
-     */
-    public void setIsMediaPlayer2Prepared(boolean prepared) {
-        mMediaPlayer2Prepared = prepared;
-    }
 
     /**
      * Changes the value of mCurrentSongIndex.
@@ -2340,13 +2096,6 @@ public class AudioPlaybackService extends Service {
     }
 
     /**
-     * Sets mMediaPlayer2SongHelper.
-     */
-    public void setMediaPlayer2SongHelper(SongHelper songHelper) {
-        mMediaPlayer2SongHelper = songHelper;
-    }
-
-    /**
      * Sets the current MediaPlayer's SongHelper object. Also
      * indirectly calls the updateNotification() and updateWidgets()
      * methods via the [CURRENT SONG HELPER].setIsCurrentSong() method.
@@ -2355,11 +2104,12 @@ public class AudioPlaybackService extends Service {
         if (getCurrentMediaPlayer() == mMediaPlayer) {
             mMediaPlayerSongHelper = songHelper;
             mMediaPlayerSongHelper.setIsCurrentSong();
-        } else {
-            mMediaPlayer2SongHelper = songHelper;
-            mMediaPlayer2SongHelper.setIsCurrentSong();
         }
 
+    }
+
+    public long getDuration() {
+        return (long) getCurrentSong().getDuration();
     }
 
     /**
@@ -2369,6 +2119,7 @@ public class AudioPlaybackService extends Service {
      */
     @Override
     public void onDestroy() {
+        Log.e("Sync", "onDestroy");
 
         //Notify the UI that the service is about to stop.
         mApp.broadcastUpdateUICommand(new String[]{PlayApplication.SERVICE_STOPPING},
@@ -2417,11 +2168,7 @@ public class AudioPlaybackService extends Service {
         if (mMediaPlayer != null)
             mMediaPlayer.release();
 
-        if (mMediaPlayer2 != null)
-            getMediaPlayer2().release();
-
         mMediaPlayer = null;
-        mMediaPlayer2 = null;
 
         //Close the cursor(s).
         try {

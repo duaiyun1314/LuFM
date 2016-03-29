@@ -23,6 +23,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -75,7 +76,7 @@ public class MiniPlayerFragment extends Fragment {
         public void run() {
 
             try {
-                long currentPosition = mApp.getService().getCurrentMediaPlayer().getCurrentPosition();
+                long currentPosition = mApp.getService().getCurrentPosition();
                 int currentPositionInSecs = (int) currentPosition / 1000;
                 smoothScrollSeekbar(currentPositionInSecs);
 
@@ -182,11 +183,13 @@ public class MiniPlayerFragment extends Fragment {
                     bundle.getString(
                             PlayApplication.UPDATE_BUFFERING_PROGRESS)));
         //Updates the duration of the SeekBar.
-        if (intent.hasExtra(PlayApplication.UPDATE_SEEKBAR_DURATION))
+        if (intent.hasExtra(PlayApplication.UPDATE_SEEKBAR_DURATION)) {
+            Log.i("Sync", "收到duration");
+            String duration = bundle.getString(PlayApplication.UPDATE_SEEKBAR_DURATION);
+            if (duration == null) return;
             setSeekbarDuration(Integer.parseInt(
-                    bundle.getString(
-                            PlayApplication.UPDATE_SEEKBAR_DURATION)));
-
+                    duration));
+        }
     }
 
     /**
@@ -318,7 +321,7 @@ public class MiniPlayerFragment extends Fragment {
 
         //Update the seekbar.
         try {
-            setSeekbarDuration(mApp.getService().getCurrentMediaPlayer().getDuration() / 1000);
+            setSeekbarDuration(mApp.getService().getDuration() / 1000);
         } catch (Exception e) {
         }
 
@@ -330,7 +333,6 @@ public class MiniPlayerFragment extends Fragment {
      */
     private void setSeekbarDuration(long duration) {
         mSeekBar.setMax((int) duration);
-        long progress = mApp.getService().getCurrentMediaPlayer().getCurrentPosition() / 1000;
         mHandler.postDelayed(seekbarUpdateRunnable, 100);
     }
 

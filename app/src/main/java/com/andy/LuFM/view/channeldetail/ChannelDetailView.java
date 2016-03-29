@@ -73,7 +73,6 @@ public class ChannelDetailView extends LinearLayout implements ChannelHelper.IDa
     }
 
     public void update(String type, Object param) {
-        Log.i("Sync", "update");
         ChannelNode temp = (ChannelNode) param;
         if (this.channelNode != temp) {
             this.channelNode = temp;
@@ -162,7 +161,6 @@ public class ChannelDetailView extends LinearLayout implements ChannelHelper.IDa
             this.channelNode.updateAllInfo(channelNode);
             this.coverView.update("setData", this.channelNode);
             title_label.setText(this.channelNode.title);
-            //  dispatchActionEvent("resetNavi", null);
         }
     }
 
@@ -170,56 +168,6 @@ public class ChannelDetailView extends LinearLayout implements ChannelHelper.IDa
         if (programNodes == null) {
             return false;
         }
-      /*  List<PlayedMetaData> history = PlayedMetaInfo.getInstance().getPlayedMetadata();
-        boolean userCancel = this.mChannelNode != null && userCancelChannels.contains(Integer.valueOf(this.mChannelNode.channelId));
-        boolean isRecommend = ControllerManager.getInstance().getChannelSource() == 1;
-        this.mRecentIncompleteProgram = null;
-        if (!(userCancel || isRecommend || history == null || history.size() <= 0)) {
-            for (PlayedMetaData item : history) {
-                if (this.mChannelNode.channelId == item.channelId && item.position > 5 && item.position < item.duration - 5) {
-                    if (this.mRecentIncompleteProgram == null || item.playedTime > this.mRecentIncompleteProgram.playedTime) {
-                        this.mRecentIncompleteProgram = item;
-                    }
-                }
-            }
-        }
-        this.mRecentNode = null;
-        if (this.mRecentIncompleteProgram != null) {
-            for (PlayHistoryNode item2 : InfoManager.getInstance().root().mPersonalCenterNode.playHistoryNode.getPlayHistoryNodes()) {
-                if (((ProgramNode) item2.playNode).id == this.mRecentIncompleteProgram.programId) {
-                    this.mRecentNode = item2;
-                    break;
-                }
-            }
-        }*/
-
-        int index = -1;
-     /*   if (programNodes.size() > 0) {
-            sendProgramsShowLog(programNodes, this.channelNode);
-            Node temp = InfoManager.getInstance().root().getCurrentPlayingNode();
-            if (temp != null && temp.nodeName.equalsIgnoreCase("program")) {
-                int i = 0;
-                while (i < programNodes.size()) {
-                    if (((ProgramNode) temp).id == ((ProgramNode) programNodes.get(i)).id) {
-                        index = i;
-                        if (this.mRecentNode != null && ((ProgramNode) temp).id == ((ProgramNode) this.mRecentNode.playNode).id) {
-                            this.mRecentNode = null;
-                        }
-                        if (temp.prevSibling == null && temp.nextSibling == null) {
-                            temp.prevSibling = ((ProgramNode) programNodes.get(i)).prevSibling;
-                            temp.nextSibling = ((ProgramNode) programNodes.get(i)).nextSibling;
-                        }
-                    } else {
-                        i++;
-                    }
-                }
-            }
-            handleAutoPlay(this.mChannelNode);
-        }*/
-       /* if (this.mRecentNode != null) {
-            QTMSGManage.getInstance().sendStatistcsMessage("resumerecent_display");
-            programs.add(this.mRecentNode);
-        }*/
         programs.clear();
         programs.addAll(programNodes);
         ((ProgramNodesProvider.MYAdapter) this.programNodesProvider.getAdapter()).setData(programs);
@@ -233,14 +181,9 @@ public class ChannelDetailView extends LinearLayout implements ChannelHelper.IDa
                 programNodesProvider.setSelectedItem(service.getCurrentSongIndex());
 
             }
-            ((PlayApplication) PlayApplication.from()).getPlaybackKickstarter().getBuildCursorListener().onServiceCursorUpdated(programNodes);
+            //  ((PlayApplication) PlayApplication.from()).getPlaybackKickstarter().getBuildCursorListener().onServiceCursorUpdated(programNodes);
 
         }
-        //  this.mAdapter.setData(ListUtils.convertToObjectList(programs));
-       /* if (!(!this.mFirstTime || index == -1 || this.mListView == null)) {
-            this.mFirstTime = false;
-            this.mListView.setSelection(index);
-        }*/
         return true;
     }
 
