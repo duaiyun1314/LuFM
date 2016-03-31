@@ -186,7 +186,6 @@ public class MediaController extends FrameLayout {
 
   @Override
   public void onFinishInflate() {
-    super.onFinishInflate();
     if (mRoot != null)
       initControllerView(mRoot);
   }
