@@ -184,7 +184,6 @@ public class MiniPlayerFragment extends Fragment {
                             PlayApplication.UPDATE_BUFFERING_PROGRESS)));
         //Updates the duration of the SeekBar.
         if (intent.hasExtra(PlayApplication.UPDATE_SEEKBAR_DURATION)) {
-            Log.i("Sync", "收到duration");
             String duration = bundle.getString(PlayApplication.UPDATE_SEEKBAR_DURATION);
             if (duration == null) return;
             setSeekbarDuration(Integer.parseInt(

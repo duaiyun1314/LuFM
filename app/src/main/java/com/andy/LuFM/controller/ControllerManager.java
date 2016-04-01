@@ -17,6 +17,7 @@ import com.andy.LuFM.model.RecommendPlayingItemNode;
 import com.andy.LuFM.model.SpecialTopicNode;
 
 import de.greenrobot.event.EventBus;
+import roboguice.util.Ln;
 
 /**
  * Created by wanglu on 15/11/20.
@@ -45,7 +46,7 @@ public class ControllerManager {
             }
             p.mClickCnt++;
             if (p.mNode != null && !p.mNode.nodeName.equalsIgnoreCase("category")) {
-                Log.i("Sync", "点击的类型：" + p.mNode.nodeName);
+                Ln.d("点击的类型：" + p.mNode.nodeName);
                 if (p.mNode.nodeName.equalsIgnoreCase("channel")) {
                   /*  ChannelNode cn = p.mNode;
                     if (p.ratingStar != -1) {

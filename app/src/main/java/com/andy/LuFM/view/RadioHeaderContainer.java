@@ -139,7 +139,6 @@ public class RadioHeaderContainer extends LinearLayout {
 
                 }
                 isDrag = !isDrag;
-                Log.i("Sync", "initlist:" + initlist.size());
                 notifyDataSetChanged();
             } else {
                 Toast.makeText(getContext(), categoryNode.getName(), Toast.LENGTH_SHORT).show();

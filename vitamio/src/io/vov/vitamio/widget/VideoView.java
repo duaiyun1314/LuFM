@@ -51,6 +51,7 @@ import io.vov.vitamio.MediaPlayer.TrackInfo;
 import io.vov.vitamio.Vitamio;
 import io.vov.vitamio.utils.Log;
 import io.vov.vitamio.utils.ScreenResolution;
+import roboguice.util.Ln;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -85,7 +86,7 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
 	private static final int STATE_SUSPEND_UNSUPPORTED = 8;
 	OnVideoSizeChangedListener mSizeChangedListener = new OnVideoSizeChangedListener() {
 		public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
-      Log.d("onVideoSizeChanged: (%dx%d)", width, height);
+      Ln.d("onVideoSizeChanged: (%dx%d)", width, height);
       mVideoWidth = mp.getVideoWidth();
       mVideoHeight = mp.getVideoHeight();
       mVideoAspectRatio = mp.getVideoAspectRatio();
@@ -95,7 +96,7 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
   };
   OnPreparedListener mPreparedListener = new OnPreparedListener() {
     public void onPrepared(MediaPlayer mp) {
-      Log.d("onPrepared");
+      Ln.d("onPrepared");
 			if (false) {
 				stopPlayback();
 				return;
@@ -201,7 +202,7 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
 	private int mBufSize;
 	private OnCompletionListener mCompletionListener = new OnCompletionListener() {
 		public void onCompletion(MediaPlayer mp) {
-      Log.d("onCompletion");
+      Ln.d("onCompletion");
       mCurrentState = STATE_PLAYBACK_COMPLETED;
       mTargetState = STATE_PLAYBACK_COMPLETED;
       if (mMediaController != null)
@@ -212,7 +213,7 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
   };
   private OnErrorListener mErrorListener = new OnErrorListener() {
     public boolean onError(MediaPlayer mp, int framework_err, int impl_err) {
-      Log.d("Error: %d, %d", framework_err, impl_err);
+      Ln.d("Error: %d, %d", framework_err, impl_err);
       mCurrentState = STATE_ERROR;
       mTargetState = STATE_ERROR;
       if (mMediaController != null)
@@ -246,7 +247,7 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
   private OnInfoListener mInfoListener = new OnInfoListener() {
     @Override
     public boolean onInfo(MediaPlayer mp, int what, int extra) {
-      Log.d("onInfo: (%d, %d)", what, extra);
+      Ln.d("onInfo: (%d, %d)", what, extra);
     	
       	if(MediaPlayer.MEDIA_INFO_UNKNOW_TYPE == what){
     		Log.e(" VITAMIO--TYPE_CHECK  stype  not include  onInfo mediaplayer unknow type ");
@@ -257,7 +258,7 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
     		mMediaPlayer.audioInitedOk(buffersize);
     	}
 
-      Log.d("onInfo: (%d, %d)", what, extra);
+      Ln.d("onInfo: (%d, %d)", what, extra);
 
       if (mOnInfoListener != null) {
         mOnInfoListener.onInfo(mp, what, extra);
@@ -278,7 +279,7 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
   private OnSeekCompleteListener mSeekCompleteListener = new OnSeekCompleteListener() {
     @Override
     public void onSeekComplete(MediaPlayer mp) {
-      Log.d("onSeekComplete");
+      Ln.d("onSeekComplete");
       if (mOnSeekCompleteListener != null)
         mOnSeekCompleteListener.onSeekComplete(mp);
     }
@@ -359,7 +360,7 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
 		}
 		setLayoutParams(lp);
 		getHolder().setFixedSize(mSurfaceWidth, mSurfaceHeight);
-    Log.d("VIDEO: %dx%dx%f, Surface: %dx%d, LP: %dx%d, Window: %dx%dx%f", mVideoWidth, mVideoHeight, mVideoAspectRatio, mSurfaceWidth, mSurfaceHeight, lp.width, lp.height, windowWidth, windowHeight, windowRatio);
+    Ln.d("VIDEO: %dx%dx%f, Surface: %dx%d, LP: %dx%d, Window: %dx%dx%f", mVideoWidth, mVideoHeight, mVideoAspectRatio, mSurfaceWidth, mSurfaceHeight, lp.width, lp.height, windowWidth, windowHeight, windowRatio);
     mVideoLayout = layout;
     mAspectRatio = aspectRatio;
   }
@@ -438,7 +439,7 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
 			mMediaPlayer.setOnSeekCompleteListener(mSeekCompleteListener);
 			mMediaPlayer.setOnTimedTextListener(mTimedTextListener);
 			
-			Log.d(" set user optional --------  ");
+			Ln.d(" set user optional --------  ");
 			HashMap<String, String> options = new HashMap<String, String>();
 			options.put("rtsp_transport", "tcp"); // udp
 		//	options.put("user-agent", "userAgent");
@@ -612,7 +613,7 @@ public class VideoView extends SurfaceView implements MediaController.MediaPlaye
     if (isInPlaybackState()) {
       release(false);
       mCurrentState = STATE_SUSPEND_UNSUPPORTED;
-      Log.d("Unable to suspend video. Release MediaPlayer.");
+      Ln.d("Unable to suspend video. Release MediaPlayer.");
     }
   }
 

@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.greenrobot.event.EventBus;
+import roboguice.util.Ln;
 
 /**
  * 存储必要信息
@@ -124,7 +125,6 @@ public class InfoManager implements IResultRecvHandler {
         } else if (type.equalsIgnoreCase(RequestType.GET_LIVE_PROGRAM_SCHEDULE)) {
             ProgramScheduleList psl = (ProgramScheduleList) result.getData();
             if (psl != null) {
-                Log.i("Sync", "请求成功:" + ((Map) param).get("id"));
                 dispatchNodeEvent(psl, (Map) param, INodeEventListener.ADD_LIVE_PROGRAMS_SCHEDULE);
                 dispatchSubscribeEvent(ISubscribeEventListener.RECV_PROGRAMS_SCHEDULE);
 
@@ -466,7 +466,7 @@ public class InfoManager implements IResultRecvHandler {
 
     public void reloadVirtualProgramsSchedule(ChannelNode node, ISubscribeEventListener listener) {
         if (node != null) {
-            Log.d(TAG, "sym:\u5237\u65b0\u8282\u76ee\u5355id=" + node.channelId);
+            Ln.d("sym:刷新节目单  id=" + node.channelId);
             //  int order = root().getProgramListOrder(node.channelId);
             int order = 0;//正序
             String requestType = RequestType.RELOAD_VIRTUAL_PROGRAMS_SCHEDULE;

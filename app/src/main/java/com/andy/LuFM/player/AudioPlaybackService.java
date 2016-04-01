@@ -59,6 +59,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import roboguice.util.Ln;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -985,7 +986,6 @@ public class AudioPlaybackService extends Service {
      * @return True if the method completed with no exceptions. False, otherwise.
      */
     public boolean prepareMediaPlayer(int songIndex) {
-        Log.e("Sync", "prepareMediaPlayer");
 
         try {
 
@@ -1067,12 +1067,12 @@ public class AudioPlaybackService extends Service {
                         @Override
                         public void call(Throwable throwable) {
                             currentMode = 1;
-                            Log.i("Sync", "throwable:" + throwable.getMessage());
+                            Ln.e(throwable);
                         }
                     });
 
         } catch (Exception e) {
-            Log.e("DEBUG", "MESSAGE", e);
+            Ln.e(e);
             e.printStackTrace();
 
             //Display an error toast to the user.
@@ -1118,7 +1118,7 @@ public class AudioPlaybackService extends Service {
                                     InfoManager.getInstance().root().setPlayingChannelNode(cn);
                                 }
                                 url = temp2.getBitrateSource();
-                                Log.i("Sync", "aurl:" + url);
+                                Ln.d("aurl:" + url);
                                 return url;
                             } else if (node.nodeName.equalsIgnoreCase("ringtone")) {
                             }
@@ -1352,7 +1352,6 @@ public class AudioPlaybackService extends Service {
      * Do NOT call this method before mMediaPlayer has been prepared.
      */
     private void startMediaPlayer() throws IllegalStateException {
-        Log.i("Sync", "media start()");
 
 
         //Aaaaand let the show begin!
@@ -1992,7 +1991,6 @@ public class AudioPlaybackService extends Service {
      * Changes the value of mCurrentSongIndex.
      */
     public void setCurrentSongIndex(int currentSongIndex) {
-        Log.i("Sync", "setCurrentSongIndex:" + currentSongIndex);
         mCurrentSongIndex = currentSongIndex;
     }
 
@@ -2121,7 +2119,6 @@ public class AudioPlaybackService extends Service {
      */
     @Override
     public void onDestroy() {
-        Log.e("Sync", "onDestroy");
 
         //Notify the UI that the service is about to stop.
         mApp.broadcastUpdateUICommand(new String[]{PlayApplication.SERVICE_STOPPING},

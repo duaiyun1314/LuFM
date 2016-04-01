@@ -32,6 +32,7 @@ import io.vov.vitamio.provider.MediaStore.Video;
 import io.vov.vitamio.utils.ContextUtils;
 import io.vov.vitamio.utils.FileUtils;
 import io.vov.vitamio.utils.Log;
+import roboguice.util.Ln;
 
 import java.io.File;
 import java.util.HashMap;
@@ -154,10 +155,10 @@ public class MediaScanner {
       postscan(directories);
       long end = System.currentTimeMillis();
 
-      Log.d(" prescan time: %dms", prescan - start);
-      Log.d("    scan time: %dms", scan - prescan);
-      Log.d("postscan time: %dms", end - scan);
-      Log.d("   total time: %dms", end - start);
+      Ln.d(" prescan time: %dms", prescan - start);
+      Ln.d("    scan time: %dms", scan - prescan);
+      Ln.d("postscan time: %dms", end - scan);
+      Ln.d("   total time: %dms", end - start);
     } catch (SQLException e) {
       Log.e("SQLException in MediaScanner.scan()", e);
     } catch (UnsupportedOperationException e) {

@@ -23,6 +23,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.Locale;
 import java.util.Map;
 
+import roboguice.util.Ln;
+
 /**
  * See {@link io.vov.vitamio.MediaPlayer#getMetadata()}
  */
@@ -129,29 +131,29 @@ public class Metadata {
     }
 
     if (BuildConfig.DEBUG) {
-      android.util.Log.i("Vitamio[Metadata]", "title:\t\t" + getString(TITLE));
-      android.util.Log.i("Vitamio[Metadata]", "comment:\t\t" + getString(COMMENT));
-      android.util.Log.i("Vitamio[Metadata]", "copyright:\t\t" + getString(COPYRIGHT));
-      android.util.Log.i("Vitamio[Metadata]", "album:\t\t" + getString(ALBUM));
-      android.util.Log.i("Vitamio[Metadata]", "artist:\t\t" + getString(ARTIST));
-      android.util.Log.i("Vitamio[Metadata]", "composer:\t\t" + getString(COMPOSER));
-      android.util.Log.i("Vitamio[Metadata]", "genre:\t\t" + getString(GENRE));
-      android.util.Log.i("Vitamio[Metadata]", "date:\t\t" + getString(DATE));
-      android.util.Log.i("Vitamio[Metadata]", "duration:\t\t" + getLong(DURATION));
-      android.util.Log.i("Vitamio[Metadata]", "length:\t\t" + getLong(LENGTH));
-      android.util.Log.i("Vitamio[Metadata]", "bit_rate:\t\t" + getInt(BIT_RATE));
-      android.util.Log.i("Vitamio[Metadata]", "audio_bit_rate:\t" + getInt(AUDIO_BIT_RATE));
-      android.util.Log.i("Vitamio[Metadata]", "video_bit_rate:\t" + getInt(VIDEO_BIT_RATE));
-      android.util.Log.i("Vitamio[Metadata]", "audio_sample_rate:\t" + getInt(AUDIO_SAMPLE_RATE));
-      android.util.Log.i("Vitamio[Metadata]", "video_frame_rate:\t" + getDouble(VIDEO_FRAME_RATE));
-      android.util.Log.i("Vitamio[Metadata]", "format:\t\t" + getString(MIME_TYPE));
-      android.util.Log.i("Vitamio[Metadata]", "audio_codec:\t" + getString(AUDIO_CODEC));
-      android.util.Log.i("Vitamio[Metadata]", "video_codec:\t" + getString(VIDEO_CODEC));
-      android.util.Log.i("Vitamio[Metadata]", "video_height:\t" + getInt(VIDEO_HEIGHT));
-      android.util.Log.i("Vitamio[Metadata]", "video_width:\t" + getInt(VIDEO_WIDTH));
-      android.util.Log.i("Vitamio[Metadata]", "num_tracks:\t\t" + getInt(NUM_TRACKS));
-      android.util.Log.i("Vitamio[Metadata]", "cap_pause:\t\t" + getBoolean(PAUSE_AVAILABLE));
-      android.util.Log.i("Vitamio[Metadata]", "cap_seek:\t\t" + getBoolean(SEEK_AVAILABLE));
+      Ln.i( "title:\t\t" + getString(TITLE));
+      Ln.i( "comment:\t\t" + getString(COMMENT));
+      Ln.i( "copyright:\t\t" + getString(COPYRIGHT));
+      Ln.i( "album:\t\t" + getString(ALBUM));
+      Ln.i( "artist:\t\t" + getString(ARTIST));
+      Ln.i( "composer:\t\t" + getString(COMPOSER));
+      Ln.i( "genre:\t\t" + getString(GENRE));
+      Ln.i( "date:\t\t" + getString(DATE));
+      Ln.i( "duration:\t\t" + getLong(DURATION));
+      Ln.i( "length:\t\t" + getLong(LENGTH));
+      Ln.i( "bit_rate:\t\t" + getInt(BIT_RATE));
+      Ln.i( "audio_bit_rate:\t" + getInt(AUDIO_BIT_RATE));
+      Ln.i( "video_bit_rate:\t" + getInt(VIDEO_BIT_RATE));
+      Ln.i( "audio_sample_rate:\t" + getInt(AUDIO_SAMPLE_RATE));
+      Ln.i( "video_frame_rate:\t" + getDouble(VIDEO_FRAME_RATE));
+      Ln.i( "format:\t\t" + getString(MIME_TYPE));
+      Ln.i( "audio_codec:\t" + getString(AUDIO_CODEC));
+      Ln.i( "video_codec:\t" + getString(VIDEO_CODEC));
+      Ln.i( "video_height:\t" + getInt(VIDEO_HEIGHT));
+      Ln.i( "video_width:\t" + getInt(VIDEO_WIDTH));
+      Ln.i( "num_tracks:\t\t" + getInt(NUM_TRACKS));
+      Ln.i( "cap_pause:\t\t" + getBoolean(PAUSE_AVAILABLE));
+      Ln.i( "cap_seek:\t\t" + getBoolean(SEEK_AVAILABLE));
     }
 
     return true;

@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import retrofit.Response;
+import roboguice.util.Ln;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -83,7 +84,6 @@ public class NetDs implements IDataOperation {
                 String id = param.get("id") + "";
                 String day = param.get("day") + "";
                 observable = getAPI.getLiveChannelPrograms(id, day);
-                Log.i("ss","GET_LIVE_PROGRAM_SCHEDULE:"+id);
             }
             observable.subscribeOn(Schedulers.io())
                     .map(new Func1<Response<ResponseBody>, Result>() {
@@ -112,7 +112,7 @@ public class NetDs implements IDataOperation {
                     }, new Action1<Throwable>() {
                         @Override
                         public void call(Throwable throwable) {
-                            Log.i("Sync", "加载失败" + throwable.getMessage());
+                            Ln.d(throwable,"加载失败");
                         }
                     });
         } catch (Exception e) {

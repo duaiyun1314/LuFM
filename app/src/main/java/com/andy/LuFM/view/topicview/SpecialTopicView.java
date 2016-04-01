@@ -61,7 +61,6 @@ public class SpecialTopicView extends LinearLayout implements AdapterView.OnItem
     }
 
     public void update(String type, Object param) {
-        Log.i("Sync", "update");
         SpecialTopicNode temp = (SpecialTopicNode) param;
         if (this.topicNode != temp) {
             this.topicNode = temp;
@@ -111,7 +110,6 @@ public class SpecialTopicView extends LinearLayout implements AdapterView.OnItem
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Log.i("Sync", "onItemClick" + position);
         ControllerManager.getInstance(getContext()).openChannelDetailController(channelNodes.get(position - 1), true);
     }
 

@@ -18,13 +18,15 @@ package io.vov.vitamio.utils;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 
+import roboguice.util.Ln;
+
 public class ContextUtils {
 	public static int getVersionCode(Context ctx) {
 		int version = 0;
 		try {
 			version = ctx.getPackageManager().getPackageInfo(ctx.getApplicationInfo().packageName, 0).versionCode;
 		} catch (Exception e) {
-			Log.e("getVersionInt", e);
+			Ln.e(e,"getVersionInt");
 		}
 		return version;
 	}

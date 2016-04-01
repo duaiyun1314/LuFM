@@ -151,7 +151,6 @@ public class PlaybackKickstarter implements AudioPlaybackService.PrepareServiceL
         mApp.setService(service);
         mApp.getService().setPrepareServiceListener(this);
         mApp.getService().setCurrentSongIndex(mCurrentSongIndex);
-        Log.i("Sync", "setCurrentSongIndex   6" );
         mBuildCursorListener.onServiceCursorReady(programNodes, mCurrentSongIndex, mPlayAll);
 
     }

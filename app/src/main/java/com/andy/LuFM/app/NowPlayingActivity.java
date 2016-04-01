@@ -49,6 +49,7 @@ import java.util.Date;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
+import roboguice.util.Ln;
 
 
 /**
@@ -214,10 +215,10 @@ public class NowPlayingActivity extends BaseToolBarActivity implements InfoManag
             ChannelHelper.getInstance().addObserver(channelId, this);
 
             if (channelNode == null) {
-                Log.i("Sync", " null load live programsschedule async");
+                Ln.d(" null load live programsschedule async");
                 //do nothing 等待后台getChannelInfo 后调用 onChannelNodeInfoUpdate
             } else {
-                Log.i("Sync", "not null load directly");
+                Ln.d( "not null load directly");
                 onNotification(InfoManager.ISubscribeEventListener.RECV_PROGRAMS_SCHEDULE);
             }
         } else {
@@ -483,7 +484,7 @@ public class NowPlayingActivity extends BaseToolBarActivity implements InfoManag
     @Override
     public void onNotification(String type) {
         if (type.equalsIgnoreCase(InfoManager.ISubscribeEventListener.RECV_PROGRAMS_SCHEDULE)) {
-            Log.i("Sync", "点击的Channel:" + channelNode.channelId);
+            Ln.d("点击的Channel:" + channelNode.channelId);
             List<ProgramNode> currentLiveLists = channelNode.getLstProgramNode(Calendar.getInstance().get(Calendar.DAY_OF_WEEK));
             PlayApplication.from().getPlaybackKickstarter().initPlayback(this, currentLiveLists, channelNode.getSongIndexByTime(currentLiveLists, System.currentTimeMillis()), false, true);
         }
@@ -492,7 +493,6 @@ public class NowPlayingActivity extends BaseToolBarActivity implements InfoManag
 
     @Override
     public void onChannelNodeInfoUpdate(ChannelNode channelNode) {
-        Log.i("Sync", "onChannelNodeInfoUpdate:" + channelNode.channelId);
         this.channelNode = channelNode;
         InfoManager.getInstance().loadLiveProgramSchedule(ProgramHelper.getInstance(), channelNode.channelId, Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + "", this);
 

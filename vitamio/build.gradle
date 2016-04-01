@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 
 dependencies {
+    provided 'org.roboguice:roboguice:3.+'
 }
 
 android {
