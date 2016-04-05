@@ -154,8 +154,12 @@ public class InfoManager implements IResultRecvHandler {
                 dispatchSubscribeEvent(ISubscribeEventListener.RECV_RECOMMEND_PLAYING_PROGRAMS_INFO);
             }
         } else if (type.equalsIgnoreCase(RequestType.GET_ADVERTISEMENT_ADDRESS)) {
-            String url = (String) result.getData();
-            EventBus.getDefault().post(url);
+            if (result.isSuccess()) {
+                String url = (String) result.getData();
+                EventBus.getDefault().post(url);
+            } else {
+                EventBus.getDefault().post("");
+            }
         }
 
     }

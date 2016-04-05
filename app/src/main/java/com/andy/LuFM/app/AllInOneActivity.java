@@ -1,19 +1,17 @@
 package com.andy.LuFM.app;
 
 import android.graphics.Bitmap;
-import android.media.Image;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Toast;
 
 import com.andy.LuFM.R;
 import com.andy.LuFM.Utils.Constants;
@@ -232,36 +230,36 @@ public class AllInOneActivity extends BaseActivity implements IEventHandler, Rad
     }
 
     /**
-     *
      * @param url ad url
      */
     public void onEventMainThread(String url) {
-        if (url != null) {
-            setContentView(R.layout.layout_ad);
-            ImageView ad_img = (ImageView) findViewById(R.id.ad_img);
-            ImageLoader.getInstance().displayImage(url, ad_img, ((PlayApplication) getApplication()).getDisplayImageOptions());
-            ImageLoader.getInstance().loadImage(url, new ImageLoadingListener() {
-                @Override
-                public void onLoadingStarted(String imageUri, View view) {
-
-                }
-
-                @Override
-                public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-
-                }
-
-                @Override
-                public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                    PrefKit.writeString(PlayApplication.from(), Constants.PREF_AD_ADDRESS, imageUri);
-                }
-
-                @Override
-                public void onLoadingCancelled(String imageUri, View view) {
-
-                }
-            });
+        if (TextUtils.isEmpty(url)) {
+            url = PrefKit.getString(PlayApplication.from(), Constants.PREF_AD_ADDRESS, Constants.PREF_AD_ADDRESS_DEFAULT);
         }
+        setContentView(R.layout.layout_ad);
+        ImageView ad_img = (ImageView) findViewById(R.id.ad_img);
+        ImageLoader.getInstance().displayImage(url, ad_img, ((PlayApplication) getApplication()).getDisplayImageOptions());
+        ImageLoader.getInstance().loadImage(url, new ImageLoadingListener() {
+            @Override
+            public void onLoadingStarted(String imageUri, View view) {
+
+            }
+
+            @Override
+            public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+
+            }
+
+            @Override
+            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                PrefKit.writeString(PlayApplication.from(), Constants.PREF_AD_ADDRESS, imageUri);
+            }
+
+            @Override
+            public void onLoadingCancelled(String imageUri, View view) {
+
+            }
+        });
         showMainView();
     }
 

@@ -1,8 +1,11 @@
 package com.andy.LuFM.data.ds;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import com.andy.LuFM.Utils.Constants;
+import com.andy.LuFM.Utils.NetKit;
+import com.andy.LuFM.app.PlayApplication;
 import com.andy.LuFM.network.NormalFactory;
 import com.andy.LuFM.network.NormalGetAPI;
 import com.andy.LuFM.Utils.NetParse;
@@ -16,6 +19,7 @@ import com.squareup.okhttp.ResponseBody;
 import java.io.IOException;
 import java.util.Map;
 
+import cz.msebera.android.httpclient.util.NetUtils;
 import retrofit.Response;
 import roboguice.util.Ln;
 import rx.Observable;
@@ -49,10 +53,17 @@ public class NetDs implements IDataOperation {
     @Override
     public Result doCommand(DataCommand dataCommand, final IResultRecvHandler iResultRecvHandler) {
         try {
-            Observable observable = null;
-            NormalGetAPI getAPI = NormalFactory.getNbaplus();
             final String type = dataCommand.getType();
             final Map<String, Object> param = dataCommand.getParam();
+            if (!NetKit.isNetworkConnected()) {
+                Toast.makeText(PlayApplication.from(), "网络连接失败", Toast.LENGTH_SHORT).show();
+                Result result = new Result();
+                result.setSuccess(false);
+                result.setMessage("网络连接失败");
+                iResultRecvHandler.onRecvResult(result, type, param);
+            }
+            Observable observable = null;
+            NormalGetAPI getAPI = NormalFactory.getNbaplus();
             if (type.equals(RequestType.DATA_TYPE_GET_RECOMMEND)) {
                 String sectionId = (Integer) param.get("sectionId") + "";
                 observable = getAPI.getRecommendInfo(sectionId);
@@ -80,7 +91,7 @@ public class NetDs implements IDataOperation {
                 observable = getAPI.getRecommendPlaying(day);
             } else if (type.equalsIgnoreCase(RequestType.GET_ADVERTISEMENT_ADDRESS)) {
                 observable = getAPI.getAddress(Constants.AD_ADDRESS);
-            }  else if (type.equalsIgnoreCase(RequestType.GET_LIVE_PROGRAM_SCHEDULE)) {
+            } else if (type.equalsIgnoreCase(RequestType.GET_LIVE_PROGRAM_SCHEDULE)) {
                 String id = param.get("id") + "";
                 String day = param.get("day") + "";
                 observable = getAPI.getLiveChannelPrograms(id, day);
@@ -112,7 +123,7 @@ public class NetDs implements IDataOperation {
                     }, new Action1<Throwable>() {
                         @Override
                         public void call(Throwable throwable) {
-                            Ln.d(throwable,"加载失败");
+                            Ln.d(throwable, "加载失败");
                             Result result = new Result();
                             result.setSuccess(false);
                             iResultRecvHandler.onRecvResult(result, type, param);

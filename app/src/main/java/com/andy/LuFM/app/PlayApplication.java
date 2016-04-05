@@ -10,13 +10,11 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.view.View;
 import android.webkit.WebView;
 
+import com.andy.LuFM.Utils.ImageLoaderUtil;
 import com.andy.LuFM.event.PlayActionEvent;
 import com.andy.LuFM.player.AudioPlaybackService;
 import com.andy.LuFM.player.PlaybackKickstarter;
-import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
@@ -54,11 +52,6 @@ public class PlayApplication extends LuFmApplication {
 
     //Google Play Music access object.
     private boolean mIsGMusicLoggedIn = false;
-
-
-    //ImageLoader/ImageLoaderConfiguration objects for ListViews and GridViews.
-    private ImageLoader mImageLoader;
-    private ImageLoaderConfiguration mImageLoaderConfiguration;
 
     //Image display options.
     private DisplayImageOptions mDisplayImageOptions;
@@ -199,13 +192,7 @@ public class PlayApplication extends LuFmApplication {
 
 
         //ImageLoader.
-        mImageLoader = ImageLoader.getInstance();
-        mImageLoaderConfiguration = new ImageLoaderConfiguration.Builder(getApplicationContext())
-                .memoryCache(new WeakMemoryCache())
-                .memoryCacheSizePercentage(13)
-                //     .imageDownloader(new ByteArrayUniversalImageLoader(mContext))
-                .build();
-        mImageLoader.init(mImageLoaderConfiguration);
+        ImageLoaderUtil.initImageLoader(this);
 
         //Init DisplayImageOptions.
         initDisplayImageOptions();
