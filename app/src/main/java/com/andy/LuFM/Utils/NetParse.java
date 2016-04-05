@@ -177,11 +177,11 @@ public class NetParse {
                 url = PrefKit.getString(PlayApplication.from(), Constants.PREF_AD_ADDRESS, Constants.PREF_AD_ADDRESS_DEFAULT);
             }
             return url;
-
         } catch (Exception e) {
             e.printStackTrace();
+            return PrefKit.getString(PlayApplication.from(), Constants.PREF_AD_ADDRESS, Constants.PREF_AD_ADDRESS_DEFAULT);
+
         }
-        return null;
     }
 
     private List<RecommendPlayingItemNode> parseRecommendPlayingPrograms(String json) {

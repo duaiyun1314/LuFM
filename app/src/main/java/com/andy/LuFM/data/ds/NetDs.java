@@ -113,6 +113,9 @@ public class NetDs implements IDataOperation {
                         @Override
                         public void call(Throwable throwable) {
                             Ln.d(throwable,"加载失败");
+                            Result result = new Result();
+                            result.setSuccess(false);
+                            iResultRecvHandler.onRecvResult(result, type, param);
                         }
                     });
         } catch (Exception e) {

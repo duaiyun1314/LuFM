@@ -231,6 +231,10 @@ public class AllInOneActivity extends BaseActivity implements IEventHandler, Rad
         }
     }
 
+    /**
+     *
+     * @param url ad url
+     */
     public void onEventMainThread(String url) {
         if (url != null) {
             setContentView(R.layout.layout_ad);
