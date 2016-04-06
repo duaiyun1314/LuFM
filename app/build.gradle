@@ -1,5 +1,9 @@
 apply plugin: 'com.android.application'
 
+def releaseTime() {
+    return new Date().format("yyyy-MM-dd", TimeZone.getTimeZone("UTC"))
+}
+
 android {
     /**
      * 唯一必须得属性为compileSdkVersion和buildToolsVersion
@@ -19,13 +23,13 @@ android {
     }
 
     /**
-     * 签名信息设置
+     * 签名信息设置 /Users/wanglu/myproject/andy.keystore
      */
     signingConfigs {
         myconfig {
-            keyAlias 'lubo.keystore'
+            keyAlias 'andy.keystore'
             keyPassword KEYSTORE_PASSWORD
-            storeFile file('/Users/wanglu/myproject/lubo.keystore')
+            storeFile file('/../../andy.keystore')
             storePassword KEY_PASSWORD
         }
     }
@@ -49,7 +53,36 @@ android {
             shrinkResources true
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            //调用签名配置
+            signingConfig signingConfigs.myconfig
+            applicationVariants.all { variant ->
+                variant.outputs.each { output ->
+                    def outputFile = output.outputFile
+                    if (outputFile != null && outputFile.name.endsWith('.apk')) {
+                        // 输出apk名称为andy.wang_v1.0_2015-01-15_wandoujia.apk
+                        def fileName = "andy.wang_v${defaultConfig.versionName}_${releaseTime()}_${variant.productFlavors[0].name}.apk"
+                        output.outputFile = new File(outputFile.parent, fileName)
+                    }
+                }
+            }
         }
+    }
+
+    // 友盟多渠道打包
+    productFlavors {
+        wandoujia {}
+       /* _360 {}
+        baidu {}
+        xiaomi {}
+        tencent {}
+        taobao {}*/
+    }
+
+    productFlavors.all { flavor ->
+        flavor.manifestPlaceholders = [UMENG_CHANNEL_VALUE: name]
+    }
+    lintOptions {
+        abortOnError false
     }
 }
 
