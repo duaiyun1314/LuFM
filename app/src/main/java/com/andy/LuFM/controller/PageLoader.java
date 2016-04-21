@@ -27,7 +27,10 @@ public class PageLoader extends DataSetObserver implements AbsListView.OnScrollL
     private OnLoadListener mOnLoadListener;
     private AbsListView.OnScrollListener mOnScrollListener;
     private boolean enable;
-    private boolean userNead =true;
+    /**
+     * 是否需要上拉加载更多
+     */
+    private boolean userNead = true;
     private ListAdapter mAdapter;
     /**
      * 正在加载

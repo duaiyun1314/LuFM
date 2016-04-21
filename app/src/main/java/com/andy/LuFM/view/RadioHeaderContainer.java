@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -15,6 +16,13 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.andy.LuFM.controller.ControllerManager;
+import com.andy.LuFM.data.DataCommand;
+import com.andy.LuFM.data.DataManager;
+import com.andy.LuFM.data.InfoManager;
+import com.andy.LuFM.data.RequestType;
+import com.andy.LuFM.data.Result;
+import com.andy.LuFM.event.SwitchContentEvent;
 import com.andy.LuFM.model.CategoryNode;
 
 import java.util.ArrayList;
@@ -46,7 +54,7 @@ public class RadioHeaderContainer extends LinearLayout {
     }
 
     private void initRecyclerView() {
-        int spanCount = isRegion ? 4 : 3;
+        int spanCount = 3;
         recyclerView.setLayoutManager(new MyGridLayoutManager(getContext(), spanCount));
         MyAdapter recyclerAdapter = new MyAdapter(this.list);
         recyclerView.setAdapter(recyclerAdapter);
@@ -141,7 +149,14 @@ public class RadioHeaderContainer extends LinearLayout {
                 isDrag = !isDrag;
                 notifyDataSetChanged();
             } else {
-                Toast.makeText(getContext(), categoryNode.getName(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getContext(), categoryNode.getName(), Toast.LENGTH_SHORT).show();
+                if (!TextUtils.isEmpty(categoryNode.getmAttributesPath()) && !(categoryNode.getName().startsWith("省市"))) {
+                    //进入该类别的频道列表
+                    ControllerManager.getInstance(getContext()).openChannelListView(SwitchContentEvent.SWITCH_TYPE_CHANNEL_LIST, categoryNode);
+                } else {
+                    //省市台 ，需要进一步选择城市
+                    ControllerManager.getInstance(getContext()).openChannelListView(SwitchContentEvent.SWITCH_TYPE_REGION_LIST, categoryNode);
+                }
             }
         }
 

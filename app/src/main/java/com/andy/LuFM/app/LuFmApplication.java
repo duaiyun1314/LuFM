@@ -9,6 +9,7 @@ import com.andy.LuFM.dbutil.DaoMaster;
  */
 public class LuFmApplication extends Application {
     private static LuFmApplication mInstance;
+    private DaoMaster.DevOpenHelper mCategoryAttrHelper;
     private DaoMaster.DevOpenHelper mHelper;
     private DaoMaster.DevOpenHelper mProgramNodesHelper;
 
@@ -28,10 +29,15 @@ public class LuFmApplication extends Application {
     private void initDb() {
         mHelper = new DaoMaster.DevOpenHelper(this, "categoryNodes", null);
         mProgramNodesHelper = new DaoMaster.DevOpenHelper(this, "programNodes", null);
+        mCategoryAttrHelper = new DaoMaster.DevOpenHelper(this, "categoryAttributes", null);
     }
 
     public DaoMaster.DevOpenHelper getHelper() {
         return mHelper;
+    }
+
+    public DaoMaster.DevOpenHelper getCategoryAttrHelper() {
+        return mCategoryAttrHelper;
     }
 
     public DaoMaster.DevOpenHelper getProgramNodesHelperHelper() {

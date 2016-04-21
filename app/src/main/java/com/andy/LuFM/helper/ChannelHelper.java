@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import roboguice.util.Ln;
+
 /**
  * Created by wanglu on 15/11/20.
  */
@@ -205,7 +207,25 @@ public class ChannelHelper extends Node {
                 addChannels(lstNodes, 1, String.valueOf(1000001 + Integer.valueOf((String) map.get("id")).intValue()), 0);
             }
 
+        } else if (type.equalsIgnoreCase(InfoManager.INodeEventListener.ADD_LIVE_CHANNELS_BYATTR)) {
+            List<ChannelNode> lstNodes = (List) obj;
+            Ln.e("通知存储" + (lstNodes == null ? "null" : lstNodes.size() + ""));
+            if (lstNodes.size() > 0 && map != null) {
+                String key = buildKey(((ChannelNode) lstNodes.get(0)).categoryId, (String) map.get("attr"));
+                addChannels(lstNodes, 0, key, 0);
+                return;
+            }
+            return;
+
         }
+    }
+
+    public static String buildKey(int catid, String attrPath) {
+        String key = String.valueOf(catid);
+        if (attrPath == null || attrPath.equalsIgnoreCase("") || attrPath.equalsIgnoreCase("0")) {
+            return key;
+        }
+        return new StringBuilder(String.valueOf(new StringBuilder(String.valueOf(key)).append("/").toString())).append(attrPath).toString();
     }
 
     private void addChannels(List<ChannelNode> lstChannels, int channelType, String key, int pos) {

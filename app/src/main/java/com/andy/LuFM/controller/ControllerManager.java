@@ -3,15 +3,14 @@ package com.andy.LuFM.controller;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.andy.LuFM.app.NowPlayingActivity;
 import com.andy.LuFM.event.SwitchContentEvent;
 import com.andy.LuFM.helper.ChannelHelper;
+import com.andy.LuFM.model.CategoryNode;
 import com.andy.LuFM.model.ChannelNode;
 import com.andy.LuFM.model.Node;
 import com.andy.LuFM.model.ProgramNode;
-import com.andy.LuFM.model.RecommendCategoryNode;
 import com.andy.LuFM.model.RecommendItemNode;
 import com.andy.LuFM.model.RecommendPlayingItemNode;
 import com.andy.LuFM.model.SpecialTopicNode;
@@ -80,11 +79,11 @@ public class ControllerManager {
     /**
      * 打开直播的playing Activity
      *
-     * @param playingItemNode
+     * @param channelId
      */
-    public void openPlayController(RecommendPlayingItemNode playingItemNode) {
+    public void openPlayController(int channelId) {
         Bundle bundle = new Bundle();
-        bundle.putSerializable(NowPlayingActivity.CHANNEL_MODE, playingItemNode);
+        bundle.putInt(NowPlayingActivity.CHANNEL_ID, channelId);
         Intent intent = new Intent(context, NowPlayingActivity.class);
         intent.putExtras(bundle);
         context.startActivity(intent);
@@ -125,6 +124,12 @@ public class ControllerManager {
         }
     }
 
+    /**
+     * 打开二级or三级视图
+     *
+     * @param name
+     * @param param
+     */
     public void redirect2View(String name, Object param) {
         SwitchContentEvent event = new SwitchContentEvent();
         event.type = name;
@@ -143,5 +148,9 @@ public class ControllerManager {
         event.params = item;
         EventBus.getDefault().post(event);
 
+    }
+
+    public void openChannelListView(String type, CategoryNode categoryNode) {
+        redirect2View(type, categoryNode);
     }
 }

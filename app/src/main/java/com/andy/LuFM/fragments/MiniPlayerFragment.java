@@ -306,6 +306,8 @@ public class MiniPlayerFragment extends Fragment {
             }
             Intent intent = new Intent(mContext, NowPlayingActivity.class);
             startActivity(intent);
+            // ((PlayApplication) PlayApplication.from()).getPlaybackKickstarter().initPlayback(getActivity(), mApp.getService().getData(), mApp.getService().getCurrentSongIndex(), true, true);
+
         }
 
     };

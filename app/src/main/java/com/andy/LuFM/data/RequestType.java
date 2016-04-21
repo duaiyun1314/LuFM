@@ -8,6 +8,7 @@ public class RequestType {
     public static final String NET_REQUEST = "Net";
     public static final String DB_REQUEST = "db";
     public static final String DATA_TYPE_GET_RECOMMEND = "GET_RECOMMEND_INFO";
+    public static final String DB_CATEGORY_ATTR = "DB_CATEGORY_ATTR";
     public static final String CHANNEL_INFO = "CHANNEL_INFO";
     public static final String GETDB_CHANNEL_INFO = "GETDB_CHANNEL_INFO";
     public static final String GET_LIVE_CHANNEL_INFO = "GET_LIVE_CHANNEL_INFO";
@@ -25,4 +26,6 @@ public class RequestType {
     public static final String GET_RECOMMEND_PLAYING = "GET_RECOMMEND_PLAYING";
     public static final String GET_ADVERTISEMENT_ADDRESS = "GET_ADVERTISEMENT_ADDRESS";
     public static final String GET_LIVE_PROGRAM_SCHEDULE = "GET_LIVE_PROGRAM_SCHEDULE";
+    public static final String GET_LIST_LIVE_CHANNELS = "GET_LIST_LIVE_CHANNELS";
+    public static final String GETDB_CATEGORY_ATTRIBUTES = "GETDB_CATEGORY_ATTRIBUTES";
 }

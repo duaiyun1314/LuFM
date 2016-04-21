@@ -47,6 +47,10 @@ public interface NormalGetAPI {
     @GET("channellives/{id}/programs/day/{day}")
     Observable<retrofit.Response<ResponseBody>> getLiveChannelPrograms(@Path("id") String id, @Path("day") String day);
 
+    @GET("categories/{id}/channels/order/0/attr/{attr}/curpage/{page}/pagesize/{pagesize}")
+    Observable<retrofit.Response<ResponseBody>> getLiveChannels(@Path("id") String id, @Path("attr") String attr, @Path("page") String page, @Path("pagesize") String pagesize);
+
+
     /**
      * 文件下载
      *

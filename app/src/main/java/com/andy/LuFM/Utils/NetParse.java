@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import roboguice.util.Ln;
+
 /**
  * Created by wanglu on 15/11/20.
  */
@@ -161,9 +163,46 @@ public class NetParse {
 
             }
             return result;
+        } else if (type.equalsIgnoreCase(RequestType.GET_LIST_LIVE_CHANNELS)) {
+            List<ChannelNode> channelNodes = parseAllChannels(responseString);
+            if (channelNodes != null) {
+                result.setSuccess(true);
+                result.setData(channelNodes);
+
+            }
+            return result;
         }
         return result;
 
+    }
+
+    private List<ChannelNode> parseAllChannels(String json) {
+        if (!(json == null || json.equalsIgnoreCase(""))) {
+            try {
+                JSONObject dataObj = new JSONObject(json);
+                JSONArray dataArray = dataObj.getJSONArray("data");
+                if (dataArray != null) {
+                    List<ChannelNode> lstNodes = new ArrayList();
+                    Node prevNode = null;
+                    for (int i = 0; i < dataArray.length(); i++) {
+                        Ln.d("解析第"+(i+1)+"个");
+                        ChannelNode node = _parseChannelNode(dataArray.getJSONObject(i));
+                        if (node != null) {
+                            lstNodes.add(node);
+                            if (prevNode != null) {
+                                prevNode.nextSibling = node;
+                                node.prevSibling = prevNode;
+                            }
+                            prevNode = node;
+                        }
+                    }
+                    return lstNodes;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 
 
@@ -609,15 +648,17 @@ public class NetParse {
                 node.groupId = json.getInt("chatgroup_id");
                 node.categoryId = json.getInt("category_id");
                 node.update_time = json.getString("update_time");
-                JSONObject thumbObj = json.getJSONObject("thumbs");
-                if (thumbObj != null) {
-                    node.setSmallThumb(thumbObj.getString("200_thumb"));
-                    node.setMediumThumb(thumbObj.getString("400_thumb"));
-                    node.setLargeThumb(thumbObj.getString("800_thumb"));
-                    if (node.noThumb()) {
-                        node.setSmallThumb(thumbObj.getString("small_thumb"));
-                        node.setMediumThumb(thumbObj.getString("medium_thumb"));
-                        node.setLargeThumb(thumbObj.getString("large_thumb"));
+                if (json.has("thumbs")) {
+                    JSONObject thumbObj = json.getJSONObject("thumbs");
+                    if (thumbObj != null) {
+                        node.setSmallThumb(thumbObj.getString("200_thumb"));
+                        node.setMediumThumb(thumbObj.getString("400_thumb"));
+                        node.setLargeThumb(thumbObj.getString("800_thumb"));
+                        if (node.noThumb()) {
+                            node.setSmallThumb(thumbObj.getString("small_thumb"));
+                            node.setMediumThumb(thumbObj.getString("medium_thumb"));
+                            node.setLargeThumb(thumbObj.getString("large_thumb"));
+                        }
                     }
                 }
                 String type = json.getString("type");

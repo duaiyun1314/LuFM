@@ -23,6 +23,7 @@ import com.andy.LuFM.data.DataOfflineManager;
 import com.andy.LuFM.data.InfoManager;
 import com.andy.LuFM.data.RequestType;
 import com.andy.LuFM.data.Result;
+import com.andy.LuFM.data.ds.AttributesDS;
 import com.andy.LuFM.data.ds.CategoryNodeDs;
 import com.andy.LuFM.data.ds.ChannelNodeDS;
 import com.andy.LuFM.data.ds.NetDs;
@@ -32,9 +33,11 @@ import com.andy.LuFM.event.IEventHandler;
 import com.andy.LuFM.event.SwitchContentEvent;
 import com.andy.LuFM.fragments.CategoryDetailFragment;
 import com.andy.LuFM.fragments.ChannelDetailFragment;
+import com.andy.LuFM.fragments.ChannelListFragment;
 import com.andy.LuFM.fragments.DiscoverFragment;
 import com.andy.LuFM.fragments.DownloadFragment;
 import com.andy.LuFM.fragments.MineFragment;
+import com.andy.LuFM.fragments.RegionListFragment;
 import com.andy.LuFM.fragments.SpecialTopicFragment;
 import com.andy.LuFM.model.CategoryNode;
 import com.andy.LuFM.player.AudioPlaybackService;
@@ -61,6 +64,8 @@ public class AllInOneActivity extends BaseActivity implements IEventHandler, Rad
     public static final String CATEGORY_DETAIL_TAG = "category_detail_tag";
     public static final String MAIN_CONTENT_TAG = "main_content_tag";
     public static final String MINI_PLAYER_TAG = "mini_player_tag";
+    public static final String CHANNEL_LIST_TAG = "channel_list_tag";
+    public static final String REGION_LIST_TAG = "region_list_tag";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,6 +107,7 @@ public class AllInOneActivity extends BaseActivity implements IEventHandler, Rad
         DataManager.getInstance().addRequests(NetDs.getInstance());
         DataManager.getInstance().addRequests(ChannelNodeDS.getInstance());
         DataManager.getInstance().addRequests(ProgramNodeDs.getInstance());
+        DataManager.getInstance().addRequests(AttributesDS.getInstance());
     }
 
     private void initData() {
@@ -226,6 +232,14 @@ public class AllInOneActivity extends BaseActivity implements IEventHandler, Rad
             CategoryDetailFragment categoryDetailFragment = new CategoryDetailFragment();
             categoryDetailFragment.update(type, param);
             switchContent(categoryDetailFragment, CATEGORY_DETAIL_TAG);
+        } else if (type.equalsIgnoreCase(SwitchContentEvent.SWITCH_TYPE_CHANNEL_LIST)) {
+            ChannelListFragment channelListFragment = new ChannelListFragment();
+            channelListFragment.update(type, param);
+            switchContent(channelListFragment, CHANNEL_LIST_TAG);
+        } else if (type.equalsIgnoreCase(SwitchContentEvent.SWITCH_TYPE_REGION_LIST)) {
+            RegionListFragment regionListFragment = new RegionListFragment();
+            regionListFragment.update(type, param);
+            switchContent(regionListFragment, REGION_LIST_TAG);
         }
     }
 
@@ -238,8 +252,7 @@ public class AllInOneActivity extends BaseActivity implements IEventHandler, Rad
         }
         setContentView(R.layout.layout_ad);
         ImageView ad_img = (ImageView) findViewById(R.id.ad_img);
-        ImageLoader.getInstance().displayImage(url, ad_img, ((PlayApplication) getApplication()).getDisplayImageOptions());
-        ImageLoader.getInstance().loadImage(url, new ImageLoadingListener() {
+        ImageLoader.getInstance().displayImage(url, ad_img, ((PlayApplication) getApplication()).getDisplayImageOptions(), new ImageLoadingListener() {
             @Override
             public void onLoadingStarted(String imageUri, View view) {
 
@@ -325,5 +338,10 @@ public class AllInOneActivity extends BaseActivity implements IEventHandler, Rad
             getWindow().setAttributes(params);
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        //super.onSaveInstanceState(outState);
     }
 }

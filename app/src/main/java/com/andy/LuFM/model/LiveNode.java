@@ -38,7 +38,7 @@ public class LiveNode extends Node {
         this.hasRestoredLiveCategory = false;
         this.hasRestored = false;
         this.nodeName = "live";
-        //  init();
+        init();
     }
 
     private void buildCategory() {
@@ -153,21 +153,13 @@ public class LiveNode extends Node {
         return null;
     }
 
-  /*  public List<Attribute> getRegionAttribute() {
+    public List<Attribute> getRegionAttribute() {
         List<Attributes> lstAttrs = getLstAttributes();
         if (lstAttrs == null) {
             return null;
         }
         for (int i = 0; i < lstAttrs.size(); i++) {
             if (((Attributes) lstAttrs.get(i)).id == 20) {
-                if (((Attributes) lstAttrs.get(i)).mLstAttribute != null && InfoManager.getInstance().disableGD()) {
-                    for (int j = 0; j < ((Attributes) lstAttrs.get(i)).mLstAttribute.size(); j++) {
-                        if (((Attribute) ((Attributes) lstAttrs.get(i)).mLstAttribute.get(j)).name.equalsIgnoreCase("\u5e7f\u4e1c")) {
-                            ((Attributes) lstAttrs.get(i)).mLstAttribute.remove(j);
-                            break;
-                        }
-                    }
-                }
                 return ((Attributes) lstAttrs.get(i)).mLstAttribute;
             }
         }
@@ -185,14 +177,14 @@ public class LiveNode extends Node {
             }
         }
         return null;
-    }*/
+    }
 
-  /*  public List<Attributes> getLstAttributes() {
+    public List<Attributes> getLstAttributes() {
         if (this.mRadioCategoryNode != null) {
-            return this.mRadioCategoryNode.getLstAttributes(true);
+            return this.mRadioCategoryNode.getLstAttributes();
         }
         return null;
-    }*/
+    }
 
     public List<CategoryNode> getLiveCategoryNodes() {
         if (this.mLstLiveCategoryNodes == null) {
@@ -230,12 +222,9 @@ public class LiveNode extends Node {
                 this.mRadioNode.restoreFromDBByCity(loc.city);
             }
         }
-    }
+    }*/
 
     private void init() {
-        if (FMManager.getInstance().isAvailable()) {
-            this.mRadioNode = new RadioNode();
-        }
         this.mRadioCategoryNode = new CategoryNode();
         this.mRadioCategoryNode.parentId = this.id;
         this.mRadioCategoryNode.categoryId = 5;
@@ -245,7 +234,7 @@ public class LiveNode extends Node {
         this.mRadioCategoryNode.parent = this;
     }
 
-    public boolean isRadioCategoryNode(CategoryNode node) {
+  /*  public boolean isRadioCategoryNode(CategoryNode node) {
         if (node != null && node.categoryId == this.mRadioCategoryNode.categoryId) {
             return true;
         }

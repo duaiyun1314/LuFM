@@ -2,6 +2,7 @@ package com.andy.LuFM.data;
 
 import android.util.Log;
 
+import com.andy.LuFM.helper.ChannelHelper;
 import com.andy.LuFM.helper.ProgramHelper;
 import com.andy.LuFM.model.CategoryNode;
 import com.andy.LuFM.model.ChannelNode;
@@ -159,6 +160,13 @@ public class InfoManager implements IResultRecvHandler {
                 EventBus.getDefault().post(url);
             } else {
                 EventBus.getDefault().post("");
+            }
+        } else if (type.equalsIgnoreCase(RequestType.GET_LIST_LIVE_CHANNELS)) {
+            List<ChannelNode> channelNodes = (List) result.getData();
+            if (channelNodes != null) {
+                dispatchNodeEvent(channelNodes, mapParam, INodeEventListener.ADD_LIVE_CHANNELS_BYATTR);
+                dispatchSubscribeEvent(ISubscribeEventListener.RECV_LIVE_CHANNELS_BYATTR);
+
             }
         }
 
@@ -498,6 +506,27 @@ public class InfoManager implements IResultRecvHandler {
             return this.liveChannel.contains(Integer.valueOf(resid));
         }
         return false;
+    }
+
+    /**
+     * 获取单个标签下直播列表
+     *
+     * @param listener
+     */
+    public void loadListLiveChannelsByAttr(CategoryNode categoryNode, ISubscribeEventListener listener) {
+        String attrs = categoryNode.getmAttributesPath();
+        if (attrs != null && !attrs.equalsIgnoreCase("")) {
+            if (listener != null) {
+                registerSubscribeEventListener(listener, ISubscribeEventListener.RECV_LIVE_CHANNELS_BYATTR);
+            }
+            Map<String, Object> requestParam = new HashMap();
+            requestParam.put("id", String.valueOf(categoryNode.categoryId));
+            requestParam.put("attr", attrs);
+            requestParam.put("page", String.valueOf(1));
+            requestParam.put("pagesize", String.valueOf(100));
+            registerNodeEventListener(ChannelHelper.getInstance(), INodeEventListener.ADD_LIVE_CHANNELS_BYATTR);
+            DataManager.getInstance().getData(RequestType.NET_REQUEST, this, new DataCommand(RequestType.GET_LIST_LIVE_CHANNELS, requestParam));
+        }
     }
 
     public void loadSpecialTopicNode(SpecialTopicNode node, ISubscribeEventListener listener) {

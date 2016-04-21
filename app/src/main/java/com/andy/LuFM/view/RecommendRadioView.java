@@ -72,6 +72,6 @@ public class RecommendRadioView extends BaseRecommendView<RecommendRadioControll
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         RecommendPlayingItemNode playingItemNode = ((RecommendRadioProvider.MYAdapter) controller.getAdatper()).getData().get(position - 1);
-        ControllerManager.getInstance(getContext()).openPlayController(playingItemNode);
+        ControllerManager.getInstance(getContext()).openPlayController(playingItemNode.channelId);
     }
 }

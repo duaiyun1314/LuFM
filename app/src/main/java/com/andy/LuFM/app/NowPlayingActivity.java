@@ -1,7 +1,6 @@
 package com.andy.LuFM.app;
 
 import android.animation.ObjectAnimator;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -9,15 +8,9 @@ import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
-import android.util.Log;
 import android.view.HapticFeedbackConstants;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
@@ -32,9 +25,6 @@ import com.andy.LuFM.helper.ChannelHelper;
 import com.andy.LuFM.helper.ProgramHelper;
 import com.andy.LuFM.model.ChannelNode;
 import com.andy.LuFM.model.ProgramNode;
-import com.andy.LuFM.model.RecommendPlayingItemNode;
-import com.andy.LuFM.player.AudioPlaybackService;
-import com.andy.LuFM.player.SongHelper;
 import com.andy.LuFM.providers.ProgramNodesProvider;
 import com.andy.LuFM.view.PlayerDiscView;
 import com.github.obsessive.library.blur.ImageBlurManager;
@@ -56,11 +46,7 @@ import roboguice.util.Ln;
  * Created by Andy.Wang on 2015/11/30.
  */
 public class NowPlayingActivity extends BaseToolBarActivity implements InfoManager.ISubscribeEventListener, ChannelHelper.IDataChangeObserver {
-    public static final String CHANNEL_MODE = "Live_Mode";//点击频道进入界面，只传进频道号，需要在acitivity中主动加载programs
-    public static final String PROGRAM_MODE = "Program_Mode";//点击program进入界面，已经加载完了所有的programs
-    public static final String MODE_KEY = "MODE_KEY";
-    private SongHelper mCurrentSong;
-    private AudioPlaybackService mPlaybackService;
+    public static final String CHANNEL_ID = "channel_id";
 
     private Context mContext;
     private PlayApplication mApp;
@@ -87,7 +73,6 @@ public class NowPlayingActivity extends BaseToolBarActivity implements InfoManag
     private DisplayImageOptions options;
     private static final int BLUR_RADIUS = 100;
 
-    private String mode;//进入界面时的mode
     private ChannelNode channelNode;
     private int channelId;
     /**
@@ -132,7 +117,6 @@ public class NowPlayingActivity extends BaseToolBarActivity implements InfoManag
                         }
                     }
                 });
-                //smoothScrollSeekbar(currentPositionInSecs);
 
 
                 mHandler.postDelayed(currentUpdateRunnable, 1000);
@@ -198,33 +182,29 @@ public class NowPlayingActivity extends BaseToolBarActivity implements InfoManag
         //Set the volume stream for this activity.
         this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_HOME_AS_UP | ActionBar.DISPLAY_SHOW_TITLE);
-        mPlaybackService = mApp.getService();
-        if (mPlaybackService != null && mPlaybackService.isPlayingMusic()) {
-            mCurrentSong = mPlaybackService.getCurrentSong();
-            setTitle(mCurrentSong.getAlbum());
-        }
         setNowPlayingActivityListener(mApp.getPlaybackKickstarter());
+        loadLiveData();
+
+    }
+
+    /**
+     * 如果只传进来channelId 是直播模式，需要加载直播列表
+     */
+    private void loadLiveData() {
         Bundle bundle = getIntent().getExtras();
-        if (bundle != null && bundle.containsKey(NowPlayingActivity.CHANNEL_MODE)) {
-            mode = NowPlayingActivity.CHANNEL_MODE;
-
-
-            RecommendPlayingItemNode playingItemNode = (RecommendPlayingItemNode) bundle.getSerializable(NowPlayingActivity.CHANNEL_MODE);
-            channelNode = ChannelHelper.getInstance().getChannel(playingItemNode.channelId, 0);
-            channelId = playingItemNode.channelId;
+        if (bundle != null && bundle.containsKey(CHANNEL_ID)) {
+            channelId = bundle.getInt(CHANNEL_ID);
+            channelNode = ChannelHelper.getInstance().getChannel(channelId, 0);
             ChannelHelper.getInstance().addObserver(channelId, this);
 
             if (channelNode == null) {
                 Ln.d(" null load live programsschedule async");
                 //do nothing 等待后台getChannelInfo 后调用 onChannelNodeInfoUpdate
             } else {
-                Ln.d( "not null load directly");
-                onNotification(InfoManager.ISubscribeEventListener.RECV_PROGRAMS_SCHEDULE);
+                Ln.d("not null load directly");
+                onChannelNodeInfoUpdate(channelNode);
             }
-        } else {
-            mode = NowPlayingActivity.PROGRAM_MODE;
         }
-
     }
 
     public void onEventMainThread(PlayActionEvent actionEvent) {
@@ -410,19 +390,28 @@ public class NowPlayingActivity extends BaseToolBarActivity implements InfoManag
 
     };
 
+    /**
+     * Helper method that checks whether the audio playback service
+     * is running or not.
+     */
+    private void checkServiceRunning() {
+        if (mApp.isServiceRunning() && mApp.getService().getData() != null) {
+            initMiniPlayer();
+            setPlayPauseButton();
+        }
+
+    }
 
     @Override
     public void onResume() {
         super.onResume();
+        checkServiceRunning();
         mPlayPauseButton.setTag("pause_light");
         if (mIsCreating == false) {
             mHandler.postDelayed(seekbarUpdateRunnable, 100);
             mHandler.postDelayed(currentUpdateRunnable, 100);
             mIsCreating = false;
         }
-
-        //Animate the controls bar in.
-        //animateInControlsBar();
 
         //Update the seekbar.
         try {
@@ -431,6 +420,7 @@ public class NowPlayingActivity extends BaseToolBarActivity implements InfoManag
         }
 
 
+        //是否开启播放服务
         Intent intent = this.getIntent();
         if (intent.hasExtra(START_SERVICE) &&
                 getNowPlayingActivityListener() != null) {
@@ -493,6 +483,7 @@ public class NowPlayingActivity extends BaseToolBarActivity implements InfoManag
 
     @Override
     public void onChannelNodeInfoUpdate(ChannelNode channelNode) {
+        setTitle(channelNode.title);
         this.channelNode = channelNode;
         InfoManager.getInstance().loadLiveProgramSchedule(ProgramHelper.getInstance(), channelNode.channelId, Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + "", this);
 
